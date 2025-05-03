@@ -22,7 +22,11 @@
           </div>
         </div>
         <div class="flex items-center">
-          <SecondaryButton name="entypo:chat" size="24px">Grupo</SecondaryButton>
+          <a href="https://t.me/lunaroficial" target="_blank" class="flex items-center">
+            <SecondaryButton name="entypo:chat" size="24px">
+              Grupo
+            </SecondaryButton>
+          </a>
         </div>
       </div>
     </header>
@@ -80,7 +84,8 @@
         </select>
         <input v-model="cookies" type="text" placeholder="Insira os cookies aqui..."
           class="flex-1 p-2.5 h-12 bg-[#0a0a0a] border-2 border-[#2c2c2c] text-white rounded-lg font-montserrat focus:border-zinc-500 transition" />
-        <SecondaryButton @click="toggleSettings(); salvarCookies();" name="material-symbols:save">Salvar</SecondaryButton>
+        <SecondaryButton @click="toggleSettings(); salvarCookies();" name="material-symbols:save">Salvar
+        </SecondaryButton>
       </div>
     </Modal>
 
@@ -277,6 +282,14 @@
         </div>
       </div>
     </div>
+    <footer class="flex items-center justify-center mt-10 pb-4">
+      <p class="text-white font-montserrat text-sm">
+        <span class="text-gray-500">&lt;\</span>
+        Desenvolvido por
+        <a href="https://t.me/lunaroficial" target="_blank" class="text-blue-500 hover:underline">Lunar Bins</a>
+        <span class="text-gray-500"> &gt;</span>
+      </p>
+    </footer>
   </div>
 </template>
 
