@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-black">
+  <div v-if="isAuthorized" class="min-h-screen bg-black">
     <NuxtRouteAnnouncer />
 
     <Notification v-if="show && notificationType === 'success'" :title="notificationTitle"
@@ -13,9 +13,12 @@
     <header class="w-screen h-fit bg-[#0a0a0a]/80 backdrop-blur-md border-b border-[#131313] fixed top-0 left-0 z-50">
       <div class="flex flex-row items-center justify-between max-w-7xl mx-auto px-6 py-4">
         <div class="flex flex-row items-center">
-          <div class="flex justify-center items-center bg-[#222222] h-fit w-fit rounded-lg">
-            <Icon class="text-white m-2" size="45px" name="flowbite:moon-solid"></Icon>
-          </div>
+          <a href="https://t.me/lunaroficial" target="_blank">
+            <div class="flex justify-center items-center bg-[#222222] h-fit w-fit rounded-lg">
+              <Icon class="text-white m-2" size="45px" name="flowbite:moon-solid"></Icon>
+            </div>
+          </a>
+
           <div class="flex flex-col justify-center ml-4">
             <p class="text-white font-montserrat font-black text-3xl">Lunar Checker</p>
             <p class="text-[#888888] font-montserrat text-base">Telegram: t.me/lunaroficial</p>
@@ -111,7 +114,7 @@
               @click="toggleLista('aprovados')" />
           </div>
         </div>
-        <div v-if="mostrarAprovados" class="overflow-y-auto max-h-32 pr-2 pb-4">
+        <div v-if="mostrarAprovados" class="overflow-y-auto max-h-32 pr-2 pb-4 scroll-smooth">
           <ul v-if="aprovados.length" class="text-white space-y-1 ml-4">
             <Approved v-for="(aprovado, index) in aprovados" :key="index">
               <li class="text-sm font-montserrat">{{ aprovado }}</li>
@@ -134,7 +137,7 @@
               @click="toggleLista('recusados')" />
           </div>
         </div>
-        <div v-if="mostrarRecusados" class="overflow-y-auto max-h-32 pr-2 pb-4">
+        <div v-if="mostrarRecusados" class="overflow-y-auto max-h-32 pr-2 pb-4 scroll-smooth">
           <ul v-if="recusados.length" class="text-white space-y-1 ml-4">
             <Refused v-for="(recusado, index) in recusados" :key="index">
               <li class="text-sm font-montserrat">{{ recusado }}</li>
@@ -157,7 +160,7 @@
               @click="toggleLista('erros')" />
           </div>
         </div>
-        <div v-if="mostrarErros" class="overflow-y-auto max-h-32 pr-2 pb-4">
+        <div v-if="mostrarErros" class="overflow-y-auto max-h-32 pr-2 pb-4 scroll-smooth">
           <ul v-if="erros.length" class="text-white space-y-1 ml-4">
             <Error v-for="(erro, index) in erros" :key="index">
               <li class="text-sm font-montserrat">{{ erro }}</li>
@@ -291,7 +294,35 @@
       </p>
     </footer>
   </div>
+  <div v-else class="min-h-screen flex items-center justify-center bg-black text-white">
+    <div class="flex flex-col items-center">
+      <Section class="flex items-center justify-center gap-2 p-4 max-w-3xl">
+        <p class="font-montserrat text-white text-2xl font-black pt-2 pb-2">
+          Lunar - Key Verify
+        </p>
+        <div class="flex flex-row">
+          <p class="font-montserrat">Join our</p>
+          <a href="https://t.me/lunaroficial" target="_blank">
+            <p class="text-blue-500 pl-1 pr-1  font-montserrat">Telegram</p>
+          </a>
+          <p class="font-montserrat">and use /key to get your key!</p>
+        </div>
+        <input v-model="userKey" type="text" placeholder="Enter your key here..."
+          class="p-2 w-full bg-[#0a0a0a] border border-[#2c2c2c] rounded-lg text-white text-center font-montserrat" />
+        <SecondaryButton @click="validarKey" class="w-full">
+          Validate key
+        </SecondaryButton>
+        <p v-if="errorMessage" class="text-red-500 ml-2 mr-2">{{ errorMessage }}</p>
+      </Section>
+    </div>
+  </div>
 </template>
+
+<style>
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+</style>
 
 <script setup>
 import Notification from '~/components/Notification.vue'
@@ -331,6 +362,31 @@ const notificationAudio = typeof Audio !== 'undefined' ? new Audio('./audios/not
 const notificationSuccessAudio = typeof Audio !== 'undefined' ? new Audio('./audios/notificationSuccess.mp3') : null;
 
 let notificacaoAtiva = false; // Controle para evitar múltiplas notificações simultâneas
+
+const isAuthorized = ref(false); // Estado para verificar se o usuário está autorizado
+const userKey = ref(''); // Key inserida pelo usuário
+const errorMessage = ref(''); // Mensagem de erro para exibir ao usuário
+
+async function validarKey() {
+  if (!userKey.value.trim()) {
+    errorMessage.value = 'Please, enter a valid key.';
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://lunarcntr.xyz/api/api.php?key=${userKey.value}`);
+    const data = await response.json();
+
+    if (data.valid) {
+      isAuthorized.value = true; // Permite o acesso ao site
+    } else {
+      errorMessage.value = 'Key inválida! Verifique e tente novamente.';
+    }
+  } catch (error) {
+    console.error('Erro ao validar a key:', error);
+    errorMessage.value = 'Erro ao validar a key. Tente novamente mais tarde.';
+  }
+}
 
 function exibirNotificacao(titulo, mensagem, tipo = 'success') {
   if (notificacaoAtiva) return; // Evita exibir notificações enquanto uma está ativa
