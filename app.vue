@@ -105,7 +105,9 @@
         <div class="flex items-center justify-between">
           <div class="flex flex-row items-left justify-left ml-2 p-2">
             <Icon class="text-white" size="22px" name="mdi:at"></Icon>
-            <label class="text-white font-montserrat font-medium pl-2">Aprovadas</label>
+            <label class="text-white font-montserrat font-medium pl-2">
+              Aprovadas ({{ aprovados.length }})
+            </label>
           </div>
           <div class="flex items-right justify-right pr-2 gap-2">
             <Icon class="text-white cursor-pointer" name="bxs:copy" @click="copiarLista('aprovados')" />
@@ -129,7 +131,9 @@
         <div class="flex items-center justify-between">
           <div class="flex flex-row items-left justify-left ml-2 p-2">
             <Icon class="text-white" size="22px" name="mdi:at"></Icon>
-            <label class="text-white font-montserrat font-medium pl-2">Recusadas</label>
+            <label class="text-white font-montserrat font-medium pl-2">
+              Recusadas ({{ recusados.length }})
+            </label>
           </div>
           <div class="flex items-right justify-right pr-2 gap-2">
             <Icon class="text-white cursor-pointer" name="tabler:trash-filled" @click="deletarLista('recusados')" />
@@ -152,7 +156,9 @@
         <div class="flex items-center justify-between">
           <div class="flex flex-row items-left justify-left ml-2 p-2">
             <Icon class="text-white" size="22px" name="mdi:at"></Icon>
-            <label class="text-white font-montserrat font-medium pl-2">Erros</label>
+            <label class="text-white font-montserrat font-medium pl-2">
+              Erros ({{ erros.length }})
+            </label>
           </div>
           <div class="flex items-right justify-right pr-2 gap-2">
             <Icon class="text-white cursor-pointer" name="tabler:trash-filled" @click="deletarLista('erros')" />
