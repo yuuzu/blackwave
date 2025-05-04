@@ -375,22 +375,40 @@ const errorMessage = ref(''); // Mensagem de erro para exibir ao usuário
 
 async function validarKey() {
   if (!userKey.value.trim()) {
-    errorMessage.value = 'Please, enter a valid key.';
+    errorMessage.value = 'Please enter a valid key.';
     return;
   }
 
   try {
     const response = await fetch(`https://lunarcntr.xyz/api/api.php?key=${userKey.value}`);
+
+    // Verifica se a resposta foi bem-sucedida
+    if (!response.ok) {
+      if (response.status === 404) {
+        errorMessage.value = 'API endpoint not found. Please contact support.';
+      } else if (response.status === 500) {
+        errorMessage.value = 'Server error. Please try again later.';
+      } else {
+        errorMessage.value = `Unexpected error: ${response.status}. Please contact support.`;
+      }
+      return;
+    }
+
     const data = await response.json();
 
     if (data.valid) {
       isAuthorized.value = true; // Permite o acesso ao site
     } else {
-      errorMessage.value = 'Key inválida! Verifique e tente novamente.';
+      errorMessage.value = 'Invalid key! Please check and try again.';
     }
   } catch (error) {
-    console.error('Erro ao validar a key:', error);
-    errorMessage.value = 'Erro ao validar a key. Tente novamente mais tarde.';
+    // Tratamento de erros de rede ou outros problemas
+    if (error.name === 'TypeError') {
+      errorMessage.value = 'Network error. Please check your connection and try again.';
+    } else {
+      errorMessage.value = `An unexpected error occurred: ${error.message}`;
+    }
+    console.error('Error validating key:', error);
   }
 }
 
