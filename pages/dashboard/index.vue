@@ -1,9 +1,9 @@
 <template>
-    <div class="w-full mx-auto pt-12 px-16">
-        <h1 class="font-semibold text-[21px] text-[#FAFAFA]">Account Information</h1>
+    <div class="w-full mx-auto pt-20 md:pt-12 px-2 md:px-16">
+        <h1 class="font-semibold text-[19px] md:text-[21px] text-[#FAFAFA] mb-4 px-16 md:px-0 md:mb-0">Account Information</h1>
     </div>
     <div class="w-full mx-auto pt-4 px-16">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
             <!-- Saldo -->
             <div
                 class="bg-[#1b273d]/60 rounded-3xl p-6 flex flex-col justify-between shadow border border-[#243451]/40">
@@ -54,7 +54,7 @@
         </div>
 
         <!-- 3. Resumo de uso -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
             <div class="bg-[#111111] rounded-2xl p-6 shadow flex flex-col gap-2">
                 <div class="font-semibold text-lg mb-2 flex items-center gap-2">
                     <Icon name="mdi:chart-bar" class="text-[#576784]" size="22" />
@@ -91,7 +91,7 @@
             </div>
         </div>
         <!-- 4. Acesso rápido -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
             <!-- 6. Status da conta -->
             <div class="bg-[#111111] rounded-2xl p-6 shadow flex flex-col gap-2">
                 <div class="font-semibold text-lg mb-2 flex items-center gap-2">

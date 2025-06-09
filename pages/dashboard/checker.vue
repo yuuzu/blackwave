@@ -1,26 +1,26 @@
 <template>
-    <div class="w-full mx-auto pt-8 px-4 md:px-16 font-satoshi">
+    <div class="w-full mx-auto pt-20 md:pt-8 px-2 md:px-16 font-satoshi">
         <!-- Bloco principal: Cards, Actions, Stats, Generator -->
         <div class="w-full max-w-6xl mx-auto bg-[#181818] rounded-2xl p-0 mb-8">
             <!-- Header Cards -->
-            <div class="flex justify-center items-center gap-2 px-8 pt-4 pb-4">
-                <Icon name="mdi:credit-card-outline" class="text-[#576784]" size="26" />
-                <span class="font-semibold text-[#fafafa] text-2xl">Cards</span>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4 px-4 md:px-8 pt-4 pb-4">
+                <Icon name="mdi:credit-card-outline" class="text-[#576784]" size="24" />
+                <span class="font-semibold text-[#fafafa] text-lg md:text-2xl">Cards</span>
             </div>
             <!-- Cards textarea -->
-            <div class="px-8 pb-4">
+            <div class="px-4 md:px-8 pb-4">
                 <textarea v-model="cardsInput" rows="8"
                     placeholder="Paste your cards here, one per line (e.g. 4174014980983772|02|27|574)"
                     class="w-full h-36 bg-[#111111] rounded-lg p-3 text-[#fafafa] font-mono resize-none focus:outline-none focus:border-[#a78bfa] transition"></textarea>
             </div>
             <!-- Actions -->
-            <div class="flex flex-col md:flex-row gap-4 px-8 pb-4">
+            <div class="flex flex-col md:flex-row gap-2 md:gap-4 px-4 md:px-8 pb-4">
                 <button @click="startCheck" :disabled="loading || !cardsInput.trim()"
-                    class="flex-1 px-8 py-2 rounded-full bg-[#576784] text-[#fafafa] font-bold hover:bg-[#313442] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    class="flex-1 px-4 md:px-8 py-2 rounded-full bg-[#576784] text-[#fafafa] font-bold hover:bg-[#313442] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                     <Icon name="mdi:play" size="20" /> Start
                 </button>
                 <button @click="stopCheck" :disabled="!loading"
-                    class="flex-1 px-8 py-2 rounded-full bg-[#23293a] text-[#fafafa] font-bold hover:bg-[#282828] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    class="flex-1 px-4 md:px-8 py-2 rounded-full bg-[#23293a] text-[#fafafa] font-bold hover:bg-[#282828] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                     <Icon name="mdi:stop" size="20" /> Stop
                 </button>
                 <button class="text-[#b8b8b8] hover:text-[#fafafa] transition p-2 rounded-full" title="Configurações"
@@ -29,22 +29,18 @@
                 </button>
             </div>
             <!-- Stats + Generator juntos -->
-            <div class="flex flex-col md:flex-row gap-4 px-8 pb-8">
+            <div class="flex flex-col md:flex-row gap-2 md:gap-4 px-4 md:px-8 pb-8">
                 <!-- Statistics -->
-                <div class="flex-1 bg-[#111111] rounded-xl p-4 flex flex-col gap-2">
+                <div class="flex-1 bg-[#111111] rounded-xl p-4 flex flex-col gap-2 mb-2 md:mb-0">
                     <div class="flex items-center gap-2 mb-1">
                         <Icon name="mdi:chart-bar" class="text-[#576784]" size="20" />
                         <span class="font-semibold text-[#fafafa]">Statistics</span>
                     </div>
                     <div class="flex flex-col gap-1 text-[#b8b8b8] text-sm">
-                        <div>Approved: <span class="text-[#fafafa] font-bold">{{
-                            approved.length }}</span></div>
-                        <div>Refused: <span class="text-[#fafafa] font-bold">{{
-                            refused.length }}</span></div>
-                        <div>Tested: <span class="text-[#fafafa] font-bold">{{ tested
-                                }}</span></div>
-                        <div>Loaded: <span class="text-[#fafafa] font-bold">{{ loaded
-                                }}</span></div>
+                        <div>Approved: <span class="text-[#fafafa] font-bold">{{ approved.length }}</span></div>
+                        <div>Refused: <span class="text-[#fafafa] font-bold">{{ refused.length }}</span></div>
+                        <div>Tested: <span class="text-[#fafafa] font-bold">{{ tested }}</span></div>
+                        <div>Loaded: <span class="text-[#fafafa] font-bold">{{ loaded }}</span></div>
                     </div>
                 </div>
                 <!-- Generator -->
@@ -53,7 +49,7 @@
                         <Icon name="mdi:cog" class="text-[#576784]" size="20" />
                         <span class="font-semibold text-[#fafafa]">CC Generator</span>
                     </div>
-                    <input v-model="genBin" maxlength="16" placeholder="Enter BIN (e.g. 417401)"
+                    <input v-model="genBin" placeholder="Enter BIN (e.g. 417401xxxxxxxxxx)"
                         class="w-full bg-[#0a0a0a] rounded-lg py-2 px-3 text-[#fafafa] placeholder-[#939193] focus:outline-none transition font-mono" />
                     <button @click="generateCards"
                         class="w-full px-4 py-2 rounded-full bg-[#576784] text-[#fafafa] font-bold hover:bg-[#313442] transition flex items-center justify-center gap-2">
@@ -64,10 +60,10 @@
         </div>
         <!-- Results: w-full, abaixo de tudo -->
         <div class="w-full max-w-6xl mx-auto mt-6">
-            <div class="bg-[#181818] rounded-2xl px-8 py-8">
-                <div class="flex justify-center items-center gap-2 mb-4">
-                    <Icon name="mdi:format-list-bulleted" class="text-[#576784]" size="30" />
-                    <span class="font-semibold text-[#fafafa] text-2xl">Results</span>
+            <div class="bg-[#181818] rounded-2xl px-4 md:px-8 py-8">
+                <div class="flex flex-col md:flex-row justify-center items-center gap-2 mb-4">
+                    <Icon name="mdi:format-list-bulleted" class="text-[#576784]" size="26" />
+                    <span class="font-semibold text-[#fafafa] text-lg md:text-2xl">Results</span>
                 </div>
                 <!-- Approved -->
                 <div class="mb-4">
@@ -141,6 +137,7 @@
                 </div>
             </div>
         </div>
+        <!-- Config Modal -->
         <transition name="fade-slide">
             <div v-if="showConfig" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
                 <div class="max-w-2xl w-full bg-[#111111] rounded-2xl shadow-xl p-8 text-white font-satoshi relative">
@@ -218,31 +215,32 @@
                 </div>
             </div>
         </transition>
-    </div>
-    <transition name="fade-slide">
-        <div v-if="showNoBalanceModal"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
-            <div class="bg-[#181818] rounded-2xl shadow-xl p-8 text-white font-satoshi max-w-sm w-full relative">
-                <button @click="showNoBalanceModal = false"
-                    class="absolute top-4 right-4 text-[#576784] hover:text-[#fafafa]">
-                    <Icon name="mdi:close" size="24" />
-                </button>
-                <div class="flex flex-col items-center gap-4">
-                    <Icon name="mdi:alert-circle-outline" size="48" class="text-[#ff5252]" />
-                    <h2 class="text-xl font-bold text-[#fafafa] text-center">Insufficient Balance</h2>
-                    <p class="text-[#b8b8b8] text-center">
-                        You need at least <span class="text-[#ff5252] font-bold">R$ 0.10</span> to start the checker.
-                    </p>
-                    <a href="https://t.me/yuzuuk1" target="_blank" rel="noopenner"
-                        class="text-[#576784] hover:text-[#fafafa] font-bold underline">
-                        <button @click="showNoBalanceModal = false"
-                            class="mt-4 px-6 py-2 rounded-full bg-[#576784] text-[#fafafa] font-bold hover:bg-[#313442] transition">
-                            Recharge
-                        </button></a>
+        <!-- No Balance Modal -->
+        <transition name="fade-slide">
+            <div v-if="showNoBalanceModal"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+                <div class="bg-[#181818] rounded-2xl shadow-xl p-8 text-white font-satoshi max-w-sm w-full relative">
+                    <button @click="showNoBalanceModal = false"
+                        class="absolute top-4 right-4 text-[#576784] hover:text-[#fafafa]">
+                        <Icon name="mdi:close" size="24" />
+                    </button>
+                    <div class="flex flex-col items-center gap-4">
+                        <Icon name="mdi:alert-circle-outline" size="48" class="text-[#ff5252]" />
+                        <h2 class="text-xl font-bold text-[#fafafa] text-center">Insufficient Balance</h2>
+                        <p class="text-[#b8b8b8] text-center">
+                            You need at least <span class="text-[#ff5252] font-bold">R$ 0.10</span> to start the checker.
+                        </p>
+                        <a href="https://t.me/yuzuuk1" target="_blank" rel="noopenner"
+                            class="text-[#576784] hover:text-[#fafafa] font-bold underline">
+                            <button @click="showNoBalanceModal = false"
+                                class="mt-4 px-6 py-2 rounded-full bg-[#576784] text-[#fafafa] font-bold hover:bg-[#313442] transition">
+                                Recharge
+                            </button></a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </transition>
+        </transition>
+    </div>
 </template>
 
 <script setup>
@@ -266,20 +264,24 @@ const hideApproved = ref(false)
 const hideRefused = ref(true)
 
 function generateCards() {
-    let bin = genBin.value.replace(/\D/g, '').slice(0, 16)
-    if (bin.length < 6) return
-    let cards = []
-    const isAmex = bin.startsWith('34') || bin.startsWith('37')
-    const cardLength = isAmex ? 15 : 16
-    const cvvLength = isAmex ? 4 : 3
+    let bin = genBin.value.trim().split('|')[0]; // Pega só o BIN antes do primeiro "|"
+    if (!/^[\dx]{6,}$/i.test(bin)) return;
+
+    let cards = [];
     for (let i = 0; i < 10; i++) {
-        let cc = bin + Math.floor(Math.random() * Math.pow(10, cardLength - bin.length)).toString().padStart(cardLength - bin.length, '0')
-        let mm = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')
-        let yy = String(new Date().getFullYear() % 100 + Math.floor(Math.random() * 5) + 1).padStart(2, '0')
-        let cvv = String(Math.floor(Math.random() * Math.pow(10, cvvLength))).padStart(cvvLength, '0')
-        cards.push(`${cc}|${mm}|${yy}|${cvv}`)
+        let cc = '';
+        for (let c of bin) {
+            cc += c.toLowerCase() === 'x' ? Math.floor(Math.random() * 10) : c;
+        }
+        while (cc.length < 16) cc += Math.floor(Math.random() * 10);
+        cc = cc.slice(0, 16);
+
+        let mm = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        let yy = String((new Date().getFullYear() % 100) + Math.floor(Math.random() * 5) + 1).padStart(2, '0');
+        let cvv = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+        cards.push(`${cc}|${mm}|${yy}|${cvv}`);
     }
-    cardsInput.value = cards.join('\n')
+    cardsInput.value = cards.join('\n');
 }
 
 async function startCheck() {

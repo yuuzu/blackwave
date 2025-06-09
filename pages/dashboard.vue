@@ -1,7 +1,119 @@
 <template>
-    <div class="min-h-screen flex bg-[#0e0e0e] text-white font-satoshi">
+    <div class="min-h-screen flex flex-col md:flex-row bg-[#0e0e0e] text-white font-satoshi">
+        <!-- Mobile Header -->
+        <header
+            class="md:hidden flex items-center rounded-full justify-between mx-2 my-2 px-4 py-3 bg-[#101010]/70 backdrop-blur-md shadow z-20 fixed top-0 left-0 right-0">
+            <div class="flex items-center gap-2">
+                <Icon name="basil:moon-solid" size="32px" class="text-[#576784]" />
+                <span class="font-bold text-xl">lunarcntr.xyz</span>
+            </div>
+            <button @click="showMobileMenu = !showMobileMenu" class="focus:outline-none">
+                <Icon :name="showMobileMenu ? 'mdi:close' : 'mdi:menu'" size="32px" />
+            </button>
+        </header>
+        <!-- Mobile Menu Drawer -->
+        <transition name="fade">
+            <aside v-if="showMobileMenu" class="fixed inset-0 z-30 bg-black/70 flex md:hidden">
+                <div class="w-64 bg-[#101010]/70 backdrop-blur-md h-full p-6 flex flex-col gap-4">
+                    <!-- Logo -->
+                    <div class="flex items-center gap-2 mb-8 px-2">
+                        <Icon name="basil:moon-solid" size="40px" class="text-[#576784]" />
+                        <span class="font-bold text-2xl">lunarcntr.xyz</span>
+                    </div>
+                    <!-- Menu -->
+                    <nav class="flex flex-col gap-2">
+                        <button @click="toggleAccount"
+                            class="flex items-center w-full px-3 py-2 rounded-full transition font-semibold duration-300 out-in"
+                            :class="accountOpen ? 'bg-[#313442]' : 'hover:bg-[#292c38]'">
+                            <Icon name="mdi:account-circle" class="mr-2" size="24.5px" />
+                            <p class="text-[17.3px]">Account</p>
+                            <Icon :name="accountOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" class="ml-auto" />
+                        </button>
+                        <transition name="fade">
+                            <div v-if="accountOpen" class="ml-8 flex flex-col gap-1 mt-1">
+                                <NuxtLink to="/dashboard" exact-active-class="text-[#CCCCCC]"
+                                    class="text-[15px] text-[#949494] hover:text-[#bbbbbb] duration-300 out-in"
+                                    @click="showMobileMenu = false">Overview
+                                </NuxtLink>
+                                <NuxtLink to="/dashboard/results" active-class="text-[#CCCCCC]"
+                                    class="text-[15px] text-[#949494] hover:text-[#bbbbbb] duration-300 out-in"
+                                    @click="showMobileMenu = false">
+                                    Historical</NuxtLink>
+                                <NuxtLink to="/dashboard/settings" active-class="text-[#CCCCCC]"
+                                    class="text-[15px] text-[#949494] hover:text-[#bbbbbb] duration-300 out-in"
+                                    @click="showMobileMenu = false">Settings
+                                </NuxtLink>
+                            </div>
+                        </transition>
+                        <NuxtLink to="/dashboard/store" exact-active-class="text-[#fafafa] font-bold bg-[#313442]"
+                            class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in"
+                            @click="showMobileMenu = false">
+                            <Icon name="mdi:cart" class="mr-2" size="24px" />
+                            <p class="text-[17.3px] font-bold">Store</p>
+                        </NuxtLink>
+                        <NuxtLink to="/dashboard/checker" exact-active-class="text-[#fafafa] font-bold bg-[#313442]"
+                            class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in"
+                            @click="showMobileMenu = false">
+                            <Icon name="mdi:credit-card" class="mr-2" size="24px" />
+                            <p class="text-[17.3px] font-bold">Checker</p>
+                        </NuxtLink>
+                        <NuxtLink to="/dashboard/reseller" exact-active-class="text-[#fafafa] font-bold bg-[#313442]"
+                            v-if="user?.reseller"
+                            class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in"
+                            @click="showMobileMenu = false">
+                            <Icon name="mdi:account-cash" class="mr-2" size="24px" />
+                            <p class="text-[17.3px] font-bold">Reseller</p>
+                        </NuxtLink>
+                        <div v-if="isAdmin">
+                            <NuxtLink to="/dashboard/admin" active-class="text-[#fafafa] bg-[#313442] font-bold"
+                                class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in"
+                                @click="showMobileMenu = false">
+                                <Icon name="material-symbols:admin-panel-settings-rounded" class="mr-2" size="24px" />
+                                <p class="text-[17.3px] font-bold">Admin</p>
+                            </NuxtLink>
+                        </div>
+                    </nav>
+                    <!-- Ajuda e página -->
+                    <div class="mt-8 flex flex-col gap-2 px-2">
+                        <a href="#"
+                            class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 text-[#FAFAFA] font-semibold justify-center">
+                            <Icon name="mdi:help-circle-outline" /> Help Center
+                        </a>
+                        <a href="#"
+                            class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center">
+                            <Icon name="mdi:link-variant" /> Free Checker
+                        </a>
+                    </div>
+                    <!-- Share/Profile -->
+                    <div class="flex flex-col gap-2 px-2 mt-4">
+                        <button v-if="isAdmin"
+                            class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center"
+                            @click="openCreateKeyModal">
+                            <Icon name="mdi:key-plus" /> Create Key
+                        </button>
+                        <button
+                            class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center"
+                            @click="openModal">
+                            <Icon name="mingcute:gift-fill" /> Redeem Key
+                        </button>
+                        <div class="flex items-center gap-2 mt-2">
+                            <img :src="photoURL" class="rounded-full w-10 h-10 object-cover" />
+                            <div>
+                                <div class="font-bold truncate max-w-[120px]">
+                                    {{ user?.email || 'Usuário' }}
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    Balance: <span class="font-semibold text-white">R$ {{ balance.toFixed(2) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1" @click="showMobileMenu = false"></div>
+            </aside>
+        </transition>
         <!-- Sidebar -->
-        <aside class="w-72 min-h-screen bg-[#0e0e0e] rounded-r-[48px] flex flex-col justify-between py-6 px-4">
+        <aside class="hidden md:flex w-72 min-h-screen bg-[#0e0e0e] rounded-r-[48px] flex-col justify-between py-6 px-4">
             <div>
                 <!-- Logo -->
                 <div class="flex items-center gap-2 mb-8 px-2">
@@ -101,7 +213,7 @@
             </div>
         </aside>
         <!-- Main Content -->
-        <main class="flex-1 min-h-screen bg-[#0a0a0a] font-satoshi">
+        <main class="flex-1 min-h-screen bg-[#0a0a0a] font-satoshi pt-16 md:pt-0">
             <!-- Overview Cards -->
 
             <!-- Conteúdo principal da página -->
@@ -179,6 +291,7 @@
 import { ref, onMounted } from 'vue'
 import { auth, db } from '~/firebase'
 import { doc, getDoc, updateDoc, deleteDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+const showMobileMenu = ref(false)
 
 const accountOpen = ref(true)
 function toggleAccount() {

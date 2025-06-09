@@ -1,37 +1,37 @@
 <template>
-  <div class="w-full mx-auto pt-8 px-16">
-    <h2 class="text-2xl font-bold mb-6 text-[#FAFAFA]">Your Lives (Cards)</h2>
+  <div class="w-full mx-auto pt-20 md:pt-8 px-2 md:px-16">
+    <h2 class="text-lg md:text-2xl font-bold mb-4 md:mb-6 text-[#FAFAFA]">Your Lives (Cards)</h2>
     <!-- Statistics Box (full width) -->
-    <div class="bg-[#111111] rounded-2xl p-6 shadow flex flex-col gap-4 mb-8">
-      <div class="font-semibold text-lg mb-2 flex items-center gap-2">
-        <Icon name="mdi:chart-bar" class="text-[#576784]" size="22" />
+    <div class="bg-[#111111] rounded-2xl p-4 md:p-6 shadow flex flex-col gap-2 md:gap-4 mb-6 md:mb-8">
+      <div class="font-semibold text-base md:text-lg mb-2 flex items-center gap-2">
+        <Icon name="mdi:chart-bar" class="text-[#576784]" size="20" />
         Lives Statistics
       </div>
-      <div class="flex flex-wrap gap-12">
+      <div class="flex flex-col md:flex-row flex-wrap gap-4 md:gap-12">
         <div>
-          <div class="text-2xl font-bold text-[#fafafa]">{{ lives.length }}</div>
+          <div class="text-xl md:text-2xl font-bold text-[#fafafa]">{{ lives.length }}</div>
           <div class="text-xs text-[#b8b8b8]">Total lives</div>
         </div>
         <div>
-          <div class="text-2xl font-bold text-[#fafafa]">{{ livesWeek }}</div>
+          <div class="text-xl md:text-2xl font-bold text-[#fafafa]">{{ livesWeek }}</div>
           <div class="text-xs text-[#b8b8b8]">Last 7 days</div>
         </div>
       </div>
     </div>
     <!-- Cards List -->
-    <div class="bg-[#111111] rounded-2xl p-6 shadow">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
-        <div class="font-semibold text-lg flex items-center gap-2">
-          <Icon name="mdi:credit-card" class="text-[#576784]" size="22" />
+    <div class="bg-[#111111] rounded-2xl p-4 md:p-6 shadow">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2 md:gap-4">
+        <div class="font-semibold text-base md:text-lg flex items-center gap-2">
+          <Icon name="mdi:credit-card" class="text-[#576784]" size="20" />
           Available Cards
         </div>
-        <div class="flex items-center gap-2 w-full md:w-auto">
+        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
           <div class="relative w-full md:w-64">
             <input v-model="searchBin" type="text" placeholder="Search by BIN (first 6 digits)"
-              class="w-full -ml-1 bg-[#181818] border border-transparent rounded-lg py-2 px-4 text-[#fafafa] placeholder-[#939193] focus:outline-none focus:border-[#576784] transition" />
+              class="w-full bg-[#181818] border border-transparent rounded-lg py-2 px-4 text-[#fafafa] placeholder-[#939193] focus:outline-none focus:border-[#576784] transition" />
           </div>
           <TertiaryB :disabled="!lives.length" @click="lives.length ? confirmDelete = true : null"
-            class="bg-[#530f0f] border-[#750c0c] hover:border-[#8c0a0a] text-white ml-2"
+            class="bg-[#530f0f] border-[#750c0c] hover:border-[#8c0a0a] text-white"
             :class="{ 'opacity-50 cursor-not-allowed': !lives.length }">
             Delete all lives
           </TertiaryB>
