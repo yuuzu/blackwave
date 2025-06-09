@@ -10,6 +10,7 @@ module.exports = {
     extend: {
       fontFamily: {
         montserrat: ['Montserrat', 'sans-serif'],
+        satoshi: ['Satoshi', 'sans-serif'],
       },
     },
   },

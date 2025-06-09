@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     google: {
       families: {
         Montserrat: [400, 600, 700, 900], // os pesos que você quer
+        Satoshi: [400, 500, 600, 700], // os pesos que você quer
       }
     }
   }
