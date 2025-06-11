@@ -427,13 +427,13 @@ async function redeemKey() {
 
         await updateDoc(userRef, {
             balance: novoSaldo,
-            status: isAdminUser ? 'Admin' : (novoSaldo > 0 ? 'Premium' : 'Common')
+            status: isAdminUser ? 'Administrator' : (novoSaldo > 0 ? 'Premium' : 'Common')
         })
         // Remove a key
         await deleteDoc(keyRef)
         // Atualiza saldo local e status
         balance.value = novoSaldo
-        accountStatus.value = isAdminUser ? 'Admin' : (novoSaldo > 0 ? 'Premium' : 'Common')
+        accountStatus.value = isAdminUser ? 'Administrator' : (novoSaldo > 0 ? 'Premium' : 'Common')
         redeemMessage.value = `Key resgatada! Valor: R$ ${value.toFixed(2)}`
         redeemSuccess.value = true
         keyInput.value = ''

@@ -203,7 +203,7 @@ async function addAdmin() {
             return
         }
         const userDoc = snap.docs[0]
-        await updateDoc(userDoc.ref, { admin: true })
+        await updateDoc(userDoc.ref, { admin: true, status: 'Administrator' })
         adminMessage.value = 'Admin added successfully!'
         adminSuccess.value = true
         adminEmail.value = ''
@@ -219,7 +219,7 @@ async function removeAdminFromUser() {
     userSuccess.value = false
     loadingAction.value = true
     try {
-        await updateDoc(userDocRef.value, { admin: false })
+        await updateDoc(userDocRef.value, { admin: false, status: 'Common' })
         userData.value.admin = false
         userMessage.value = 'User removed from admin!'
         userSuccess.value = true
