@@ -63,12 +63,8 @@
                 </div>
                 <div class="flex flex-wrap gap-8">
                     <div>
-                        <div class="text-2xl font-bold text-[#fafafa]">{{ checksMonth }}</div>
-                        <div class="text-xs text-[#b8b8b8]">Checks this month</div>
-                    </div>
-                    <div>
                         <div class="text-2xl font-bold text-[#fafafa]">R$ {{ avgSpentWeek?.toFixed(2) }}</div>
-                        <div class="text-xs text-[#b8b8b8]">Avg. spent/week</div>
+                        <div class="text-xs text-[#b8b8b8]">Total expenses</div>
                     </div>
                     <div>
                         <div class="text-2xl font-bold text-[#fafafa]">{{ lastLogin || '---' }}</div>
