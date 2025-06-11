@@ -378,7 +378,7 @@ async function startCheck() {
                     livesUsed: (await getDoc(userRef)).data().livesUsed + 1,
                     lastCheck: serverTimestamp(),
                     balance: Math.max(0, (await getDoc(userRef)).data().balance - 0.10),
-                    avgSpentWeek: Math.max(0, (await getDoc(userRef)).data().balance + 0.10)
+                    avgSpentWeek: Math.max(0, (await getDoc(userRef)).data().avgSpentWeek + 0.10)
                 })
             } else {
                 refused.value.push({
@@ -396,14 +396,6 @@ async function startCheck() {
                 type: 'error',
                 card,
                 html: 'An error occurred'
-            })
-            await updateDoc(userRef, {
-                lives: arrayUnion(card),
-                checksMonth: (await getDoc(userRef)).data().checksMonth + 1,
-                livesUsed: (await getDoc(userRef)).data().livesUsed + 1,
-                lastCheck: serverTimestamp(),
-                balance: Math.max(0, (await getDoc(userRef)).data().balance - 0.10),
-                avgSpentWeek: Math.max(0, (await getDoc(userRef)).data().avgSpentWeek + 0.10)
             })
         }
         tested.value++
