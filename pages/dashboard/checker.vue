@@ -1,5 +1,7 @@
 <template>
     <div class="w-full mx-auto pt-20 md:pt-8 px-2 md:px-16 font-satoshi">
+        <audio ref="audioLive" src="/audios/live.mp3" preload="auto"></audio>
+        <audio ref="audioSuccess" src="/audios/notificationSuccess.mp3" preload="auto"></audio>
         <!-- Bloco principal: Cards, Actions, Stats, Generator -->
         <div class="w-full max-w-6xl mx-auto bg-[#181818] rounded-2xl p-0 mb-8">
             <!-- Header Cards -->
@@ -14,6 +16,18 @@
                     class="w-full h-36 bg-[#111111] rounded-lg p-3 text-[#fafafa] font-mono resize-none focus:outline-none focus:border-[#a78bfa] transition"></textarea>
             </div>
             <!-- Actions -->
+            <TransitionGroup name="fade-slide" tag="div" class="w-full">
+                <div v-if="errorMessage" class="w-full px-[32px] mb-4">
+                    <div
+                        class="bg-[#530f0f] border-[#750c0c] border text-white rounded-lg px-4 py-2 flex items-center gap-2">
+                        <Icon name="mdi:alert-circle-outline" size="22" />
+                        <span>{{ errorMessage }}</span>
+                        <button @click="errorMessage = ''" class="ml-auto text-white hover:text-gray-200">
+                            <Icon name="mdi:close" size="18" />
+                        </button>
+                    </div>
+                </div>
+            </TransitionGroup>
             <div class="flex flex-col md:flex-row gap-2 md:gap-4 px-4 md:px-8 pb-4">
                 <button @click="startCheck" :disabled="loading || !cardsInput.trim()"
                     class="flex-1 px-4 md:px-8 py-2 rounded-full bg-[#576784] text-[#fafafa] font-bold hover:bg-[#313442] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
@@ -150,6 +164,14 @@
                         <Icon name="mdi:cog-outline" class="text-[#576784]" size="32" />
                         Settings
                     </h2>
+                    <!-- Cookies -->
+                    <div class="mb-8">
+                        <label class="block text-[#fafafa] font-semibold mb-2">Cookies</label>
+                        <textarea v-model="settings.cookies"
+                            class="w-full bg-[#0a0a0a] text-[#fafafa] rounded-lg p-2 focus:outline-none font-mono resize-y max-h-10"
+                            rows="2" placeholder="Paste your cookies here"></textarea>
+                        <div class="text-[#b8b8b8] text-sm mt-1">Paste cookies if required by the gateway.</div>
+                    </div>
                     <!-- Threads -->
                     <div class="mb-8">
                         <label class="block text-[#fafafa] font-semibold mb-2">Threads</label>
@@ -228,7 +250,8 @@
                         <Icon name="mdi:alert-circle-outline" size="48" class="text-[#ff5252]" />
                         <h2 class="text-xl font-bold text-[#fafafa] text-center">Insufficient Balance</h2>
                         <p class="text-[#b8b8b8] text-center">
-                            You need at least <span class="text-[#ff5252] font-bold">R$ 0.10</span> to start the checker.
+                            You need at least <span class="text-[#ff5252] font-bold">R$ 0.10</span> to start the
+                            checker.
                         </p>
                         <a href="https://t.me/yuzuuk1" target="_blank" rel="noopenner"
                             class="text-[#576784] hover:text-[#fafafa] font-bold underline">
@@ -244,12 +267,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { doc, updateDoc, getDoc, arrayUnion, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '~/firebase'
 import Approved from '~/components/Approved.vue'
 import Refused from '~/components/Refused.vue'
 import ErrorIcon from '~/components/Error.vue'
+
+const audioLive = ref(null)
+const audioSuccess = ref(null)
 
 const cardsInput = ref('')
 const approved = ref([])
@@ -259,9 +285,16 @@ const tested = ref(0)
 const loaded = ref(0)
 const genBin = ref('')
 const showNoBalanceModal = ref(false)
+const errorMessage = ref('')
 
 const hideApproved = ref(false)
 const hideRefused = ref(true)
+
+function playAudio(refAudio) {
+    try {
+        refAudio.value && refAudio.value.play()
+    } catch { }
+}
 
 function generateCards() {
     let bin = genBin.value.trim().split('|')[0]; // Pega só o BIN antes do primeiro "|"
@@ -285,7 +318,13 @@ function generateCards() {
 }
 
 async function startCheck() {
+    errorMessage.value = ''
+    if (!settings.value.cookies.trim()) {
+        errorMessage.value = 'You must insert cookies in the settings before starting the checker.'
+        return
+    }
     if (!cardsInput.value.trim()) return
+    playAudio(audioSuccess)
 
     // 1. Busca saldo do usuário
     const user = auth.currentUser
@@ -318,7 +357,7 @@ async function startCheck() {
                 },
                 body: JSON.stringify({
                     card,
-                    cookie: '',
+                    cookie: settings.value.cookies || '',
                     host: gatewayMap[settings.value.gateway] || 'US',
                     removeCards: settings.value.removeCards,
                     autoSave: settings.value.approvedLog
@@ -331,6 +370,7 @@ async function startCheck() {
                     card,
                     html: data.html
                 })
+                playAudio(audioLive)
                 // 3. Salva live no array lives e desconta 0.10 do saldo
                 await updateDoc(userRef, {
                     lives: arrayUnion(card),
@@ -417,6 +457,7 @@ const settings = ref({
     gateway: 'Amazon US (Faster Pre-auth)',
     removeCards: false,
     approvedLog: false,
+    cookies: ''
 })
 
 function resetSettings() {
@@ -425,6 +466,7 @@ function resetSettings() {
         gateway: 'Amazon US (Faster Pre-auth)',
         removeCards: false,
         approvedLog: false,
+        cookies: '',
     }
 }
 

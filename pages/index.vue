@@ -55,7 +55,7 @@
                     </a>
                 </div>
                 <div class="px-6 pb-8 pt-4 mt-auto">
-                    <a href="login" target="_blank" rel="noopener" @click="showMobileMenu = false">
+                    <a href="dashboard" target="_blank" rel="noopener" @click="showMobileMenu = false">
                         <PrimaryB class="w-full rounded-2xl">Join premium</PrimaryB>
                     </a>
                 </div>

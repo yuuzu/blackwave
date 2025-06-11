@@ -4,8 +4,10 @@
         <header
             class="md:hidden flex items-center rounded-full justify-between mx-2 my-2 px-4 py-3 bg-[#101010]/70 backdrop-blur-md shadow z-20 fixed top-0 left-0 right-0">
             <div class="flex items-center gap-2">
-                <Icon name="basil:moon-solid" size="32px" class="text-[#576784]" />
-                <span class="font-bold text-xl">lunarcntr.xyz</span>
+                <a href="/" class="flex items-center gap-2">
+                    <Icon name="basil:moon-solid" size="40px" class="text-[#576784]" />
+                    <span class="font-bold text-2xl">lunarcntr.xyz</span>
+                </a>
             </div>
             <button @click="showMobileMenu = !showMobileMenu" class="focus:outline-none">
                 <Icon :name="showMobileMenu ? 'mdi:close' : 'mdi:menu'" size="32px" />
@@ -113,12 +115,15 @@
             </aside>
         </transition>
         <!-- Sidebar -->
-        <aside class="hidden md:flex w-72 min-h-screen bg-[#0e0e0e] rounded-r-[48px] flex-col justify-between py-6 px-4">
+        <aside
+            class="hidden md:flex w-72 min-h-screen bg-[#0e0e0e] rounded-r-[48px] flex-col justify-between py-6 px-4">
             <div>
                 <!-- Logo -->
                 <div class="flex items-center gap-2 mb-8 px-2">
-                    <Icon name="basil:moon-solid" size="40px" class="text-[#576784]" />
-                    <span class="font-bold text-2xl">lunarcntr.xyz</span>
+                    <a href="/" class="flex items-center gap-2">
+                        <Icon name="basil:moon-solid" size="40px" class="text-[#576784]" />
+                        <span class="font-bold text-2xl">lunarcntr.xyz</span>
+                    </a>
                 </div>
                 <!-- Menu -->
                 <nav class="flex flex-col gap-2">
@@ -303,7 +308,7 @@ const user = ref(null)
 const balance = ref(0)
 const livesUsed = ref(0)
 const cardsBought = ref(0)
-const photoURL = ref('https://cdn.discordapp.com/attachments/1309251468045320223/1379190818589376623/photo_4947363663258430903_c.jpg?ex=684545cb&is=6843f44b&hm=a274b7c4f1efbf549175e632116bfe9ac4d68d65f7393fe3f22f83bdfef31f15&') // Placeholder
+const photoURL = ref('https://cdn.discordapp.com/attachments/1309251468045320223/1379190818589376623/photo_4947363663258430903_c.jpg?ex=684b348b&is=6849e30b&hm=8c51baa4fe5c9bc6af737a4d6cc544e78b08bad7677c744d7dc9c9a275c03cb6&') // Placeholder
 const isAdmin = ref(false)
 const copied = ref(false)
 const accountStatus = ref('Common') // Pode ser 'Premium', 'Common', 'Blocked'
