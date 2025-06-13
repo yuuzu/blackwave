@@ -297,7 +297,7 @@ if (typeof window !== 'undefined') {
     if (saved) {
         try {
             Object.assign(settings.value, JSON.parse(saved))
-        } catch {}
+        } catch { }
     }
 }
 
@@ -336,7 +336,7 @@ function generateCards() {
     const isAmex = /^3[47]/.test(bin);
 
     let cards = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 50; i++) {
         let cc = '';
         for (let c of bin) {
             cc += c.toLowerCase() === 'x' ? Math.floor(Math.random() * 10) : c;
@@ -407,11 +407,11 @@ async function startCheck() {
             })
             const data = await res.json()
             // Novo formato: data.return.status, data.return.html, data.return.message, data.return.bank
-            if (data.return && data.return.status === 'success') {
+            if (data.return && (data.return.status === 'success' || data.return.status === 'approved')) {
                 approved.value.push({
                     type: 'approved',
                     card: data.card,
-                    html: data.return.html || `${data.return.message} <span class="text-blue-400">(${data.return.bank})</span>`
+                    html: data.return.html
                 })
                 playAudio(audioLive)
                 await updateDoc(userRef, {
