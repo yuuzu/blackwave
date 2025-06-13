@@ -137,9 +137,6 @@
                                     <ErrorIcon />
                                     <span class="text-yellow-400">
                                         <span v-html="item.html"></span>
-                                        <template v-if="item.bank">
-                                            <span class="text-blue-400"> ({{ item.bank }})</span>
-                                        </template>
                                     </span>
                                 </template>
                             </div>
@@ -315,9 +312,28 @@ function playAudio(refAudio) {
     } catch { }
 }
 
+function luhnComplete(number) {
+    // number: string com 15 dígitos, retorna string com 16 dígitos válidos
+    let arr = number.split('').reverse().map(x => parseInt(x));
+    let sum = 0;
+    for (let i = 0; i < arr.length; i++) {
+        let val = arr[i];
+        if (i % 2 === 0) {
+            val *= 2;
+            if (val > 9) val -= 9;
+        }
+        sum += val;
+    }
+    let checkDigit = (10 - (sum % 10)) % 10;
+    return number + checkDigit;
+}
+
 function generateCards() {
-    let bin = genBin.value.trim().split('|')[0]; // Pega só o BIN antes do primeiro "|"
+    let bin = genBin.value.trim().split('|')[0];
     if (!/^[\dx]{6,}$/i.test(bin)) return;
+
+    // Detecta se é Amex (começa com 34 ou 37)
+    const isAmex = /^3[47]/.test(bin);
 
     let cards = [];
     for (let i = 0; i < 10; i++) {
@@ -325,15 +341,18 @@ function generateCards() {
         for (let c of bin) {
             cc += c.toLowerCase() === 'x' ? Math.floor(Math.random() * 10) : c;
         }
-        // Completa até 16 dígitos se necessário
-        while (cc.length < 16) cc += Math.floor(Math.random() * 10);
-        cc = cc.slice(0, 16);
+        // Amex: 14 dígitos + Luhn = 15, outros: 15 + Luhn = 16
+        const baseLen = isAmex ? 14 : 15;
+        cc = cc.slice(0, baseLen);
+        while (cc.length < baseLen) cc += Math.floor(Math.random() * 10);
+        cc = luhnComplete(cc);
 
-        // Pega MM e YY do BIN se existirem, senão gera aleatório
         let parts = genBin.value.trim().split('|');
         let mm = parts[1] ? parts[1].padStart(2, '0') : String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
         let yy = parts[2] ? parts[2].padStart(2, '0') : String((new Date().getFullYear() % 100) + Math.floor(Math.random() * 5) + 1).padStart(2, '0');
-        let cvv = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+        // Amex: CVV 4 dígitos, outros: 3 dígitos
+        let cvvLen = isAmex ? 4 : 3;
+        let cvv = String(Math.floor(Math.random() * Math.pow(10, cvvLen))).padStart(cvvLen, '0');
         cards.push(`${cc}|${mm}|${yy}|${cvv}`);
     }
     cardsInput.value = cards.join('\n');
