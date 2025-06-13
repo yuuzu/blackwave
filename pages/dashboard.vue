@@ -308,7 +308,7 @@ const user = ref(null)
 const balance = ref(0)
 const livesUsed = ref(0)
 const cardsBought = ref(0)
-const photoURL = ref('https://cdn.discordapp.com/attachments/1309251468045320223/1379190818589376623/photo_4947363663258430903_c.jpg?ex=684b348b&is=6849e30b&hm=8c51baa4fe5c9bc6af737a4d6cc544e78b08bad7677c744d7dc9c9a275c03cb6&') // Placeholder
+const photoURL = ref('https://i.imgur.com/qqG1ZOD.jpeg') // Placeholder
 const isAdmin = ref(false)
 const copied = ref(false)
 const accountStatus = ref('Common') // Pode ser 'Premium', 'Common', 'Blocked'

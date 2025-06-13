@@ -161,9 +161,9 @@
                     <!-- Cookies -->
                     <div class="mb-8">
                         <label class="block text-[#fafafa] font-semibold mb-2">Cookies</label>
-                        <textarea v-model="settings.cookies"
+                        <input v-model="settings.cookies"
                             class="w-full bg-[#0a0a0a] text-[#fafafa] rounded-lg p-2 focus:outline-none font-mono resize-y max-h-10"
-                            rows="2" placeholder="Paste your cookies here"></textarea>
+                            rows="2" placeholder="Paste your cookies here"></input>
                         <div class="text-[#b8b8b8] text-sm mt-1">Paste cookies if required by the gateway.</div>
                     </div>
                     <!-- Threads -->
@@ -173,7 +173,11 @@
                             class="w-full accent-[#576784]" />
                         <div class="flex justify-between text-[#b8b8b8] text-sm mt-1">
                             <span>How many simultaneous requests the Checker can make to API.</span>
-                            <span class="font-bold text-[#576784]">{{ settings.threads }}x</span>
+                            <span class="font-bold text-[#576784]">
+                                <transition name="fade" mode="out-in">
+                                    <span :key="settings.threads">{{ settings.threads }}x</span>
+                                </transition>
+                            </span>
                         </div>
                     </div>
                     <!-- Gateway -->
@@ -532,5 +536,21 @@ function saveSettings() {
 .fade-enter-to,
 .fade-leave-from {
     opacity: 1;
+}
+
+input[type="range"] {
+    transition: accent-color 0.3s, background 0.3s;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+}
+
+input[type="range"]:focus {
+    outline: none;
 }
 </style>

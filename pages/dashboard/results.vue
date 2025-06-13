@@ -31,6 +31,11 @@
             <input v-model="searchBin" type="text" placeholder="Search by BIN (first 6 digits)"
               class="w-full bg-[#181818] border border-transparent rounded-lg py-2 px-4 text-[#fafafa] placeholder-[#939193] focus:outline-none focus:border-[#576784] transition" />
           </div>
+          <TertiaryB :disabled="!lives.length" @click="downloadLives"
+            class="bg-[#1a3a1a] border-[#235723] hover:border-[#2e8c2e] text-white"
+            :class="{ 'opacity-50 cursor-not-allowed': !lives.length }">
+            Download lives
+          </TertiaryB>
           <TertiaryB :disabled="!lives.length" @click="lives.length ? confirmDelete = true : null"
             class="bg-[#530f0f] border-[#750c0c] hover:border-[#8c0a0a] text-white"
             :class="{ 'opacity-50 cursor-not-allowed': !lives.length }">
@@ -134,6 +139,19 @@ const filteredLives = computed(() => {
     return bin && bin.includes(searchBin.value)
   })
 })
+
+function downloadLives() {
+  if (!lives.value.length) return;
+  const blob = new Blob([lives.value.join('\n')], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'lives.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 const filteredVisibleLives = computed(() => filteredLives.value.slice(0, visibleCount.value))
 
