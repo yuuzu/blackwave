@@ -12,10 +12,11 @@
           <div class="text-xl md:text-2xl font-bold text-[#fafafa]">{{ lives.length }}</div>
           <div class="text-xs text-[#b8b8b8]">Total lives</div>
         </div>
-        <div>
+        <!-- <div>
           <div class="text-xl md:text-2xl font-bold text-[#fafafa]">{{ livesWeek }}</div>
           <div class="text-xs text-[#b8b8b8]">Last 7 days</div>
         </div>
+        -->
       </div>
     </div>
     <!-- Cards List -->

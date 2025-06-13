@@ -180,11 +180,11 @@
                 </nav>
                 <!-- Ajuda e página -->
                 <div class="mt-8 flex flex-col gap-2 px-2">
-                    <a href="#"
+                    <a href="https://t.me/lunaroficial" target="_blank"
                         class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 text-[#FAFAFA] font-semibold justify-center">
                         <Icon name="mdi:help-circle-outline" /> Help Center
                     </a>
-                    <a href="#"
+                    <a href="https://lunarchk.vercel.app/" target="_blank"
                         class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center">
                         <Icon name="mdi:link-variant" /> Free Checker
                     </a>
@@ -373,7 +373,7 @@ const createKeySuccess = ref(false)
 function generateKeyCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     let code = ''
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 16; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length))
     }
     return `LUNAR-${code}`

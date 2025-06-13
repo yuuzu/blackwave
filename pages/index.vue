@@ -13,10 +13,10 @@
                 </div>
                 <!-- Desktop Menu -->
                 <div class="hidden sm:flex flex-row items-center gap-2 sm:gap-4">
-                    <a href="https://lunar-10.gitbook.io/lunar-docs/getting-started/introduction" target="_blank"
+                    <!-- <a href="https://lunar-10.gitbook.io/lunar-docs/getting-started/introduction" target="_blank"
                         rel="noopener">
                         <SecondaryB>Docs</SecondaryB>
-                    </a>
+                    </a> -->
                     <a href="https://t.me/lunaroficial" target="_blank" rel="noopener">
                         <SecondaryB>Telegram</SecondaryB>
                     </a>
@@ -46,10 +46,10 @@
                     </button>
                 </div>
                 <div class="flex flex-col gap-4 px-6 mt-4 flex-1">
-                    <a href="https://lunar-10.gitbook.io/lunar-docs/getting-started/introduction" target="_blank"
+                    <!-- <a href="https://lunar-10.gitbook.io/lunar-docs/getting-started/introduction" target="_blank"
                         rel="noopener" @click="showMobileMenu = false">
                         <SecondaryB class="w-full rounded-2xl">Docs</SecondaryB>
-                    </a>
+                    </a> -->
                     <a href="https://t.me/lunaroficial" target="_blank" rel="noopener" @click="showMobileMenu = false">
                         <SecondaryB class="w-full rounded-2xl">Telegram</SecondaryB>
                     </a>
