@@ -91,7 +91,7 @@
                     </p>
                     <div class="flex flex-col gap-1 pt-2">
                         <Feature text="Basic gateways (US, IT)" />
-                        <Feature text="Include multithread (2X)" />
+                        <Feature text="Include multithread (1X)" />
                         <Feature text="CCGen Include" />
                     </div>
                     <a href="https://lunarchk.vercel.app/" target="_blank" rel="noopener" class="mt-[198px]">
