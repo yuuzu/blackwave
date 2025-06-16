@@ -132,9 +132,9 @@ const confirmDelete = ref(false)
 const userId = ref(null)
 
 const filteredLives = computed(() => {
-  if (!searchBin.value) return lives.value
-  // BIN is first 6 digits of the card (first part before |)
-  return lives.value.filter(live => {
+  let arr = lives.value.slice().reverse()
+  if (!searchBin.value) return arr
+  return arr.filter(live => {
     const bin = live.split('|')[0]?.slice(0, 6)
     return bin && bin.includes(searchBin.value)
   })
