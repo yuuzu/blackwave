@@ -12,12 +12,12 @@
             <button
                 :class="['px-4 py-2 rounded-lg font-bold', !showUsed ? 'bg-[#23293a] text-[#fafafa]' : 'bg-[#181818] text-[#b8b8b8]']"
                 @click="showUsed = false">
-                Não usadas
+                Not used
             </button>
             <button
                 :class="['px-4 py-2 rounded-lg font-bold', showUsed ? 'bg-[#23293a] text-[#fafafa]' : 'bg-[#181818] text-[#b8b8b8]']"
                 @click="showUsed = true">
-                Usadas
+                Used
             </button>
         </div>
         <div class="bg-[#111111] rounded-2xl p-4 md:p-6 shadow">
@@ -70,11 +70,11 @@
                 <div class="flex justify-center mt-4">
                     <span v-if="(showUsed ? filteredUsedKeys.length : filteredKeys.length) > visibleCount" @click="showMore"
                         class="cursor-pointer text-sm text-[#939193] hover:underline transition select-none">
-                        Mostrar mais keys
+                        Show more keys
                     </span>
                     <span v-if="visibleCount > 10" @click="showLess"
                         class="cursor-pointer text-sm text-[#939193] hover:underline transition select-none ml-4">
-                        Mostrar menos
+                        Show less
                     </span>
                 </div>
             </div>
@@ -134,20 +134,20 @@
                             <h2 class="text-xl font-bold text-white mb-2">Key Information</h2>
                             <div class="text-[#b8b8b8] text-sm break-all">
                                 <div><b>ID:</b> {{ infoKey.id || infoKey.keyId }}</div>
-                                <div><b>Valor:</b> R$ {{ infoKey.value }}</div>
-                                <div><b>Criada por:</b> {{ infoKey.createdByEmail || infoKey.createdBy || 'N/A' }}</div>
-                                <div><b>Data de criação: </b>
+                                <div><b>Value:</b> R$ {{ infoKey.value }}</div>
+                                <div><b>Created by:</b> {{ infoKey.createdByEmail || infoKey.createdBy || 'N/A' }}</div>
+                                <div><b>Creation date: </b>
                                     <span v-if="infoKey.createdAt">
                                         {{ formatDate(infoKey.createdAt) }}
                                     </span>
                                     <span v-else>N/A</span>
                                 </div>
-                                <div><b>Usada por:</b> {{ infoKey.usedByEmail || infoKey.usedBy || 'Não usada' }}</div>
-                                <div><b>Data de uso: </b>
+                                <div><b>Used by:</b> {{ infoKey.usedByEmail || infoKey.usedBy || 'Não usada' }}</div>
+                                <div><b>Date of use: </b>
                                     <span v-if="infoKey.usedAt">
                                         {{ formatDate(infoKey.usedAt) }}
                                     </span>
-                                    <span v-else> Nunca usada</span>
+                                    <span v-else> Never used</span>
                                 </div>
                             </div>
                         </div>
