@@ -177,6 +177,14 @@
                             <p class="text-[17.3px] font-bold">Admin</p>
                         </NuxtLink>
                     </div>
+                    <!-- Keys -->
+                    <div v-if="isAdmin">
+                        <NuxtLink to="/dashboard/keys" active-class="text-[#fafafa] bg-[#313442] font-bold"
+                            class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in">
+                            <Icon name="ic:baseline-vpn-key" class="mr-2" size="24px" />
+                            <p class="text-[17.3px] font-bold">Keys</p>
+                        </NuxtLink>
+                    </div>
                 </nav>
                 <!-- Ajuda e página -->
                 <div class="mt-8 flex flex-col gap-2 px-2">
@@ -417,6 +425,7 @@ async function redeemKey() {
             return
         }
         const value = keySnap.data().value ?? 0
+
         // Atualiza saldo do usuário
         const userRef = doc(db, 'users', user.value.uid)
         const novoSaldo = balance.value + value
@@ -429,8 +438,22 @@ async function redeemKey() {
             balance: novoSaldo,
             status: isAdminUser ? 'Administrator' : (novoSaldo > 0 ? 'Premium' : 'Common')
         })
-        // Remove a key
+
+        // Salva a key usada na coleção usedKeys
+        await setDoc(doc(db, 'usedKeys', key), {
+            keyId: key,
+            value: value,
+            createdBy: keySnap.data().createdBy,
+            createdByEmail: keySnap.data().createdByEmail,
+            createdAt: keySnap.data().createdAt,
+            usedBy: user.value.uid,
+            usedByEmail: user.value.email,
+            usedAt: serverTimestamp()
+        })
+
+        // Remove a key da coleção keys
         await deleteDoc(keyRef)
+
         // Atualiza saldo local e status
         balance.value = novoSaldo
         accountStatus.value = isAdminUser ? 'Administrator' : (novoSaldo > 0 ? 'Premium' : 'Common')
@@ -456,8 +479,15 @@ async function createKey() {
     }
     try {
         const keyId = generateKeyCode()
-        const keyRef = doc(db, 'keys', keyId)
-        await setDoc(keyRef, { value })
+        await setDoc(doc(db, 'keys', keyId), {
+            value: value,
+            createdBy: user.value.uid,
+            createdByEmail: user.value.email,
+            createdAt: serverTimestamp(),
+            usedBy: null,
+            usedByEmail: null,
+            usedAt: null
+        })
         // Copia para a área de transferência
         await navigator.clipboard.writeText(keyId)
         createKeyMessage.value = `Key criada com sucesso: ${keyId}`

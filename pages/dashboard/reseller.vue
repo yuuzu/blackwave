@@ -26,7 +26,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { auth, db } from '~/firebase'
-import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 
 const resellerBalance = ref(0)
 const keyValue = ref(1)
@@ -38,7 +38,7 @@ function generateKeyCode() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   let code = ''
   for (let i = 0; i < 12; i++) code += chars.charAt(Math.floor(Math.random() * chars.length))
-  return `LUNAR-${code}`
+  return `LUNAR-R-${code}`
 }
 
 onMounted(async () => {
@@ -75,7 +75,12 @@ async function createKey() {
   }
   try {
     const keyId = generateKeyCode()
-    await setDoc(doc(db, 'keys', keyId), { value: keyValue.value })
+    await setDoc(doc(db, 'keys', keyId), {
+      value: keyValue.value,
+      createdBy: user.uid,
+      createdByEmail: user.email ?? '',
+      createdAt: serverTimestamp()
+    })
     await updateDoc(userRef, { resellerBalance: balance - keyValue.value })
     resellerBalance.value = balance - keyValue.value
     message.value = `Key created: ${keyId}`
