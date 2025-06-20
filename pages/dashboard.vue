@@ -443,9 +443,9 @@ async function redeemKey() {
         await setDoc(doc(db, 'usedKeys', key), {
             keyId: key,
             value: value,
-            createdBy: keySnap.data().createdBy,
-            createdByEmail: keySnap.data().createdByEmail,
-            createdAt: keySnap.data().createdAt,
+            createdBy: keySnap.data().createdBy ?? null,
+            createdByEmail: keySnap.data().createdByEmail ?? null,
+            createdAt: keySnap.data().createdAt ?? null,
             usedBy: user.value.uid,
             usedByEmail: user.value.email,
             usedAt: serverTimestamp()
