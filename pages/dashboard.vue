@@ -334,10 +334,24 @@ onMounted(async () => {
         if (u) {
             user.value = u
             photoURL.value = u.photoURL || photoURL.value
+            let location = {}
+            try {
+                const res = await fetch('https://ipapi.co/json/')
+                location = await res.json()
+            } catch (e) {
+                location = { error: true }
+            }
+
             // Atualiza o lastLogin no Firestore ao logar
             await updateDoc(doc(db, 'users', u.uid), {
-                lastLogin: serverTimestamp()
+                lastLogin: serverTimestamp(),
+                lastLocation: {
+                    ip: location.ip ?? null,
+                    city: location.city ?? null,
+                    country: location.country_name ?? null
+                }
             })
+
             // Busca saldo e dados do Firestore
             const userDoc = await getDoc(doc(db, 'users', u.uid))
             if (userDoc.exists()) {
