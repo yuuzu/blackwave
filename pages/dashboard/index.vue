@@ -135,7 +135,13 @@
                             @ruddyoz
                         </a>
                     </li>
-                    <!-- Adicione mais revendedores aqui -->
+                    <li>
+                        <a href="https://t.me/chipeogod" target="_blank" rel="noopener"
+                            class="flex items-center gap-2 hover:text-[#576784] transition">
+                            <Icon name="mdi:telegram" class="text-[#576784]" size="18" />
+                            @chipeogod
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
