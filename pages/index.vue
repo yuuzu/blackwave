@@ -95,7 +95,7 @@
                         <Feature text="CCGen Include" />
                     </div>
                     <a href="https://lunarchk.vercel.app/" target="_blank" rel="noopener" class="mt-[198px]">
-                        <SecondaryB class="mt-8 w-full bg-[#202020] rounded-full">Get started</SecondaryB>
+                        <SecondaryB disabled class="mt-8 w-full bg-[#202020] rounded-full">Get started</SecondaryB>
                     </a>
                 </div>
 
