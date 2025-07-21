@@ -45,10 +45,6 @@
                   </TertiaryB>
                 </div>
               </div>
-              <div v-else class="flex flex-col gap-1">
-                <span class="font-semibold text-[#fafafa]">Seu produto:</span>
-                <span class="text-[#b8b8b8] text-sm break-all">{{ bought[product.id] }}</span>
-              </div>
             </div>
             <!-- Botão de criar produto como card -->
             <div v-if="isAdmin"
@@ -261,6 +257,7 @@ const showInfoModal = ref(false)
 const infoModalData = ref({ description: '', id: '' })
 const editDescription = ref('')
 
+
 // Abre modal de info e busca descrição
 async function openInfoModal(product) {
   infoModalData.value = { description: '', id: product.id }
@@ -459,8 +456,6 @@ async function buyProduct(productId) {
   }
   showBoughtModal.value = true
 
-  // Salva produto comprado localmente
-  bought.value[productId] = boughtValue
 }
 
 async function addStock(productId) {
