@@ -210,7 +210,7 @@
                 <button
                     class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center"
                     @click="openModal">
-                    <Icon name="mingcute:gift-fill" /> Redeem Key
+                    <Icon name="mingcute:gift-fill"></Icon> Redeem Key
                 </button>
                 <div class="flex items-center gap-2 mt-2">
                     <img :src="photoURL" class="rounded-full w-10 h-10 object-cover" />

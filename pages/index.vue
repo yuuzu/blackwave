@@ -21,7 +21,7 @@
                         <SecondaryB>Telegram</SecondaryB>
                     </a>
                     <a href="#" @click.prevent="goToPremium" rel="noopener">
-                        <PrimaryB>Join premium</PrimaryB>
+                        <PrimaryB>Dashboard</PrimaryB>
                     </a>
                 </div>
                 <!-- Mobile Menu Button -->
@@ -56,7 +56,7 @@
                 </div>
                 <div class="px-6 pb-8 pt-4 mt-auto">
                     <a href="dashboard" target="_blank" rel="noopener" @click="showMobileMenu = false">
-                        <PrimaryB class="w-full rounded-2xl">Join premium</PrimaryB>
+                        <PrimaryB class="w-full rounded-2xl">Dashboard</PrimaryB>
                     </a>
                 </div>
             </div>
@@ -73,7 +73,7 @@
                     Discover and enjoy the best checker available today!
                 </p>
                 <a href="https://lunarchk.vercel.app/" target="_blank" rel="noopener" class="mt-4">
-                    <PrimaryB class="max-w-72">Get started with free version</PrimaryB>
+                    <PrimaryB disabled class="max-w-72 opacity-70">Get started with free version</PrimaryB>
                 </a>
             </div>
 
