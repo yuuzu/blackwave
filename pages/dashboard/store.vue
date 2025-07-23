@@ -415,7 +415,7 @@ async function buyProduct(productId) {
 
   const productValue = product.data.value ?? 0.5
   if (userBalance.value < productValue) {
-    alert('Saldo insuficiente!')
+    alert('Insufficient balance to buy this product.')
     return
   }
 
@@ -428,10 +428,13 @@ async function buyProduct(productId) {
   })
   delete product.data[firstKey]
 
+  // ...dentro da função buyProduct...
+
   const user = auth.currentUser
-  let buyerName = user?.email || 'Desconhecido'
+  let buyerName = user?.email || 'Anonymous'
+  let userId = user?.uid
   if (user) {
-    const userDocRef = doc(db, 'users', user.uid)
+    const userDocRef = doc(db, 'users', userId)
     await updateDoc(userDocRef, { balance: userBalance.value - productValue })
     userBalance.value -= productValue
   }
@@ -445,6 +448,13 @@ async function buyProduct(productId) {
     createdAt: new Date().toLocaleString()
   }
   const transactionRef = await addDoc(collection(db, 'transactionId'), transaction)
+
+  // Atualiza o campo lastTransactionId no documento do usuário
+  if (userId) {
+    await updateDoc(doc(db, 'users', userId), {
+      lastTransactionId: transactionRef.id
+    })
+  }
 
   // Exibe modal com dados da compra
   boughtModalData.value = {
