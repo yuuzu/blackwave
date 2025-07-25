@@ -422,24 +422,17 @@ async function buyProduct(productId) {
   const firstKey = keys[0]
   const boughtValue = product.data[firstKey]
 
-  // Remove do estoque
+  // Remove do estoque (apenas o campo do produto)
   await updateDoc(doc(db, 'products', productId), {
     [firstKey]: deleteField()
   })
   delete product.data[firstKey]
 
-  // ...dentro da função buyProduct...
-
+  // Salva transação na coleção transactionId
   const user = auth.currentUser
   let buyerName = user?.email || 'Anonymous'
   let userId = user?.uid
-  if (user) {
-    const userDocRef = doc(db, 'users', userId)
-    await updateDoc(userDocRef, { balance: userBalance.value - productValue })
-    userBalance.value -= productValue
-  }
 
-  // Salva transação na coleção transactionId
   const transaction = {
     buyer: buyerName,
     amount: productValue,
@@ -449,11 +442,14 @@ async function buyProduct(productId) {
   }
   const transactionRef = await addDoc(collection(db, 'transactionId'), transaction)
 
-  // Atualiza o campo lastTransactionId no documento do usuário
-  if (userId) {
-    await updateDoc(doc(db, 'users', userId), {
+  // Atualiza saldo e lastTransactionId do usuário em uma única chamada
+  if (user) {
+    const userDocRef = doc(db, 'users', userId)
+    await updateDoc(userDocRef, {
+      balance: userBalance.value - productValue,
       lastTransactionId: transactionRef.id
     })
+    userBalance.value -= productValue
   }
 
   // Exibe modal com dados da compra
@@ -465,7 +461,6 @@ async function buyProduct(productId) {
     transactionId: transactionRef.id
   }
   showBoughtModal.value = true
-
 }
 
 async function addStock(productId) {
