@@ -18,7 +18,7 @@
         <p class="font-satoshi pl-1 font-semibold text-[#dddddd] -mb-2">Password</p>
         <div class="relative">
           <span class="flex items-center justify-center absolute left-3 top-1/2 -translate-y-1/2 text-[#666666] pr-16">
-            <Icon name="mdi:lock-outline" size="24" />
+            <Icon name="fluent:key-20-filled" size="24" />
           </span>
           <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Password"
             class="bg-[#0c0c0c] font-satoshi rounded-xl px-12 py-2 w-full text-white text-[15px] outline-none hover:ring-[#191919] ring-transparent ring-2 focus:ring-[#191919] transition" />
