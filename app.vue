@@ -1,11 +1,11 @@
 <template>
-  <!--<div v-if="maintenance" class="bg-[#0a0a0a] w-screen h-screen flex flex-col items-center justify-center text-white font-satoshi">
+  <div v-if="maintenance" class="bg-[#0a0a0a] w-screen h-screen flex flex-col items-center justify-center text-white font-satoshi">
     <div class="flex flex-col items-center justify-center bg-[#101010]/70 backdrop-blur-md flex items-center rounded-xl px-6 py-4 mx-auto">
       <Icon name="pajamas:warning-solid" size="48" class="bg-yellow-400 mt-4" />
       <p class="text-2xl font-bold px-4 py-2">We are undergoing maintenance</p>
       <p class="text-1xl font-bold pb-2">We'll be back soon.</p>
     </div>
-  </div>-->
+  </div>
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
