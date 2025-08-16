@@ -4,9 +4,9 @@
       class="w-full max-w-sm border border-[2px] border-[#191919] bg-[#121212] rounded-2xl shadow-xl p-8 flex flex-col gap-6">
       <div class="flex flex-col items-center gap-2">
         <Icon name="basil:moon-solid" size="96px" class="text-[#576784]" />
-        <h2 class="text-2xl font-bold font-satoshi text-white">Log in to your account</h2>
+        <h2 class="text-2xl font-bold font-satoshi text-white">Create your account</h2>
       </div>
-      <form @submit.prevent="login" class="flex flex-col gap-4">
+      <form @submit.prevent="handleRegister" class="flex flex-col gap-4">
         <p class="font-satoshi font-semibold text-[#dddddd] pl-1 -mb-2">Email</p>
         <div class="relative">
           <span class="flex items-center justify-center absolute left-3 top-1/2 -translate-y-1/2 text-[#666666]">
@@ -30,9 +30,6 @@
             </div>
           </button>
         </div>
-          <a href="/reset" class="flex justify-end -mt-3 font-satoshi text-[#989898] text-[15px]">
-            Forgot password?
-          </a>
         <div id="turnstile-container" class="flex justify-center"></div>
         <div v-if="error"
           class="flex flex-col items-center justify-center bg-[#4a0d0d] border-2 border-[#640b0b] text-[#fafafa] px-4 py-2 rounded-xl mt-2">
@@ -40,12 +37,12 @@
         </div>
         <Button
           class="flex flex-col items-center justify-center bg-[#181818] border-2 border-[#202020] hover:border-[#262626] duration-300 text-[#fafafa] font-satoshi font-thin px-4 py-2 rounded-xl"
-          type="submit">Login</Button>
+          type="submit">Register</Button>
       </form>
-      <p class="-mt-1 font-satoshi text-[#c9c9c9] text-[15px] text-center">
-        Don't have an account?
-        <a href="/register" class="font-satoshi text-[#576784] hover:underline">
-          Create an account
+      <p class="-mt-3 font-satoshi text-[#c9c9c9] text-[15px] text-center">
+        Already have an account?
+        <a href="/login" class="font-satoshi text-[#576784] hover:underline">
+          Log in
         </a>
       </p>
     </div>
@@ -55,8 +52,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { auth } from '../firebase'
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from '../firebase'
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 const router = useRouter()
 const email = ref('')
@@ -97,32 +95,50 @@ function renderTurnstile() {
 
 function getFirebaseErrorMessage(code) {
   const messages = {
-    'auth/user-not-found': 'User not found.',
-    'auth/wrong-password': 'Incorrect password.',
+    'auth/email-already-in-use': 'This email is already registered.',
     'auth/invalid-email': 'Invalid email.',
+    'auth/weak-password': 'Password must be at least 6 characters.',
     'auth/too-many-requests': 'Too many attempts. Please try again later.',
     'auth/network-request-failed': 'No internet connection.',
     'auth/internal-error': 'Internal error. Please try again.',
     'auth/missing-password': 'Please enter your password.',
     'auth/missing-email': 'Please enter your email.',
-    'default': 'Error while logging in. Please try again.'
+    'default': 'Error while registering. Please try again.'
   }
   return messages[code] || messages['default']
 }
 
-async function login() {
+async function handleRegister() {
   error.value = ''
-  if (!email.value || !password.value) {
-    error.value = 'Please fill in all fields.'
-    return
-  }
   if (!turnstileToken.value) {
     error.value = 'Please solve the captcha.'
     return
   }
+  if (!email.value || !password.value) {
+    error.value = 'Please fill in all fields.'
+    return
+  }
   try {
-    await signInWithEmailAndPassword(auth, email.value, password.value)
+    if (auth.currentUser) {
+      await auth.signOut()
+    }
+    const cred = await createUserWithEmailAndPassword(auth, email.value, password.value)
+    await setDoc(doc(db, "users", cred.user.uid), {
+      email: email.value,
+      createdAt: new Date(),
+      balance: 0,
+      lives: '',
+      livesUsed: 0,
+      cardsBought: 0,
+      admin: false,
+      status: 'Common',
+      checksMonth: 0,
+      avgSpentWeek: 0,
+      lastLogin: new Date()
+    })
+    error.value = ''
     router.push('/dashboard')
+    return
   } catch (e) {
     error.value = getFirebaseErrorMessage(e.code)
   }
