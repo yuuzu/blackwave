@@ -81,10 +81,10 @@
                             class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 text-[#FAFAFA] font-semibold justify-center">
                             <Icon name="mdi:help-circle-outline" /> Help Center
                         </a>
-                        <a href="#"
+                        <!-- <a href="#"
                             class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center">
                             <Icon name="mdi:link-variant" /> Free Checker
-                        </a>
+                        </a> -->
                     </div>
                     <!-- Share/Profile -->
                     <div class="flex flex-col gap-2 px-2 mt-4">
@@ -98,15 +98,42 @@
                             @click="openModal">
                             <Icon name="mingcute:gift-fill" /> Redeem Key
                         </button>
-                        <div class="flex items-center gap-2 mt-2">
-                            <img :src="photoURL" class="rounded-full w-10 h-10 object-cover" />
-                            <div>
-                                <div class="font-bold truncate max-w-[120px]">
-                                    {{ user?.email || 'Usuário' }}
-                                </div>
-                                <div class="text-xs text-gray-400">
+                        <div class="flex items-center gap-3 px-2 py-3 rounded-xl bg-[#181818] mb-4 relative group mt-4">
+                            <img :src="photoURL" class="rounded-full w-10 h-10 object-cover bg-[#232323]" />
+                            <div class="flex flex-col">
+                                <span class="font-bold text-[17px] leading-tight truncate max-w-[120px]">
+                                    {{ user?.nickname || 'User' }}
+                                </span>
+                                <span class="text-xs text-gray-400 font-medium">
                                     Balance: <span class="font-semibold text-white">R$ {{ balance.toFixed(2) }}</span>
-                                </div>
+                                </span>
+                            </div>
+                            <!-- Botão de menu -->
+                            <button @click="showProfileMenu = !showProfileMenu"
+                                class="ml-auto flex items-center justify-center w-8 h-8 rounded-full hover:bg-[#232323] transition">
+                                <Icon name="mdi:dots-horizontal" size="22" class="text-[#bdbdbd]" />
+                            </button>
+                            <!-- Menu suspenso -->
+                            <div v-if="showProfileMenu"
+                                class="absolute bottom-14 left-16 z-50 bg-[#111111] border border-[#161616] rounded-xl shadow-lg w-72 p-4 flex flex-col gap-2"
+                                @click.away="showProfileMenu = false">
+                                <div class="font-bold text-[#fafafa] text-[20px] mb-1">Other Links</div>
+                                <div class="text-[16px] text-[#999999] mb-2">Navigate quickly through our system</div>
+                                <NuxtLink to="/"
+                                    class="w-full py-2 rounded-xl bg-[#181818] border-2 border-[#212121] text-center font-semibold transition mb-1">
+                                    Home</NuxtLink>
+                                <a href="https://t.me/lunaroficial" target="_blank"
+                                    class="flex justify-center items-center w-full py-2 rounded-xl bg-[#3390ec]/40 border-2 border-[#3390ec] text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition mb-1">
+                                    <Icon name="mdi:telegram" /> Telegram Group
+                                </a>
+                                <NuxtLink to="/dashboard/settings"
+                                    class="w-full py-2 rounded-xl bg-[#576784]/40 border-2 border-[#576784] text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition mb-1">
+                                    <Icon name="mdi:cog" /> Account Settings
+                                </NuxtLink>
+                                <button @click="logout"
+                                    class="w-full py-2 rounded-xl bg-[#640b0b] border-2 border-[#820808] text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
+                                    Logout
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -192,10 +219,10 @@
                         class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 text-[#FAFAFA] font-semibold justify-center">
                         <Icon name="mdi:help-circle-outline" /> Help Center
                     </a>
-                    <a href="https://lunarchk.vercel.app/" target="_blank"
+                    <!-- <a href="https://lunarchk.vercel.app/" target="_blank"
                         class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center">
                         <Icon name="mdi:link-variant" /> Free Checker
-                    </a>
+                    </a> -->
                 </div>
             </div>
             <!-- Share/Profile -->
@@ -212,15 +239,42 @@
                     @click="openModal">
                     <Icon name="mingcute:gift-fill"></Icon> Redeem Key
                 </button>
-                <div class="flex items-center gap-2 mt-2">
-                    <img :src="photoURL" class="rounded-full w-10 h-10 object-cover" />
-                    <div>
-                        <div class="font-bold truncate max-w-[120px]">
-                            {{ user?.email || 'Usuário' }}
-                        </div>
-                        <div class="text-xs text-gray-400">
+                <div class="flex items-center gap-3 px-2 py-3 rounded-xl bg-[#181818] mb-4 relative group">
+                    <img :src="photoURL" class="rounded-full w-10 h-10 object-cover bg-[#232323]" />
+                    <div class="flex flex-col">
+                        <span class="font-bold text-[17px] leading-tight truncate max-w-[120px]">
+                            {{ user?.nickname || 'User' }}
+                        </span>
+                        <span class="text-xs text-gray-400 font-medium">
                             Balance: <span class="font-semibold text-white">R$ {{ balance.toFixed(2) }}</span>
-                        </div>
+                        </span>
+                    </div>
+                    <!-- Botão de menu -->
+                    <button @click="showProfileMenu = !showProfileMenu"
+                        class="ml-auto flex items-center justify-center w-8 h-8 rounded-full hover:bg-[#232323] transition">
+                        <Icon name="mdi:dots-horizontal" size="22" class="text-[#bdbdbd]" />
+                    </button>
+                    <!-- Menu suspenso -->
+                    <div v-if="showProfileMenu"
+                        class="absolute bottom-14 left-16 z-50 bg-[#111111] border border-[#161616] rounded-xl shadow-lg w-72 p-4 flex flex-col gap-2"
+                        @click.away="showProfileMenu = false">
+                        <div class="font-bold text-[#fafafa] text-[20px] mb-1">Other Links</div>
+                        <div class="text-[16px] text-[#999999] mb-2">Navigate quickly through our system</div>
+                        <NuxtLink to="/"
+                            class="w-full py-2 rounded-xl bg-[#181818] border-2 border-[#212121] text-center font-semibold transition mb-1">
+                            Home</NuxtLink>
+                        <a href="https://t.me/lunaroficial" target="_blank"
+                            class="flex justify-center items-center w-full py-2 rounded-xl bg-[#3390ec]/40 border-2 border-[#3390ec] text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition mb-1">
+                            <Icon name="mdi:telegram" /> Telegram Group
+                        </a>
+                        <NuxtLink to="/dashboard/settings"
+                            class="w-full py-2 rounded-xl bg-[#576784]/40 border-2 border-[#576784] text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition mb-1">
+                            <Icon name="mdi:cog" /> Account Settings
+                        </NuxtLink>
+                        <button @click="logout"
+                            class="w-full py-2 rounded-xl bg-[#640b0b] border-2 border-[#820808] text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
+                            Logout
+                        </button>
                     </div>
                 </div>
             </div>
@@ -303,7 +357,19 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { auth, db } from '~/firebase'
-import { doc, getDoc, updateDoc, deleteDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, getDocs, collection, query, where } from 'firebase/firestore'
+import { signOut } from "firebase/auth"
+import { useRouter } from 'vue-router'
+const showProfileMenu = ref(false)
+const router = useRouter()
+
+function logout() {
+    signOut(auth).then(() => {
+        router.push('/login')
+    })
+    showProfileMenu.value = false
+}
+
 const showMobileMenu = ref(false)
 
 const accountOpen = ref(true)
@@ -361,7 +427,7 @@ onMounted(async () => {
                 cardsBought.value = data.cardsBought ?? 0
                 isAdmin.value = !!data.admin
                 // Adicione esta linha:
-                user.value = { ...user.value, reseller: !!data.reseller }
+                user.value = { ...user.value, reseller: !!data.reseller, nickname: data.nickname }
                 // Resumo de uso
                 checksMonth.value = data.checksMonth ?? 0
                 avgSpentWeek.value = data.avgSpentWeek ?? 0
@@ -372,6 +438,9 @@ onMounted(async () => {
                     lastLogin.value = data.lastLogin ?? ''
                 }
                 accountStatus.value = data.status ?? 'Common'
+                if (!data.nickname) {
+                    showNicknameModal.value = true
+                }
             }
         }
     })
@@ -390,6 +459,11 @@ const newKeyValue = ref('')
 const createKeyMessage = ref('')
 const createKeyLoading = ref(false)
 const createKeySuccess = ref(false)
+
+// Modal de nickname
+const nicknameInput = ref('')
+const nicknameError = ref('')
+const showNicknameModal = ref(false)
 
 // Gera código aleatório LUNAR-XXXXXXXXXXXX
 function generateKeyCode() {
@@ -418,6 +492,15 @@ function openCreateKeyModal() {
 }
 function closeCreateKeyModal() {
     showCreateKeyModal.value = false
+}
+
+function openNicknameModal() {
+    showNicknameModal.value = true
+    nicknameInput.value = ''
+    nicknameError.value = ''
+}
+function closeNicknameModal() {
+    showNicknameModal.value = false
 }
 
 async function redeemKey() {
@@ -511,6 +594,33 @@ async function createKey() {
         createKeyMessage.value = 'Erro ao criar key: ' + (e.message || e.code || e)
     }
     createKeyLoading.value = false
+}
+
+async function saveNickname() {
+    nicknameError.value = ''
+    if (!nicknameInput.value || nicknameInput.value.length < 3) {
+        nicknameError.value = 'O nickname deve ter pelo menos 3 caracteres.'
+        return
+    }
+    try {
+        // Busca apenas usuários com o mesmo nickname (case-insensitive)
+        const q = query(collection(db, 'users'), where('nickname', '==', nicknameInput.value))
+        const snap = await getDocs(q)
+        let exists = false
+        snap.forEach(docSnap => {
+            if (docSnap.id !== user.value.uid) {
+                exists = true
+            }
+        })
+        if (exists) {
+            nicknameError.value = 'Este nickname já está em uso.'
+            return
+        }
+        await updateDoc(doc(db, 'users', user.value.uid), { nickname: nicknameInput.value })
+        showNicknameModal.value = false
+    } catch (e) {
+        nicknameError.value = 'Erro ao salvar nickname.'
+    }
 }
 
 function copyEmail() {

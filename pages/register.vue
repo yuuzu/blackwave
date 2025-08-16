@@ -7,6 +7,14 @@
         <h2 class="text-2xl font-bold font-satoshi text-white">Create your account</h2>
       </div>
       <form @submit.prevent="handleRegister" class="flex flex-col gap-4">
+        <p class="font-satoshi font-semibold text-[#dddddd] pl-1 -mb-2">Nickname</p>
+        <div class="relative">
+          <span class="flex items-center justify-center absolute left-3 top-1/2 -translate-y-1/2 text-[#666666]">
+            <Icon name="mdi:account-circle" size="24" />
+          </span>
+          <input autocorrect="off" v-model="nickname" type="text" placeholder="Nickname"
+            class="flex flex-row font-satoshi bg-[#0c0c0c] rounded-xl px-12 py-2 text-white text-[15px] outline-none hover:ring-[#191919] ring-transparent ring-2 focus:ring-[#191919] transition w-full" />
+        </div>
         <p class="font-satoshi font-semibold text-[#dddddd] pl-1 -mb-2">Email</p>
         <div class="relative">
           <span class="flex items-center justify-center absolute left-3 top-1/2 -translate-y-1/2 text-[#666666]">
@@ -54,11 +62,12 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { auth, db } from '../firebase'
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 const router = useRouter()
 const email = ref('')
 const password = ref('')
+const nickname = ref('')
 const error = ref('')
 const turnstileToken = ref('')
 const showPassword = ref(false)
@@ -108,22 +117,39 @@ function getFirebaseErrorMessage(code) {
   return messages[code] || messages['default']
 }
 
+async function isNicknameTaken(nick) {
+  const nickLower = nick.trim().toLowerCase();
+  const q = query(
+    collection(db, 'users'),
+    where('nicknameLower', '==', nickLower)
+  );
+  const snap = await getDocs(q);
+  return !snap.empty;
+}
+
 async function handleRegister() {
-  error.value = ''
+  error.value = '';
   if (!turnstileToken.value) {
-    error.value = 'Please solve the captcha.'
-    return
+    error.value = 'Please solve the captcha.';
+    return;
   }
-  if (!email.value || !password.value) {
-    error.value = 'Please fill in all fields.'
-    return
+  if (!nickname.value || !email.value || !password.value) {
+    error.value = 'Please fill in all fields.';
+    return;
+  }
+  // Verificação de nickname único
+  if (await isNicknameTaken(nickname.value)) {
+    error.value = 'This nickname is already in use.';
+    return;
   }
   try {
     if (auth.currentUser) {
-      await auth.signOut()
+      await auth.signOut();
     }
-    const cred = await createUserWithEmailAndPassword(auth, email.value, password.value)
+    const cred = await createUserWithEmailAndPassword(auth, email.value, password.value);
     await setDoc(doc(db, "users", cred.user.uid), {
+      nickname: nickname.value,
+      nicknameLower: nickname.value.trim().toLowerCase(),
       email: email.value,
       createdAt: new Date(),
       balance: 0,
@@ -135,12 +161,12 @@ async function handleRegister() {
       checksMonth: 0,
       avgSpentWeek: 0,
       lastLogin: new Date()
-    })
-    error.value = ''
-    router.push('/dashboard')
-    return
+    });
+    error.value = '';
+    router.push('/dashboard');
+    return;
   } catch (e) {
-    error.value = getFirebaseErrorMessage(e.code)
+    error.value = getFirebaseErrorMessage(e.code);
   }
 }
 </script>
