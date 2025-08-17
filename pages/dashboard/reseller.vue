@@ -1,5 +1,6 @@
 <template>
-  <div class="max-w-[530px] sm:max-w-[576px] mx-auto mt-12 bg-[#111111] rounded-2xl shadow-xl p-8 text-white font-satoshi">
+  <div
+    class="max-w-[510px] sm:max-w-[576px] mx-auto mt-12 bg-[#111111] rounded-2xl shadow-xl p-8 text-white font-satoshi">
     <h1 class="text-2xl font-bold mb-6 flex items-center gap-2">
       <Icon name="mdi:account-cash" class="text-[#8a97ab]" size="32" />
       Reseller Panel
@@ -22,6 +23,7 @@
           <p class="font-satoshi text-[16px] font-thin text-white w-max">{{ message }}</p>
         </div>
       </div>
+      <div class="my-8 border-t border-[#232323]"></div>
       <div class="mt-10">
         <h2 class="text-xl font-bold mb-3 flex items-center gap-2">
           <Icon name="mdi:key-chain" class="text-[#8a97ab]" size="24" />
@@ -32,8 +34,14 @@
         <div v-else class="space-y-2 max-h-64 overflow-y-auto rounded-lg border border-[#232323] bg-[#161616] p-2"
           style="min-height: 56px;">
           <div v-for="k in createdKeys" :key="k.id"
-            class="flex items-center justify-between bg-[#181818] border border-[#232323] rounded-lg px-4 py-2">
-            <span class="text-[#fafafa] select-all text-xs sm:text-sm break-all">{{ k.id }}</span>
+            class="flex items-center justify-between bg-[#181818] border border-[#232323] rounded-lg px-4 py-2 gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-[#fafafa] select-all text-xs sm:text-sm break-all">{{ k.id }}</span>
+              <button @click="copyKey(k.id)" class="text-[#d4d4d4] hover:text-[#8a97ab] transition duration-100 p-1"
+                title="Copy key">
+                <Icon name="mdi:content-copy" size="16" />
+              </button>
+            </div>
             <span class="text-[#8a97ab] font-bold text-xs sm:text-base">R$ {{ k.value.toFixed(2) }}</span>
             <span class="text-xs text-[#b8b8b8] hidden sm:inline">{{ k.createdAt }}</span>
           </div>
@@ -50,6 +58,15 @@ import { doc, getDoc, updateDoc, setDoc, serverTimestamp, getDocs, collection, q
 
 const createdKeys = ref([])
 const loadingKeys = ref(true)
+
+const copyKey = async (keyId) => {
+  await navigator.clipboard.writeText(`🔑 You can redeem your key at:
+https://lunarcntr.vercel.app/redeem/${keyId}
+
+Just access the link, log in, and redeem your balance!`)
+  message.value = 'Key copied!'
+  success.value = true
+}
 
 async function fetchCreatedKeys() {
   loadingKeys.value = true
