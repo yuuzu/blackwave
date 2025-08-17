@@ -48,7 +48,7 @@
             <span class="text-[#fafafa] select-all">{{ key }}</span>
           </div>
           <div class="flex justify-center items-center mb-2 text-[#b8b8b8] text-center">
-            <span class="text-[#38bdf8] font-bold">R$ {{ keyData.value.toFixed(2) }}</span>
+            <span class="text-[#576784] font-bold">R$ {{ keyData.value.toFixed(2) }}</span>
           </div>
           <div class="mb-4 text-[#b8b8b8] text-center text-sm">
             By redeeming, the value will be instantly credited to your account balance.
