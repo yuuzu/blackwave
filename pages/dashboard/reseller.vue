@@ -1,7 +1,7 @@
 <template>
-  <div class="max-w-xl mx-auto mt-12 bg-[#111111] rounded-2xl shadow-xl p-8 text-white font-satoshi">
+  <div class="max-w-[530px] sm:max-w-[576px] mx-auto mt-12 bg-[#111111] rounded-2xl shadow-xl p-8 text-white font-satoshi">
     <h1 class="text-2xl font-bold mb-6 flex items-center gap-2">
-      <Icon name="mdi:account-cash" class="text-[#576784]" size="32" />
+      <Icon name="mdi:account-cash" class="text-[#8a97ab]" size="32" />
       Reseller Panel
     </h1>
     <div class="mb-6">
@@ -12,12 +12,32 @@
       <label class="block text-[#b8b8b8] mb-3">Key Value (R$)</label>
       <input v-model.number="keyValue" type="number" min="1" placeholder="Value"
         class="rounded-lg px-4 py-2 bg-[#1a1a1a] border-2 border-[#202020] text-[#FAFAFA] outline-none w-full" />
-      <PrimaryB @click="createKey" :disabled="loading" class="mt-6 justify-center items-center w-full">
-        <Icon name="mdi:check-bold" /> {{ loading ? 'Creating...' : 'Create Key' }}
-      </PrimaryB>
-      <div v-if="message" :class="success ? 'text-green-400' : 'text-red-400'" class="mt-2 text-center">
-        <Icon :name="success ? 'mdi:check-circle' : 'mdi:alert-circle'" />
-        {{ message }}
+      <Button @click="createKey" :disabled="loading"
+        class="w-full py-2 rounded-xl bg-[#181818] border-2 border-[#212121] hover:bg-[#181818]/80 text-center font-semibold transition mt-2">
+        {{ loading ? 'Creating...' : 'Create Key' }}
+      </Button>
+      <div v-if="success"
+        class="flex flex-col items-center justify-center bg-[#1a3a1a] border-2 border-[#235723] text-[#fafafa] px-4 py-2 rounded-xl mt-2">
+        <div class="text-green-400 text-center">
+          <p class="font-satoshi text-[16px] font-thin text-white w-max">{{ message }}</p>
+        </div>
+      </div>
+      <div class="mt-10">
+        <h2 class="text-xl font-bold mb-3 flex items-center gap-2">
+          <Icon name="mdi:key-chain" class="text-[#8a97ab]" size="24" />
+          Your Created Keys
+        </h2>
+        <div v-if="loadingKeys" class="text-[#b8b8b8]">Loading keys...</div>
+        <div v-else-if="createdKeys.length === 0" class="text-[#b8b8b8]">No keys created yet.</div>
+        <div v-else class="space-y-2 max-h-64 overflow-y-auto rounded-lg border border-[#232323] bg-[#161616] p-2"
+          style="min-height: 56px;">
+          <div v-for="k in createdKeys" :key="k.id"
+            class="flex items-center justify-between bg-[#181818] border border-[#232323] rounded-lg px-4 py-2">
+            <span class="text-[#fafafa] select-all text-xs sm:text-sm break-all">{{ k.id }}</span>
+            <span class="text-[#8a97ab] font-bold text-xs sm:text-base">R$ {{ k.value.toFixed(2) }}</span>
+            <span class="text-xs text-[#b8b8b8] hidden sm:inline">{{ k.createdAt }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -26,7 +46,37 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { auth, db } from '~/firebase'
-import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp, getDocs, collection, query, where, orderBy } from 'firebase/firestore'
+
+const createdKeys = ref([])
+const loadingKeys = ref(true)
+
+async function fetchCreatedKeys() {
+  loadingKeys.value = true
+  createdKeys.value = []
+  const user = auth.currentUser
+  if (!user) {
+    loadingKeys.value = false
+    return
+  }
+  const q = query(
+    collection(db, 'keys'),
+    where('createdBy', '==', user.uid),
+    orderBy('createdAt', 'desc')
+  )
+  const snap = await getDocs(q)
+  createdKeys.value = snap.docs.map(docSnap => {
+    const d = docSnap.data()
+    return {
+      id: docSnap.id,
+      value: d.value ?? 0,
+      createdAt: d.createdAt?.toDate
+        ? new Date(d.createdAt.seconds * 1000).toLocaleString()
+        : '-'
+    }
+  })
+  loadingKeys.value = false
+}
 
 const resellerBalance = ref(0)
 const keyValue = ref(1)
@@ -47,7 +97,13 @@ onMounted(async () => {
   const userDoc = await getDoc(doc(db, 'users', user.uid))
   if (userDoc.exists() && userDoc.data().reseller) {
     resellerBalance.value = userDoc.data().resellerBalance ?? 0
+    await fetchCreatedKeys() // Atualiza a lista de keys ao carregar a página
   }
+})
+
+// Atualiza a lista de keys sempre que uma key for criada com sucesso
+watch(success, (val) => {
+  if (val) fetchCreatedKeys()
 })
 
 async function createKey() {
