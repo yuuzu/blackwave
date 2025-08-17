@@ -1,6 +1,6 @@
 <template>
   <div
-    class="max-w-[510px] sm:max-w-[576px] mx-auto mt-12 bg-[#111111] rounded-2xl shadow-xl p-8 text-white font-satoshi">
+    class="max-w-[475px] sm:max-w-[576px] mx-auto mt-12 bg-[#111111] rounded-2xl shadow-xl p-8 text-white font-satoshi">
     <h1 class="text-2xl font-bold mb-6 flex items-center gap-2">
       <Icon name="mdi:account-cash" class="text-[#8a97ab]" size="32" />
       Reseller Panel
