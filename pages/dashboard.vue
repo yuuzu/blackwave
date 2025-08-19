@@ -47,6 +47,13 @@
                                 </NuxtLink>
                             </div>
                         </transition>
+                        <NuxtLink
+                            v-if="accountStatus === 'Premium' || accountStatus === 'Reseller' || accountStatus === 'Administrator'"
+                            to="/dashboard/customize" exact-active-class="text-[#fafafa] font-bold bg-[#313442]"
+                            class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in">
+                            <Icon name="dashicons:admin-customizer" class="mr-2" size="24px" />
+                            <p class="text-[17.3px] font-bold">Customize</p>
+                        </NuxtLink>
                         <NuxtLink to="/dashboard/store" exact-active-class="text-[#fafafa] font-bold bg-[#313442]"
                             class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in"
                             @click="showMobileMenu = false">
@@ -98,8 +105,10 @@
                             @click="openModal">
                             <Icon name="mingcute:gift-fill" /> Redeem Key
                         </button>
-                        <div class="flex items-center gap-3 px-2 py-3 rounded-xl bg-[#181818] mb-4 relative group mt-4">
-                            <img :src="photoURL" class="rounded-full w-10 h-10 object-cover bg-[#232323]" />
+                        <div class="flex items-center gap-3 px-2 py-3 rounded-xl bg-[#181818] mb-4 relative group cursor-pointer transition hover:bg-[#232323]"
+                            @click="goToProfile">
+                            <img :src="user?.photoURL || photoURL"
+                                class="rounded-full w-10 h-10 object-cover bg-[#232323]" alt="Profile" />
                             <div class="flex flex-col">
                                 <span class="font-bold text-[17px] leading-tight truncate max-w-[120px]">
                                     {{ user?.nickname || 'User' }}
@@ -178,6 +187,12 @@
                         </transition>
                     </div>
                     <!-- Store -->
+                    <NuxtLink v-if="accountStatus === 'Premium', 'Administrator', 'Reseller'" to="/dashboard/customize"
+                        exact-active-class="text-[#fafafa] font-bold bg-[#313442]"
+                        class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in">
+                        <Icon name="dashicons:admin-customizer" class="mr-2" size="24px" />
+                        <p class="text-[17.3px] font-bold">Customize</p>
+                    </NuxtLink>
                     <NuxtLink to="/dashboard/store" exact-active-class="text-[#fafafa] font-bold bg-[#313442]"
                         class="flex items-center px-3 py-2 rounded-full hover:bg-[#323232] duration-300 out-in">
                         <Icon name="mdi:cart" class="mr-2" size="24px" />
@@ -216,7 +231,7 @@
                 <!-- Ajuda e página -->
                 <div class="mt-8 flex flex-col gap-2 px-2">
                     <a href="https://t.me/lunaroficial" target="_blank"
-                        class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 text-[#FAFAFA] font-semibold justify-center">
+                        class="bg-[#272b56]/90 border-[#373d8d] border-2 hover:brightness-110 duration-100 out-in rounded-2xl py-2 px-3 flex items-center gap-2 text-[#FAFAFA] font-semibold justify-center">
                         <Icon name="mdi:help-circle-outline" /> Help Center
                     </a>
                     <!-- <a href="https://lunarchk.vercel.app/" target="_blank"
@@ -229,18 +244,21 @@
             <div class="flex flex-col gap-2 px-2">
                 <!-- Botão de criar key para admin -->
                 <button v-if="isAdmin"
-                    class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center"
+                    class="bg-[#313442]/90 border-[#434653] border-2 hover:brightness-110 duration-100 out-in rounded-2xl py-2 px-3 flex items-center gap-2 font-semibold justify-center"
                     @click="openCreateKeyModal">
                     <Icon name="mdi:key-plus" /> Create Key
                 </button>
                 <!-- Botão de resgatar key -->
                 <button
-                    class="bg-[#313442] hover:bg-[#292c38] duration-300 out-in rounded-lg py-2 px-3 flex items-center gap-2 font-semibold justify-center"
+                    class="bg-[#313442]/90 border-[#434653] border-2 hover:brightness-110 duration-100 out-in rounded-2xl py-2 px-3 flex items-center gap-2 font-semibold justify-center"
                     @click="openModal">
                     <Icon name="mingcute:gift-fill"></Icon> Redeem Key
                 </button>
-                <div class="flex items-center gap-3 px-2 py-3 rounded-xl bg-[#181818] mb-4 relative group">
-                    <img :src="photoURL" class="rounded-full w-10 h-10 object-cover bg-[#232323]" />
+                <!-- Card do usuário com foto e clique para perfil -->
+                <div class="flex items-center gap-3 px-2 py-3 rounded-xl bg-[#181818] mb-4 relative group cursor-pointer transition hover:bg-[#232323]"
+                    @click="goToProfile">
+                    <img :src="user?.photoURL || photoURL" class="rounded-full w-10 h-10 object-cover bg-[#232323]"
+                        alt="Profile" />
                     <div class="flex flex-col">
                         <span class="font-bold text-[17px] leading-tight truncate max-w-[120px]">
                             {{ user?.nickname || 'User' }}
@@ -250,7 +268,7 @@
                         </span>
                     </div>
                     <!-- Botão de menu -->
-                    <button @click="showProfileMenu = !showProfileMenu"
+                    <button @click.stop="showProfileMenu = !showProfileMenu"
                         class="ml-auto flex items-center justify-center w-8 h-8 rounded-full hover:bg-[#232323] transition">
                         <Icon name="mdi:dots-horizontal" size="22" class="text-[#bdbdbd]" />
                     </button>
@@ -392,8 +410,14 @@ const avgSpentWeek = ref(0)
 const lastLogin = ref('')
 
 const notices = ref([
-    "Detailed analysis in the menu"
+    "New profile system!"
 ])
+
+function goToProfile() {
+    if (user.value?.nickname) {
+        router.push(`/profile/${user.value.nickname}`)
+    }
+}
 
 onMounted(async () => {
     auth.onAuthStateChanged(async (u) => {
@@ -423,6 +447,7 @@ onMounted(async () => {
             if (userDoc.exists()) {
                 const data = userDoc.data()
                 balance.value = data.balance ?? 0
+                photoURL.value = data.photoURL ?? photoURL.value
                 livesUsed.value = data.livesUsed ?? 0
                 cardsBought.value = data.cardsBought ?? 0
                 isAdmin.value = !!data.admin
