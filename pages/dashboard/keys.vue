@@ -1,155 +1,223 @@
 <template>
-    <div class="w-full mx-auto pt-20 md:pt-8 px-2 md:px-16 font-satoshi">
-        <h2 class="text-lg md:text-2xl font-bold mb-4 md:mb-6 text-[#FAFAFA]">All Created Keys</h2>
-        <!-- Barra de pesquisa -->
-        <div class="mb-4 flex items-center gap-2">
-            <input
-                v-model="search"
-                type="text"
-                placeholder="Pesquisar por ID, email ou valor..."
-                class="px-4 py-2 rounded-lg bg-[#181818] text-[#fafafa] w-full max-w-xs outline-none"
-            />
-            <button
-                :class="['px-4 py-2 rounded-lg font-bold', !showUsed ? 'bg-[#23293a] text-[#fafafa]' : 'bg-[#181818] text-[#b8b8b8]']"
-                @click="showUsed = false">
-                Not used
-            </button>
-            <button
-                :class="['px-4 py-2 rounded-lg font-bold', showUsed ? 'bg-[#23293a] text-[#fafafa]' : 'bg-[#181818] text-[#b8b8b8]']"
-                @click="showUsed = true">
-                Used
-            </button>
-        </div>
-        <div class="bg-[#111111] rounded-2xl p-4 md:p-6 shadow">
-            <div v-if="loading" class="text-gray-400">Loading...</div>
-            <div v-else-if="!showUsed && !filteredKeys.length" class="text-gray-400">No keys found.</div>
-            <div v-else-if="showUsed && !filteredUsedKeys.length" class="text-gray-400">No used keys found.</div>
-            <div v-else>
-                <div class="max-h-96 overflow-y-auto pr-1">
-                    <ul class="divide-y divide-[#23293a]/60">
-                        <li v-for="(key, i) in showUsed ? filteredVisibleUsedKeys : filteredVisibleKeys" :key="showUsed ? key.keyId : key.id"
-                            class="py-2 font-satoshi text-[#c6c3c6] flex items-center justify-between">
-                            <div class="flex flex-col gap-1 flex-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-[#fafafa]">{{ showUsed ? key.keyId : key.id }}</span>
-                                    <span class="text-xs text-[#b8b8b8]">R$ {{ key.value }}</span>
-                                </div>
-                            </div>
-                            <div class="flex gap-2 items-center">
-                                <button @click="copyKey(showUsed ? key.keyId : key.id)"
-                                    class="px-2 py-1 rounded text-xs text-[#b8b8b8] hover:text-[#576784] transition"
-                                    title="Copy key">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                        viewBox="0 0 24 24">
-                                        <path fill="currentColor"
-                                            d="M19 21H9a2 2 0 0 1-2-2V7h2v12h10v2Zm3-16v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Zm-2 0H7v12h12V5Z" />
-                                    </svg>
-                                </button>
-                                <button @click="showKeyInfo(key)"
-                                    class="px-2 py-1 rounded text-xs text-[#b8b8b8] hover:text-blue-400 transition"
-                                    title="Key info">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                        viewBox="0 0 24 24">
-                                        <path fill="currentColor"
-                                            d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-                                    </svg>
-                                </button>
-                                <button v-if="!showUsed" @click="confirmDeleteKey(key.id)"
-                                    class="px-2 py-1 rounded text-xs text-[#b8b8b8] hover:text-red-400 transition"
-                                    title="Delete key">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                        viewBox="0 0 24 24">
-                                        <path fill="currentColor"
-                                            d="M9 3v1H4v2h16V4h-5V3H9zm-4 6v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9H5zm2 2h8v10H7V11z" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </li>
-                    </ul>
+    <div class="w-full mx-auto pt-20 md:pt-8 px-4 sm:px-6 lg:px-10 font-satoshi">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div
+                class="inline-flex items-center gap-2 w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70 backdrop-blur-xl">
+                <span class="h-1.5 w-1.5 rounded-full bg-[#7aa7ff] shadow-[0_0_18px_rgba(122,167,255,0.9)]"></span>
+                Dashboard • Keys Panel
+            </div>
+            <div class="flex mt-8 items-center gap-3 mb-4">
+                <span class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                    <Icon name="ic:baseline-vpn-key" size="30" class="text-[#7aa7ff]" />
+                </span>
+                <div class="min-w-0">
+                    <h2 class="text-lg md:text-2xl font-black text-white">All Created Keys</h2>
+                    <p class="text-sm text-white/55">Search and manage keys (not used / used).</p>
                 </div>
-                <div class="flex justify-center mt-4">
-                    <span v-if="(showUsed ? filteredUsedKeys.length : filteredKeys.length) > visibleCount" @click="showMore"
-                        class="cursor-pointer text-sm text-[#939193] hover:underline transition select-none">
-                        Show more keys
-                    </span>
-                    <span v-if="visibleCount > 10" @click="showLess"
-                        class="cursor-pointer text-sm text-[#939193] hover:underline transition select-none ml-4">
-                        Show less
-                    </span>
+            </div>
+
+            <!-- Filters -->
+            <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
+               shadow-[0_18px_70px_rgba(0,0,0,0.45)] p-4 sm:p-5 mb-5">
+                <div class="flex flex-col md:flex-row md:items-center gap-3">
+                    <div class="relative w-full md:max-w-sm">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-white/55">
+                            <Icon name="mdi:magnify" size="20" />
+                        </span>
+                        <input v-model="search" type="text" placeholder="Search by ID, email or value..." class="w-full pl-10 pr-4 py-3 rounded-2xl bg-black/25 border border-white/10 text-white outline-none
+                     focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition" />
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button class="px-4 py-3 rounded-2xl font-bold border transition" :class="!showUsed
+                            ? 'bg-white/10 border-white/10 text-white'
+                            : 'bg-black/20 border-white/10 text-white/60 hover:text-white hover:bg-white/5'"
+                            @click="setShowUsed(false)">
+                            Not used
+                        </button>
+
+                        <button class="px-4 py-3 rounded-2xl font-bold border transition" :class="showUsed
+                            ? 'bg-white/10 border-white/10 text-white'
+                            : 'bg-black/20 border-white/10 text-white/60 hover:text-white hover:bg-white/5'"
+                            @click="setShowUsed(true)">
+                            Used
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List -->
+            <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
+               shadow-[0_18px_70px_rgba(0,0,0,0.45)] p-4 sm:p-6">
+                <div v-if="loading" class="text-white/55">Loading...</div>
+
+                <div v-else-if="!showUsed && !filteredKeys.length" class="text-white/55">
+                    No keys found.
+                </div>
+
+                <div v-else-if="showUsed && !filteredUsedKeys.length" class="text-white/55">
+                    No used keys found.
+                </div>
+
+                <div v-else>
+                    <div class="max-h-[420px] overflow-y-auto pr-1">
+                        <ul class="divide-y divide-white/10">
+                            <li v-for="(key, i) in showUsed ? filteredVisibleUsedKeys : filteredVisibleKeys"
+                                :key="showUsed ? key.keyId : key.id"
+                                class="py-3 flex items-center justify-between gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="font-black text-white truncate">
+                                            {{ showUsed ? key.keyId : key.id }}
+                                        </span>
+                                        <span
+                                            class="text-xs px-2 py-1 rounded-full bg-white/10 border border-white/10 text-white/80">
+                                            R$ {{ Number(key.value ?? 0).toFixed(2) }}
+                                        </span>
+                                    </div>
+
+                                    <div class="text-xs text-white/50 mt-1 break-all" v-if="showUsed">
+                                        Used by: {{ key.usedByEmail || key.usedBy || '—' }}
+                                    </div>
+                                    <div class="text-xs text-white/50 mt-1 break-all" v-else>
+                                        Created by: {{ key.createdByEmail || key.createdBy || '—' }}
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <button @click="copyKey(showUsed ? key.keyId : key.id)" class="w-9 h-9 rounded-2xl bg-white/5 border border-white/10
+                           hover:bg-white/10 hover:border-white/20 transition flex items-center justify-center"
+                                        title="Copy key">
+                                        <Icon name="mdi:content-copy" size="18" class="text-white/70" />
+                                    </button>
+
+                                    <button @click="showKeyInfo(key)" class="w-9 h-9 rounded-2xl bg-white/5 border border-white/10
+                           hover:bg-white/10 hover:border-white/20 transition flex items-center justify-center"
+                                        title="Key info">
+                                        <Icon name="material-symbols:info-rounded" size="20" class="text-[#7aa7ff]" />
+                                    </button>
+
+                                    <button v-if="!showUsed" @click="confirmDeleteKey(key.id)" class="w-9 h-9 rounded-2xl bg-rose-500/10 border border-rose-500/20
+                           hover:bg-rose-500/15 hover:border-rose-500/30 transition flex items-center justify-center"
+                                        title="Delete key">
+                                        <Icon name="mdi:delete-outline" size="20" class="text-rose-300" />
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="flex justify-center mt-4 gap-4">
+                        <span v-if="(showUsed ? filteredUsedKeys.length : filteredKeys.length) > visibleCount"
+                            @click="showMore"
+                            class="cursor-pointer text-sm text-white/55 hover:text-white hover:underline transition select-none">
+                            Show more keys
+                        </span>
+
+                        <span v-if="visibleCount > 10" @click="showLess"
+                            class="cursor-pointer text-sm text-white/55 hover:text-white hover:underline transition select-none">
+                            Show less
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
+
         <!-- Confirm delete dialog -->
         <transition name="modal-fade">
-            <div v-if="deleteKeyId" class="fixed inset-0 z-50 flex items-center justify-center font-satoshi">
+            <div v-if="deleteKeyId" class="fixed inset-0 z-50 flex items-center justify-center font-satoshi px-4">
                 <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
                 <transition name="modal-zoom">
-                    <div
-                        class="relative bg-[#0a0a0a] rounded-3xl p-10 w-full max-w-md flex flex-col gap-6 shadow-2xl border border-[#0e0e0e]/30">
-                        <button @click="deleteKeyId = null"
-                            class="absolute top-4 right-4 text-[#576784] hover:text-white text-2xl transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z" />
-                            </svg>
-                        </button>
-                        <div class="flex flex-col items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"
-                                viewBox="0 0 24 24" class="text-[#530f0f]">
-                                <path fill="currentColor"
-                                    d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                            </svg>
-                            <h2 class="text-2xl font-bold mb-2 text-white text-center">Delete this key?</h2>
-                            <p class="text-[#b8b8b8] text-sm text-center">
-                                This action will permanently remove the key.<br>
-                                Are you sure you want to continue?
-                            </p>
+                    <div class="relative w-full max-w-md rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
+                   p-8 shadow-[0_24px_90px_rgba(0,0,0,0.70)] overflow-hidden">
+                        <div
+                            class="pointer-events-none absolute -inset-1 opacity-60 bg-[radial-gradient(circle_at_top,rgba(244,63,94,0.20),transparent_55%)]">
                         </div>
-                        <div class="flex gap-4 justify-center">
-                            <button @click="deleteKey"
-                                class="bg-[#530f0f] border border-[#750c0c] hover:border-[#8c0a0a] text-white px-4 py-2 rounded transition">
-                                Yes, delete
-                            </button>
+
+                        <button @click="deleteKeyId = null"
+                            class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl transition"
+                            title="Close">
+                            <Icon name="mdi:close" />
+                        </button>
+
+                        <div class="relative flex flex-col gap-5">
+                            <div class="flex flex-col items-center gap-2">
+                                <Icon name="mdi:alert-circle-outline" size="48" class="text-rose-300" />
+                                <h2 class="text-2xl font-black text-white text-center">Delete this key?</h2>
+                                <p class="text-white/55 text-sm text-center">
+                                    This action will permanently remove the key.<br />
+                                    Are you sure you want to continue?
+                                </p>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button @click="deleteKey" class="flex-1 rounded-2xl py-3 font-bold bg-rose-500/15 border border-rose-500/25
+                         hover:bg-rose-500/20 hover:border-rose-500/35 transition text-white">
+                                    Yes, delete
+                                </button>
+
+                                <button @click="deleteKeyId = null" class="flex-1 rounded-2xl py-3 font-bold bg-white/10 border border-white/10
+                         hover:bg-white/15 hover:border-white/20 transition text-white">
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </transition>
             </div>
         </transition>
+
+        <!-- Info modal -->
         <transition name="modal-fade">
-            <div v-if="infoKey" class="fixed inset-0 z-50 flex items-center justify-center font-satoshi">
+            <div v-if="infoKey" class="fixed inset-0 z-50 flex items-center justify-center font-satoshi px-4">
                 <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
                 <transition name="modal-zoom">
-                    <div
-                        class="relative bg-[#0a0a0a] rounded-3xl p-8 w-full max-w-md flex flex-col gap-6 shadow-2xl border border-[#0e0e0e]/30">
+                    <div class="relative w-full max-w-md rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
+                   p-7 shadow-[0_24px_90px_rgba(0,0,0,0.70)] overflow-hidden">
+                        <div
+                            class="pointer-events-none absolute -inset-1 opacity-60 bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.22),transparent_55%)]">
+                        </div>
+
                         <button @click="infoKey = null"
-                            class="absolute top-4 right-4 text-[#576784] hover:text-white text-2xl transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z" />
-                            </svg>
+                            class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl transition"
+                            title="Close">
+                            <Icon name="mdi:close" />
                         </button>
-                        <div class="flex flex-col gap-2">
-                            <h2 class="text-xl font-bold text-white mb-2">Key Information</h2>
-                            <div class="text-[#b8b8b8] text-sm break-all">
-                                <div><b>ID:</b> {{ infoKey.id || infoKey.keyId }}</div>
-                                <div><b>Value:</b> R$ {{ infoKey.value }}</div>
-                                <div><b>Created by:</b> {{ infoKey.createdByEmail || infoKey.createdBy || 'N/A' }}</div>
-                                <div><b>Creation date: </b>
-                                    <span v-if="infoKey.createdAt">
-                                        {{ formatDate(infoKey.createdAt) }}
-                                    </span>
+
+                        <div class="relative flex flex-col gap-4">
+                            <div class="flex items-center gap-2">
+                                <Icon name="material-symbols:info-rounded" size="22" class="text-[#7aa7ff]" />
+                                <h2 class="text-xl font-black text-white">Key Information</h2>
+                            </div>
+
+                            <div
+                                class="rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-white/75 break-all space-y-2">
+                                <div><b class="text-white">ID:</b> {{ infoKey.id || infoKey.keyId }}</div>
+                                <div><b class="text-white">Value:</b> R$ {{ Number(infoKey.value ?? 0).toFixed(2) }}
+                                </div>
+                                <div><b class="text-white">Created by:</b> {{ infoKey.createdByEmail ||
+                                    infoKey.createdBy || 'N/A' }}</div>
+                                <div>
+                                    <b class="text-white">Creation date:</b>
+                                    <span v-if="infoKey.createdAt">{{ formatDate(infoKey.createdAt) }}</span>
                                     <span v-else>N/A</span>
                                 </div>
-                                <div><b>Used by:</b> {{ infoKey.usedByEmail || infoKey.usedBy || 'Não usada' }}</div>
-                                <div><b>Date of use: </b>
-                                    <span v-if="infoKey.usedAt">
-                                        {{ formatDate(infoKey.usedAt) }}
-                                    </span>
-                                    <span v-else> Never used</span>
+                                <div><b class="text-white">Used by:</b> {{ infoKey.usedByEmail || infoKey.usedBy ||
+                                    'Never used' }}</div>
+                                <div>
+                                    <b class="text-white">Date of use:</b>
+                                    <span v-if="infoKey.usedAt">{{ formatDate(infoKey.usedAt) }}</span>
+                                    <span v-else>Never used</span>
                                 </div>
                             </div>
+
+                            <button @click="infoKey = null" class="w-full rounded-2xl py-3 font-bold bg-white/10 border border-white/10
+                       hover:bg-white/15 hover:border-white/20 transition text-white">
+                                Close
+                            </button>
                         </div>
                     </div>
                 </transition>
@@ -161,38 +229,46 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { db, auth } from '~/firebase'
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'
+import { collection, getDocs, deleteDoc, doc, getDoc } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 
 const keys = ref([])
 const usedKeys = ref([])
 const loading = ref(true)
+
 const deleteKeyId = ref(null)
-const router = useRouter()
+const infoKey = ref(null)
 
 const showUsed = ref(false)
-const infoKey = ref(null)
 const search = ref('')
-
 const visibleCount = ref(10)
 
+const router = useRouter()
+
+function setShowUsed(val) {
+    showUsed.value = val
+    visibleCount.value = 10
+}
+
 const filteredKeys = computed(() => {
-    if (!search.value) return keys.value.slice().reverse()
+    const arr = keys.value.slice().reverse()
+    if (!search.value) return arr
     const s = search.value.toLowerCase()
-    return keys.value.slice().reverse().filter(k =>
+    return arr.filter(k =>
         (k.id && k.id.toLowerCase().includes(s)) ||
-        (k.value && String(k.value).toLowerCase().includes(s)) ||
+        (k.value != null && String(k.value).toLowerCase().includes(s)) ||
         (k.createdByEmail && k.createdByEmail.toLowerCase().includes(s)) ||
         (k.createdBy && String(k.createdBy).toLowerCase().includes(s))
     )
 })
 
 const filteredUsedKeys = computed(() => {
-    if (!search.value) return usedKeys.value.slice().reverse()
+    const arr = usedKeys.value.slice().reverse()
+    if (!search.value) return arr
     const s = search.value.toLowerCase()
-    return usedKeys.value.slice().reverse().filter(k =>
+    return arr.filter(k =>
         (k.keyId && k.keyId.toLowerCase().includes(s)) ||
-        (k.value && String(k.value).toLowerCase().includes(s)) ||
+        (k.value != null && String(k.value).toLowerCase().includes(s)) ||
         (k.createdByEmail && k.createdByEmail.toLowerCase().includes(s)) ||
         (k.createdBy && String(k.createdBy).toLowerCase().includes(s)) ||
         (k.usedByEmail && k.usedByEmail.toLowerCase().includes(s)) ||
@@ -222,33 +298,14 @@ function formatDate(ts) {
     return new Date(ts).toLocaleString('pt-BR')
 }
 
-onMounted(async () => {
-    auth.onAuthStateChanged(async (user) => {
-        if (!user) {
-            router.push('/dashboard')
-            return
-        }
-        // Busca dados do usuário para verificar se é admin
-        const userSnap = await getDocs(collection(db, 'users'))
-        const userDoc = userSnap.docs.find(d => d.id === user.uid)
-        if (!userDoc || !userDoc.data().admin) {
-            router.push('/dashboard')
-            return
-        }
-        await fetchKeys()
-        await fetchUsedKeys()
-        loading.value = false
-    })
-})
-
 async function fetchUsedKeys() {
     const snap = await getDocs(collection(db, 'usedKeys'))
-    usedKeys.value = snap.docs.map(doc => ({ keyId: doc.id, ...doc.data() }))
+    usedKeys.value = snap.docs.map(d => ({ keyId: d.id, ...d.data() }))
 }
 
 async function fetchKeys() {
     const snap = await getDocs(collection(db, 'keys'))
-    keys.value = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    keys.value = snap.docs.map(d => ({ id: d.id, ...d.data() }))
 }
 
 function copyKey(keyId) {
@@ -265,4 +322,47 @@ async function deleteKey() {
     keys.value = keys.value.filter(k => k.id !== deleteKeyId.value)
     deleteKeyId.value = null
 }
+
+onMounted(async () => {
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            router.push('/dashboard')
+            return
+        }
+
+        // ✅ checa admin do jeito certo (sem baixar todos users)
+        const uSnap = await getDoc(doc(db, 'users', user.uid))
+        if (!uSnap.exists() || !uSnap.data()?.admin) {
+            router.push('/dashboard')
+            return
+        }
+
+        await fetchKeys()
+        await fetchUsedKeys()
+        loading.value = false
+    })
+})
 </script>
+
+<style scoped>
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+    transition: opacity 0.22s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+    opacity: 0;
+}
+
+.modal-zoom-enter-active,
+.modal-zoom-leave-active {
+    transition: all 0.26s cubic-bezier(.4, 2, .6, 1);
+}
+
+.modal-zoom-enter-from,
+.modal-zoom-leave-to {
+    opacity: 0;
+    transform: scale(0.92);
+}
+</style>

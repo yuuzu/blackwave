@@ -4,7 +4,7 @@ const props = defineProps({ text: String });
 
 <template>
   <span class="flex items-center gap-1">
-    <Icon name="si:check-fill" class="text-[#576784]" size="24px"></Icon>
+    <Icon name="si:check-fill" class="text-[#7aa7ff]" size="24px"></Icon>
     <p class="text-[#FAFAFA] font-satoshi text-[17px]">{{ text }}</p>
   </span>
 </template>
