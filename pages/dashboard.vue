@@ -36,7 +36,7 @@
       >
         <div class="flex items-center gap-2">
           <a href="/" class="flex items-center gap-2">
-            <NuxtImg src="../public/icon.png" class="w-6" />
+            <NuxtImg src="/icon.png" class="w-6" />
             <span class="font-bold text-2xl tracking-tight">lunarcntr.xyz</span>
           </a>
         </div>
@@ -55,7 +55,7 @@
             >
               <!-- Logo -->
               <div class="flex items-center gap-2 mb-6 px-2">
-                <NuxtImg src="../public/icon.png" class="w-6" />
+                <NuxtImg src="/icon.png" class="w-6" />
                 <span class="font-bold text-2xl tracking-tight">lunarcntr.xyz</span>
               </div>
 
@@ -263,7 +263,7 @@
           <!-- Logo -->
           <div class="flex items-center gap-2 mb-8 px-2">
             <a href="/" class="flex items-center gap-2">
-              <NuxtImg src="../public/icon.png" class="w-8" />
+              <NuxtImg src="/icon.png" class="w-8" />
               <span class="font-bold text-2xl tracking-tight">lunarcntr.xyz</span>
             </a>
           </div>
