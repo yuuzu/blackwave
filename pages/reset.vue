@@ -32,7 +32,7 @@
                 flex items-center justify-between">
           <!-- Logo -->
           <div class="flex items-center select-none">
-            <NuxtImg src="../public/icon.png" class="w-12" />
+            <NuxtImg src="/icon.png" class="w-12" />
             <p class="pl-2 text-xl sm:text-3xl font-satoshi font-semibold text-white">lunarcntr</p>
             <span class="h-1 w-1 -mb-3 sm:-mb-5 rounded-full bg-[#7aa7ff]"></span>
             <p class="pl-1 text-xl sm:text-3xl font-satoshi font-semibold text-white">xyz</p>

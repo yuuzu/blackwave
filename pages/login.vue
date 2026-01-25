@@ -24,7 +24,7 @@
       <div class="relative flex flex-col gap-6">
         <!-- Header -->
         <div class="flex flex-col items-center gap-2">
-          <NuxtImg src="../public/icon.png" class="w-16" />
+          <NuxtImg src="/icon.png" class="w-16" />
           <h2 class="text-2xl font-black text-white font-satoshi">Log in to your account</h2>
           <p class="text-white/60 text-sm text-center">
             Enter your credentials below to access your dashboard.

@@ -34,7 +34,7 @@
                flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center select-none">
-          <NuxtImg src="../public/icon.png" class="w-12" />
+          <NuxtImg src="/icon.png" class="w-12" />
           <p class="pl-2 text-xl sm:text-3xl font-satoshi font-semibold text-white">lunarcntr</p>
           <span class="h-1 w-1 -mb-3 sm:-mb-5 rounded-full bg-[#7aa7ff]"></span>
           <p class="pl-1 text-xl sm:text-3xl font-satoshi font-semibold text-white">xyz</p>
@@ -62,7 +62,7 @@
       <div v-if="showMobileMenu" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-xl flex flex-col">
         <div class="flex items-center justify-between px-6 pt-6 pb-4">
           <div class="flex items-center">
-            <Icon name="basil:moon-solid" size="40px" class="text-[#7aa7ff]" />
+            <NuxtImg src="/icon.png" class="w-12" />
             <p class="pl-2 text-2xl font-satoshi font-semibold text-white">lunarcntr</p>
             <span class="h-1 w-1 -mb-4 rounded-full bg-[#7aa7ff]"></span>
             <p class="pl-1 text-2xl font-satoshi font-semibold text-white">xyz</p>
@@ -118,7 +118,7 @@
       </div>
 
       <!-- Pricing cards -->
-      <div class="flex flex-col md:flex-row items-stretch justify-center gap-6 w-full max-w-6xl">
+      <div class="flex flex-row md:flex-row items-stretch justify-center gap-6 w-full max-w-6xl">
         <!-- Free Plan -->
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 duration-100
                  shadow-[0_16px_60px_rgba(0,0,0,0.55)]
@@ -214,7 +214,7 @@
         <!-- Branding -->
         <div class="col-span-1 flex flex-col">
           <div class="flex items-center space-x-2 mb-4">
-            <NuxtImg src="../public/icon.png" class="w-8" />
+            <NuxtImg src="/icon.png" class="w-8" />
             <p class="font-satoshi font-bold text-2xl text-white">lunarcntr.xyz</p>
           </div>
           <p class="text-sm mb-4 text-white/60">
