@@ -1,6 +1,6 @@
 <template>
   <div class="relative min-h-screen w-full overflow-x-hidden bg-[#05060a] text-white font-satoshi">
-    <!-- Background (mesma vibe do dashboard/layout) -->
+    <!-- Background -->
     <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <div
         class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(120,180,255,0.16),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(140,90,255,0.12),transparent_55%)]"
@@ -67,10 +67,28 @@
             </div>
           </div>
 
+          <!-- ✅ Already redeemed by YOU -->
+          <div v-else-if="redeemedInfo" class="flex flex-col items-center gap-3 text-center">
+            <Icon name="mdi:check-circle-outline" size="42" class="text-emerald-400" />
+            <div class="text-emerald-400 font-black text-lg">Você já resgatou essa chave.</div>
+
+            <div class="text-white/60 text-sm">
+              {{ redeemedInfo.text }}
+              <span class="block mt-1 text-white/45">Redirecionando para o dashboard…</span>
+            </div>
+
+            <NuxtLink
+              to="/dashboard"
+              class="mt-2 rounded-2xl px-5 py-2 font-semibold bg-white/10 border border-white/10 hover:bg-white/15 hover:border-white/20 transition"
+            >
+              Go to Dashboard
+            </NuxtLink>
+          </div>
+
           <!-- Key not found -->
           <div v-else-if="!keyData" class="flex flex-col items-center gap-2 text-center">
             <Icon name="mdi:alert-circle-outline" size="36" class="text-rose-400" />
-            <div class="text-rose-400 font-bold">Key not found or already used.</div>
+            <div class="text-rose-400 font-bold">{{ msg || 'Key not found or already used.' }}</div>
             <div class="text-white/60 text-sm">
               Check if the key is correct or contact support if you believe this is a mistake.
             </div>
@@ -90,7 +108,9 @@
               <div class="text-sm font-mono text-white select-all break-all">{{ keyStr }}</div>
 
               <div class="mt-3 text-xs text-white/60 mb-1">Value</div>
-              <div class="text-lg font-black text-[#7aa7ff]">R$ {{ Number(keyData.value ?? 0).toFixed(2) }}</div>
+              <div class="text-lg font-black text-[#7aa7ff]">
+                R$ {{ Number(keyData.value ?? 0).toFixed(2) }}
+              </div>
 
               <div class="mt-3 text-xs text-white/50">
                 By redeeming, the value will be credited to your account balance.
@@ -99,13 +119,14 @@
 
             <button
               @click="redeem"
-              :disabled="redeemLoading || success"
+              :disabled="redeemLoading"
               class="w-full rounded-2xl py-3 font-bold flex items-center justify-center gap-2
                      bg-[#7aa7ff]/20 border border-[#7aa7ff]/35 hover:bg-[#7aa7ff]/25 hover:border-[#7aa7ff]/45 transition
                      disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Icon :name="redeemLoading ? 'mdi:loading' : (success ? 'mdi:check-circle' : 'mdi:gift')" :class="redeemLoading ? 'animate-spin' : ''" />
-              {{ redeemLoading ? 'Redeeming...' : (success ? 'Redeemed!' : 'Redeem Key') }}
+              <Icon :name="redeemLoading ? 'mdi:loading' : 'mdi:gift'"
+                    :class="redeemLoading ? 'animate-spin' : ''" />
+              {{ redeemLoading ? 'Redeeming...' : 'Redeem Key' }}
             </button>
 
             <div
@@ -124,52 +145,123 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { auth, db } from '~/firebase'
-import { doc, getDoc, updateDoc, setDoc, serverTimestamp, deleteDoc } from 'firebase/firestore'
+import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore'
 
 const route = useRoute()
 const router = useRouter()
 
-// ✅ key reativa (não congela)
-const key = computed(() => String(route.params.key || '').trim())
+// ✅ key reativa + decode + trim (evita docId errado)
+const key = computed(() => {
+  const raw = String(route.params.key ?? '').trim()
+  try {
+    return decodeURIComponent(raw).trim()
+  } catch {
+    return raw
+  }
+})
+const keyStr = computed(() => key.value)
 
 const keyData = ref(null)
+const redeemedInfo = ref(null) // { text: string }
 const loading = ref(true)
 const redeemLoading = ref(false)
 const msg = ref('')
 const success = ref(false)
 const authUser = ref(null)
 
-onMounted(() => {
-  auth.onAuthStateChanged(async (user) => {
-    authUser.value = user
-    loading.value = true
+let unsubAuth = null
+let redirectTimer = null
 
-    if (!user) {
-      loading.value = false
-      return
-    }
-    if (!key.value) {
-      loading.value = false
-      return
-    }
+function clearRedirect() {
+  if (redirectTimer) {
+    clearTimeout(redirectTimer)
+    redirectTimer = null
+  }
+}
+function scheduleRedirect(ms = 1700) {
+  clearRedirect()
+  redirectTimer = setTimeout(() => router.push('/dashboard'), ms)
+}
 
-    // Só busca a key se autenticado
+function moneyBRL(v) {
+  const n = Number(v ?? 0)
+  if (!Number.isFinite(n)) return 'R$ 0,00'
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+async function loadKeyState() {
+  clearRedirect()
+  loading.value = true
+  msg.value = ''
+  success.value = false
+  keyData.value = null
+  redeemedInfo.value = null
+
+  if (!authUser.value || !key.value) {
+    loading.value = false
+    return
+  }
+
+  try {
     const keyRef = doc(db, 'keys', key.value)
+    const usedRef = doc(db, 'usedKeys', key.value)
+
+    // 1) tenta achar em keys
     const keySnap = await getDoc(keyRef)
     if (keySnap.exists()) {
       keyData.value = keySnap.data()
-    } else {
-      keyData.value = null
+      return
     }
 
+    // 2) se não existe em keys, tenta usedKeys
+    const usedSnap = await getDoc(usedRef)
+    if (usedSnap.exists()) {
+      const used = usedSnap.data() || {}
+
+      // ✅ só mostra “já resgatou” se foi o MESMO usuário
+      if (used.usedBy === authUser.value.uid) {
+        const v = Number(used.value ?? 0)
+        redeemedInfo.value = {
+          text: Number.isFinite(v) && v > 0
+            ? `Valor resgatado: ${moneyBRL(v)}`
+            : 'Chave já resgatada.'
+        }
+        scheduleRedirect(1600)
+      } else {
+        // privacidade: não revela que alguém usou
+        msg.value = 'Key not found or already used.'
+      }
+      return
+    }
+
+    // 3) não existe em lugar nenhum
+    msg.value = 'Key not found or already used.'
+  } finally {
     loading.value = false
+  }
+}
+
+onMounted(() => {
+  unsubAuth = auth.onAuthStateChanged(async (user) => {
+    authUser.value = user
+    await loadKeyState()
   })
 })
 
+watch(key, async () => {
+  await loadKeyState()
+})
+
+onBeforeUnmount(() => {
+  if (unsubAuth) unsubAuth()
+  clearRedirect()
+})
+
 async function redeem() {
+  clearRedirect()
   msg.value = ''
   success.value = false
   redeemLoading.value = true
@@ -179,66 +271,77 @@ async function redeem() {
       msg.value = 'You must be logged in.'
       return
     }
-
     if (!key.value) {
       msg.value = 'Invalid key.'
       return
     }
 
-    // ✅ garante keyData (se não carregou)
-    if (!keyData.value) {
-      const keyRef = doc(db, 'keys', key.value)
-      const keySnap = await getDoc(keyRef)
-      if (!keySnap.exists()) {
-        msg.value = 'Key not found or already used.'
-        return
+    const userId = authUser.value.uid
+    const keyId = key.value
+
+    const userRef = doc(db, 'users', userId)
+    const keyRef = doc(db, 'keys', keyId)
+    const usedRef = doc(db, 'usedKeys', keyId)
+
+    const result = await runTransaction(db, async (tx) => {
+      // já usada?
+      const usedSnap = await tx.get(usedRef)
+      if (usedSnap.exists()) {
+        const used = usedSnap.data() || {}
+        if (used.usedBy === userId) {
+          const v = Number(used.value ?? 0)
+          return { status: 'already', value: Number.isFinite(v) ? v : 0 }
+        }
+        throw new Error('Key not found or already used.')
       }
-      keyData.value = keySnap.data()
-    }
 
-    const keyValue = Number(keyData.value.value ?? 0)
-    if (!Number.isFinite(keyValue) || keyValue <= 0) {
-      msg.value = 'Invalid key value.'
-      return
-    }
+      // key existe?
+      const keySnap = await tx.get(keyRef)
+      if (!keySnap.exists()) throw new Error('Key not found or already used.')
 
-    // Atualiza saldo do usuário
-    const userRef = doc(db, 'users', authUser.value.uid)
-    const userSnap = await getDoc(userRef)
+      const kd = keySnap.data() || {}
+      const value = Number(kd.value ?? 0)
+      if (!Number.isFinite(value) || value <= 0) throw new Error('Invalid key value.')
 
-    if (!userSnap.exists()) {
-      msg.value = 'User not found.'
-      return
-    }
+      // user existe?
+      const userSnap = await tx.get(userRef)
+      if (!userSnap.exists()) throw new Error('User not found.')
 
-    const balance = Number(userSnap.data().balance ?? 0)
-    const newBalance = balance + keyValue
-    await updateDoc(userRef, { balance: newBalance })
+      const currentBalance = Number(userSnap.data()?.balance ?? 0)
+      const newBalance = currentBalance + value
 
-    // Marca a key como usada
-    await setDoc(doc(db, 'usedKeys', key.value), {
-      usedBy: authUser.value.uid,
-      usedByEmail: authUser.value.email ?? '',
-      usedAt: serverTimestamp(),
-      value: keyValue,
-      createdBy: keyData.value.createdBy ?? '',
-      createdAt: keyData.value.createdAt ?? null
+      tx.update(userRef, { balance: newBalance })
+
+      tx.set(usedRef, {
+        usedBy: userId,
+        usedByEmail: authUser.value.email ?? '',
+        usedAt: serverTimestamp(),
+        value,
+        createdBy: kd.createdBy ?? '',
+        createdAt: kd.createdAt ?? null
+      })
+
+      tx.delete(keyRef)
+
+      return { status: 'redeemed', value }
     })
 
-    // Deleta a key
-    await deleteDoc(doc(db, 'keys', key.value))
-
-    msg.value = `Key redeemed! R$ ${keyValue.toFixed(2)} added to your balance.`
-    success.value = true
-
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 2000)
+    // ✅ mostra tela de resgatado / já resgatado e redireciona
+    const v = Number(result.value ?? 0)
+    redeemedInfo.value = {
+      text: result.status === 'redeemed'
+        ? `Você resgatou essa chave! Valor: ${moneyBRL(v)}`
+        : `Você já resgatou essa chave. Valor: ${moneyBRL(v)}`
+    }
 
     keyData.value = null
+    success.value = true
+    msg.value = ''
+    scheduleRedirect(1800)
   } catch (e) {
     console.error('redeem error:', e)
-    msg.value = 'Error redeeming key.'
+    msg.value = e?.message || 'Error redeeming key.'
+    success.value = false
   } finally {
     redeemLoading.value = false
   }

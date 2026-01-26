@@ -132,7 +132,7 @@
                   <div
                     class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
                     <span class="h-1.5 w-1.5 rounded-full bg-[#7aa7ff] shadow-[0_0_18px_rgba(122,167,255,0.9)]"></span>
-                    Live stats • Firestore
+                    Live stats • Database
                   </div>
 
                   <h2 class="mt-3 text-2xl sm:text-3xl font-satoshi font-black tracking-tight
