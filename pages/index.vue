@@ -117,92 +117,229 @@
         </div>
       </div>
 
-      <!-- Pricing cards -->
-      <div class="flex flex-row md:flex-row items-stretch justify-center gap-6 w-full max-w-6xl">
-        <!-- Free Plan -->
-        <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 duration-100
+      <div class="flex flex-col justify-center items-center gap-4">
+        <!-- ✅ NEW: Live Stats Section -->
+        <section class="w-full max-w-[840px] px-0 sm:px-6">
+          <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl
+                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]">
+            <!-- glow -->
+            <div class="pointer-events-none absolute -inset-[1px] rounded-2xl opacity-50
+                      bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.28),transparent_60%)]"></div>
+
+            <div class="relative p-5 sm:p-7">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <div
+                    class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
+                    <span class="h-1.5 w-1.5 rounded-full bg-[#7aa7ff] shadow-[0_0_18px_rgba(122,167,255,0.9)]"></span>
+                    Live stats • Firestore
+                  </div>
+
+                  <h2 class="mt-3 text-2xl sm:text-3xl font-satoshi font-black tracking-tight
+                           bg-gradient-to-b from-white via-white/80 to-white/45
+                           text-transparent bg-clip-text">
+                    Activity overview
+                  </h2>
+
+                  <p class="mt-1 text-sm sm:text-base font-satoshi text-white/60">
+                    Totals updated in real-time from our database.
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <div
+                    class="hidden sm:flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs text-white/60">
+                    <Icon name="mdi:cloud-sync-outline" class="text-[#7aa7ff]" />
+                    <span v-if="statsLoading">Syncing…</span>
+                    <span v-else>Synced</span>
+                  </div>
+
+                  <button
+                    class="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 transition"
+                    @click="refreshStats" :disabled="statsLoading" title="Recarregar (apenas re-subscreve o snapshot)">
+                    <Icon name="mdi:refresh" class="mr-1 text-[#7aa7ff]" />
+                    Refresh
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Total tested -->
+                <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-5 sm:p-6
+                       shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
+                  <div
+                    class="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-[#5aa2ff]/15 blur-[60px]">
+                  </div>
+
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class="text-sm font-satoshi text-white/60">Total tested</p>
+
+                      <div class="mt-2 flex items-baseline gap-2">
+                        <div v-if="statsLoading" class="h-9 w-40 rounded-xl bg-white/10 animate-pulse"></div>
+                        <p v-else class="text-4xl sm:text-5xl font-satoshi font-black tracking-tight">
+                          {{ formatCompact(animatedTotalTested) }}
+                        </p>
+
+                        <p class="text-xs font-satoshi text-white/50">items</p>
+                      </div>
+
+                      <p class="mt-2 text-xs sm:text-sm font-satoshi text-white/45">
+                        Total number of cards checked in our checker.
+                      </p>
+                    </div>
+
+                    <div
+                      class="shrink-0 flex items-center justify-center h-11 w-11 rounded-2xl border border-white/10 bg-white/5">
+                      <Icon name="mdi:layers-triple-outline" size="22px" class="text-[#7aa7ff]" />
+                    </div>
+                  </div>
+
+                  <div class="mt-4 h-[1px] w-full bg-white/10"></div>
+
+                  <div class="mt-4 flex items-center justify-between text-xs text-white/50 font-satoshi">
+                    <span v-if="statsError" class="text-red-300/80">Error</span>
+                    <span v-else class="text-white/40">Realtime</span>
+                  </div>
+                </div>
+
+                <!-- Approved -->
+                <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-5 sm:p-6
+                       shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
+                  <div
+                    class="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-[#8b5dff]/14 blur-[60px]">
+                  </div>
+
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class="text-sm font-satoshi text-white/60">Approved</p>
+
+                      <div class="mt-2 flex items-baseline gap-2">
+                        <div v-if="statsLoading" class="h-9 w-40 rounded-xl bg-white/10 animate-pulse"></div>
+                        <p v-else class="text-4xl sm:text-5xl font-satoshi font-black tracking-tight">
+                          {{ formatCompact(animatedApprovedCount) }}
+                        </p>
+
+                        <p class="text-xs font-satoshi text-white/50">items</p>
+                      </div>
+
+                      <p class="mt-2 text-xs sm:text-sm font-satoshi text-white/45">
+                        Successful/approved validations.
+                      </p>
+                    </div>
+
+                    <div
+                      class="shrink-0 flex items-center justify-center h-11 w-11 rounded-2xl border border-white/10 bg-white/5">
+                      <Icon name="mdi:check-decagram-outline" size="22px" class="text-[#a78bfa]" />
+                    </div>
+                  </div>
+
+                  <div class="mt-4 h-[1px] w-full bg-white/10"></div>
+
+                  <div class="mt-4 flex items-center justify-between text-xs text-white/50 font-satoshi">
+                    <span>Approval rate</span>
+                    <span v-if="statsLoading">—</span>
+                    <span v-else class="text-white/70">
+                      {{ approvalRate }}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p v-if="statsError" class="mt-4 text-xs sm:text-sm font-satoshi text-red-200/80">
+                Couldn’t load stats. Check Firestore rules / document path.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Pricing cards -->
+        <div class="flex flex-row md:flex-row items-stretch justify-center gap-6 w-full max-w-6xl">
+          <!-- Free Plan -->
+          <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10
                  shadow-[0_16px_60px_rgba(0,0,0,0.55)]
                  hover:border-white/20 hover:bg-white/[0.07] transition
                  px-6 py-5 w-full max-w-sm flex flex-col">
-          <p class="text-white font-satoshi font-semibold text-[25px]">Free</p>
+            <p class="text-white font-satoshi font-semibold text-[25px]">Free</p>
 
-          <div class="flex flex-row items-end gap-2 pt-2">
-            <p class="text-white font-satoshi font-semibold text-[34px] leading-none">0$</p>
-            <p class="text-white/50 font-satoshi font-normal text-[15px]">/lifetime</p>
-          </div>
-
-          <p class="text-white/60 font-satoshi font-normal text-[16px] mt-2">
-            Essential for those just starting out.
-          </p>
-
-          <div class="flex flex-col gap-1 pt-4">
-            <Feature text="Basic gateways (US, IT)" />
-            <Feature text="Include multithread (1X)" />
-            <Feature text="CCGen Include" />
-          </div>
-
-          <div class="mt-auto pt-6">
-            <a href="https://lunarchk.vercel.app/" target="_blank" rel="noopener">
-              <SecondaryB disabled class="w-full bg-white/10 rounded-full border border-white/10">
-                Get started
-              </SecondaryB>
-            </a>
-          </div>
-        </div>
-
-        <!-- Premium Plan -->
-        <div class="relative w-full max-w-sm flex flex-col justify-between rounded-2xl border border-[#344364] hover:brightness-110
-                 bg-[linear-gradient(180deg,rgba(90,162,255,0.16),rgba(0,0,0,0.22))]
-                 backdrop-blur-xl shadow-[0_22px_80px_rgba(0,0,0,0.65)]
-                 transition px-6 py-5 min-h-[520px] duration-100">
-          <!-- glow ring -->
-          <div class="pointer-events-none absolute -inset-[1px] rounded-2xl opacity-50
-                   bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.35),transparent_55%)]"></div>
-
-          <div class="relative">
-            <div class="flex flex-row items-center justify-between w-full">
-              <div class="flex items-center mb-2 sm:mb-0">
-                <Icon name="basil:star-solid" size="22px" class="text-[#7aa7ff]" />
-                <p class="text-white font-satoshi font-semibold text-[25px] pl-2">Premium</p>
-              </div>
-
-              <div
-                class="flex items-center justify-center w-max h-max bg-white/10 border border-white/10 rounded-full px-3 py-1">
-                <Icon name="mdi:sparkles" class="text-[#7aa7ff] mr-2" />
-                <p class="text-xs font-bold font-satoshi text-white/90">
-                  Most Popular
-                </p>
-              </div>
-            </div>
-
-            <div class="flex flex-row items-start gap-3 pt-2">
-              <p class="text-white font-satoshi font-semibold text-[34px] leading-none">45$</p>
-              <div class="flex flex-col">
-                <p class="text-white/65 font-satoshi font-normal text-[15px]">12k lives • 6 months</p>
-                <p class="text-white/45 font-satoshi font-normal text-[11px]">other plans in our telegram</p>
-              </div>
+            <div class="flex flex-row items-end gap-2 pt-2">
+              <p class="text-white font-satoshi font-semibold text-[34px] leading-none">0$</p>
+              <p class="text-white/50 font-satoshi font-normal text-[15px]">/lifetime</p>
             </div>
 
             <p class="text-white/60 font-satoshi font-normal text-[16px] mt-2">
-              Necessary for those who know out.
+              Essential for those just starting out.
             </p>
 
-            <div class="flex flex-col pt-4 gap-1">
-              <Feature text="More gateways (US, IT, MX, UK, ES, AE)" />
-              <Feature text="Include multithread (3X)" />
+            <div class="flex flex-col gap-1 pt-4">
+              <Feature text="Basic gateways (US, IT)" />
+              <Feature text="Include multithread (1X)" />
               <Feature text="CCGen Include" />
-              <Feature text="Remove cards" />
-              <Feature text="Auto add address" />
-              <Feature text="Approved list log" />
+            </div>
+
+            <div class="mt-auto pt-6">
+              <a href="https://lunarchk.vercel.app/" target="_blank" rel="noopener">
+                <SecondaryB disabled class="w-full bg-white/10 rounded-full border border-white/10">
+                  Get started
+                </SecondaryB>
+              </a>
             </div>
           </div>
 
-          <div class="mt-8">
-            <a href="https://t.me/yuzuuk1" target="_blank" rel="noopener" class="block w-full">
-              <PrimaryB class="w-full max-w-none mx-0 !rounded-2xl !py-2.5 !px-6">
-                Purchase
-              </PrimaryB>
-            </a>
+          <!-- Premium Plan -->
+          <div class="relative w-full max-w-sm flex flex-col justify-between rounded-2xl border border-[#344364] hover:brightness-110
+                 bg-[linear-gradient(180deg,rgba(90,162,255,0.16),rgba(0,0,0,0.22))]
+                 backdrop-blur-xl shadow-[0_22px_80px_rgba(0,0,0,0.65)]
+                 transition px-6 py-5 min-h-[520px]">
+            <!-- glow ring -->
+            <div class="pointer-events-none absolute -inset-[1px] rounded-2xl opacity-50
+                   bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.35),transparent_55%)]"></div>
+
+            <div class="relative">
+              <div class="flex flex-row items-center justify-between w-full">
+                <div class="flex items-center mb-2 sm:mb-0">
+                  <Icon name="basil:star-solid" size="22px" class="text-[#7aa7ff]" />
+                  <p class="text-white font-satoshi font-semibold text-[25px] pl-2">Premium</p>
+                </div>
+
+                <div
+                  class="flex items-center justify-center w-max h-max bg-white/10 border border-white/10 rounded-full px-3 py-1">
+                  <Icon name="mdi:sparkles" class="text-[#7aa7ff] mr-2" />
+                  <p class="text-xs font-bold font-satoshi text-white/90">
+                    Most Popular
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex flex-row items-start gap-3 pt-2">
+                <p class="text-white font-satoshi font-semibold text-[34px] leading-none">45$</p>
+                <div class="flex flex-col">
+                  <p class="text-white/65 font-satoshi font-normal text-[15px]">12k lives • 6 months</p>
+                  <p class="text-white/45 font-satoshi font-normal text-[11px]">other plans in our telegram</p>
+                </div>
+              </div>
+
+              <p class="text-white/60 font-satoshi font-normal text-[16px] mt-2">
+                Necessary for those who know out.
+              </p>
+
+              <div class="flex flex-col pt-4 gap-1">
+                <Feature text="More gateways (US, IT, MX, UK, ES, AE)" />
+                <Feature text="Include multithread (3X)" />
+                <Feature text="CCGen Include" />
+                <Feature text="Remove cards" />
+                <Feature text="Auto add address" />
+                <Feature text="Approved list log" />
+              </div>
+            </div>
+
+            <div class="mt-8">
+              <a href="https://t.me/yuzuuk1" target="_blank" rel="noopener" class="block w-full">
+                <PrimaryB class="w-full max-w-none mx-0 !rounded-2xl !py-2.5 !px-6">
+                  Purchase
+                </PrimaryB>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -264,19 +401,139 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { auth } from '~/firebase'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { auth, db } from '~/firebase'
+import { doc, getDoc } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 
 const showMobileMenu = ref(false)
 const isLogged = ref(false)
 const router = useRouter()
 
+// ---------- STATS ----------
+const statsLoading = ref(true)
+const statsError = ref(false)
+
+// valores "reais" vindos do banco
+const totalTested = ref(0)
+const approvedCount = ref(0)
+
+// valores "animados" que você mostra no UI
+const animatedTotalTested = ref(0)
+const animatedApprovedCount = ref(0)
+
+let pollTimer = null
+let raf1 = null
+let raf2 = null
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3)
+}
+
+function animateNumber({ from, to, duration = 850, onUpdate, onDone }) {
+  const start = performance.now()
+  const diff = to - from
+
+  function frame(now) {
+    const t = Math.min(1, (now - start) / duration)
+    const eased = easeOutCubic(t)
+    const value = Math.round(from + diff * eased)
+    onUpdate(value)
+
+    if (t < 1) return requestAnimationFrame(frame)
+    onDone?.()
+  }
+
+  return requestAnimationFrame(frame)
+}
+
+async function fetchStats() {
+  try {
+    if (!statsLoading.value) statsLoading.value = true
+    statsError.value = false
+
+    const statsRef = doc(db, 'general', 'totalChecked')
+    const snap = await getDoc(statsRef)
+
+    if (!snap.exists()) {
+      statsError.value = true
+      totalTested.value = 0
+      approvedCount.value = 0
+      statsLoading.value = false
+      return
+    }
+
+    const data = snap.data() || {}
+    const nextTotal = Number(data.cards ?? 0)
+    const nextApproved = Number(data.lives ?? 0)
+
+    totalTested.value = Number.isFinite(nextTotal) ? nextTotal : 0
+    approvedCount.value = Number.isFinite(nextApproved) ? nextApproved : 0
+
+    // anima o TOTAL
+    cancelAnimationFrame(raf1)
+    raf1 = animateNumber({
+      from: animatedTotalTested.value,
+      to: totalTested.value,
+      duration: 900,
+      onUpdate: (v) => (animatedTotalTested.value = v),
+    })
+
+    // anima o APPROVED
+    cancelAnimationFrame(raf2)
+    raf2 = animateNumber({
+      from: animatedApprovedCount.value,
+      to: approvedCount.value,
+      duration: 900,
+      onUpdate: (v) => (animatedApprovedCount.value = v),
+    })
+
+    statsLoading.value = false
+  } catch (e) {
+    statsError.value = true
+    statsLoading.value = false
+  }
+}
+
+function refreshStats() {
+  fetchStats()
+}
+
+const approvalRate = computed(() => {
+  const total = totalTested.value
+  const ok = approvedCount.value
+  if (!total || total <= 0) return 0
+  const pct = (ok / total) * 100
+  return Math.max(0, Math.min(100, Math.round(pct)))
+})
+
+function formatCompact(n) {
+  const num = Number(n || 0)
+  try {
+    return new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(num)
+  } catch {
+    return String(num)
+  }
+}
+
+// ---------- AUTH + INIT ----------
 onMounted(() => {
   isLogged.value = !!auth.currentUser
   auth.onAuthStateChanged(user => {
     isLogged.value = !!user
   })
+
+  // primeira carga
+  fetchStats()
+
+  // atualiza a cada 10s
+  pollTimer = setInterval(fetchStats, 10_000)
+})
+
+onBeforeUnmount(() => {
+  if (pollTimer) clearInterval(pollTimer)
+  cancelAnimationFrame(raf1)
+  cancelAnimationFrame(raf2)
 })
 
 function goToPremium() {
@@ -287,6 +544,7 @@ function goToPremium() {
   }
 }
 </script>
+
 
 <style>
 /* Scrollbar bonita para todo o site */

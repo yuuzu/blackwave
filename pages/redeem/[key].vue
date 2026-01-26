@@ -28,7 +28,7 @@
           <!-- Header -->
           <div class="flex flex-col items-center gap-2">
             <div class="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center">
-              <Icon name="fa7-solid:gift" size="36" class="text-[#7aa7ff]" />
+              <Icon name="fa7-solid:gift" size="26" class="text-[#7aa7ff]" />
             </div>
 
             <h2 class="text-2xl font-black text-white text-center">Redeem Your Key</h2>
@@ -127,12 +127,13 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { auth, db } from '~/firebase'
-import { doc, getDoc, setDoc, serverTimestamp, runTransaction } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp, deleteDoc } from 'firebase/firestore'
 
 const route = useRoute()
 const router = useRouter()
 
-const keyStr = computed(() => String(route.params.key || '').trim())
+// ✅ key reativa (não congela)
+const key = computed(() => String(route.params.key || '').trim())
 
 const keyData = ref(null)
 const loading = ref(true)
@@ -144,21 +145,26 @@ const authUser = ref(null)
 onMounted(() => {
   auth.onAuthStateChanged(async (user) => {
     authUser.value = user
-    msg.value = ''
-    success.value = false
-    keyData.value = null
     loading.value = true
 
-    if (!user || !keyStr.value) {
+    if (!user) {
+      loading.value = false
+      return
+    }
+    if (!key.value) {
       loading.value = false
       return
     }
 
-    const keyRef = doc(db, 'keys', keyStr.value)
+    // Só busca a key se autenticado
+    const keyRef = doc(db, 'keys', key.value)
     const keySnap = await getDoc(keyRef)
     if (keySnap.exists()) {
       keyData.value = keySnap.data()
+    } else {
+      keyData.value = null
     }
+
     loading.value = false
   })
 })
@@ -169,66 +175,72 @@ async function redeem() {
   redeemLoading.value = true
 
   try {
-    if (!authUser.value) throw new Error('NOT_AUTH')
-    if (!keyStr.value) throw new Error('NO_KEY')
+    if (!authUser.value) {
+      msg.value = 'You must be logged in.'
+      return
+    }
 
-    const uid = authUser.value.uid
-    const email = authUser.value.email ?? ''
+    if (!key.value) {
+      msg.value = 'Invalid key.'
+      return
+    }
 
-    await runTransaction(db, async (tx) => {
-      const keyRef = doc(db, 'keys', keyStr.value)
-      const usedRef = doc(db, 'usedKeys', keyStr.value)
-      const userRef = doc(db, 'users', uid)
-
-      const [keySnap, userSnap] = await Promise.all([
-        tx.get(keyRef),
-        tx.get(userRef)
-      ])
-
+    // ✅ garante keyData (se não carregou)
+    if (!keyData.value) {
+      const keyRef = doc(db, 'keys', key.value)
+      const keySnap = await getDoc(keyRef)
       if (!keySnap.exists()) {
-        throw new Error('KEY_NOT_FOUND')
+        msg.value = 'Key not found or already used.'
+        return
       }
-      if (!userSnap.exists()) {
-        throw new Error('USER_NOT_FOUND')
-      }
+      keyData.value = keySnap.data()
+    }
 
-      const keyVal = Number(keySnap.data().value ?? 0)
-      const userData = userSnap.data()
-      const currentBalance = Number(userData.balance ?? 0)
-      const isAdminUser = !!userData.admin
+    const keyValue = Number(keyData.value.value ?? 0)
+    if (!Number.isFinite(keyValue) || keyValue <= 0) {
+      msg.value = 'Invalid key value.'
+      return
+    }
 
-      const newBalance = currentBalance + keyVal
-      const newStatus = isAdminUser ? 'Administrator' : (newBalance > 0 ? 'Premium' : 'Common')
+    // Atualiza saldo do usuário
+    const userRef = doc(db, 'users', authUser.value.uid)
+    const userSnap = await getDoc(userRef)
 
-      tx.update(userRef, { balance: newBalance, status: newStatus })
+    if (!userSnap.exists()) {
+      msg.value = 'User not found.'
+      return
+    }
 
-      tx.set(usedRef, {
-        keyId: keyStr.value,
-        value: keyVal,
-        createdBy: keySnap.data().createdBy ?? null,
-        createdByEmail: keySnap.data().createdByEmail ?? null,
-        createdAt: keySnap.data().createdAt ?? null,
-        usedBy: uid,
-        usedByEmail: email,
-        usedAt: serverTimestamp()
-      })
+    const balance = Number(userSnap.data().balance ?? 0)
+    const newBalance = balance + keyValue
+    await updateDoc(userRef, { balance: newBalance })
 
-      tx.delete(keyRef)
+    // Marca a key como usada
+    await setDoc(doc(db, 'usedKeys', key.value), {
+      usedBy: authUser.value.uid,
+      usedByEmail: authUser.value.email ?? '',
+      usedAt: serverTimestamp(),
+      value: keyValue,
+      createdBy: keyData.value.createdBy ?? '',
+      createdAt: keyData.value.createdAt ?? null
     })
 
-    msg.value = `Key redeemed! Value added to your balance.`
+    // Deleta a key
+    await deleteDoc(doc(db, 'keys', key.value))
+
+    msg.value = `Key redeemed! R$ ${keyValue.toFixed(2)} added to your balance.`
     success.value = true
+
+    setTimeout(() => {
+      router.push('/dashboard')
+    }, 2000)
+
     keyData.value = null
-
-    setTimeout(() => router.push('/dashboard'), 1200)
   } catch (e) {
-    const code = String(e?.message || e)
-
-    if (code.includes('KEY_NOT_FOUND')) msg.value = 'Key not found or already used.'
-    else if (code.includes('NOT_AUTH')) msg.value = 'You must be logged in.'
-    else msg.value = 'Error redeeming key.'
+    console.error('redeem error:', e)
+    msg.value = 'Error redeeming key.'
+  } finally {
+    redeemLoading.value = false
   }
-
-  redeemLoading.value = false
 }
 </script>

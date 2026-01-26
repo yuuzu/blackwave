@@ -402,7 +402,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { doc, updateDoc, getDoc, arrayUnion, serverTimestamp } from 'firebase/firestore'
+import { doc, updateDoc, getDoc, arrayUnion, serverTimestamp, increment } from 'firebase/firestore'
 import { db, auth } from '~/firebase'
 import Approved from '~/components/Approved.vue'
 import Refused from '~/components/Refused.vue'
@@ -423,6 +423,8 @@ const genBin = ref('')
 const showNoBalanceModal = ref(false)
 const errorMessage = ref('')
 const showConfig = ref(false)
+
+const statsRef = doc(db, "general", "totalChecked")
 
 const settings = ref({
     threads: 1,
@@ -560,6 +562,7 @@ async function startCheck() {
     async function processCard(card) {
         if (!loading.value) return
         try {
+            await updateDoc(statsRef, { cards: increment(1) })
             currentCard.value = card
 
             const res = await fetch('https://vortexcenter.xyz/3bfa94eb-fbdb-46f5-9940-903334cda078/checker', {
@@ -594,6 +597,8 @@ async function startCheck() {
                 checksMonth += 1
                 livesUsed += 1
                 avgSpentWeek = Math.max(0, avgSpentWeek + 0.10)
+
+                await updateDoc(statsRef, { lives: increment(1) })
 
                 // 1 update only (avoid multiple getDoc)
                 await updateDoc(userRef, {
