@@ -1,15 +1,11 @@
 <template>
   <div class="w-full mx-auto pt-20 md:pt-8 px-4 sm:px-6 lg:px-10 font-satoshi">
-    <div
-      class="w-full max-w-5xl mx-auto rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
-             shadow-[0_18px_70px_rgba(0,0,0,0.55)] overflow-hidden"
-    >
+    <div class="w-full max-w-5xl mx-auto rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
+             shadow-[0_18px_70px_rgba(0,0,0,0.55)] overflow-hidden">
       <!-- Header -->
       <div class="p-6 sm:p-8 border-b border-white/10">
         <div class="flex items-center gap-3">
-          <span
-            class="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center"
-          >
+          <span class="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
             <Icon name="material-symbols:admin-panel-settings-rounded" class="text-[#7aa7ff]" size="24" />
           </span>
 
@@ -30,17 +26,10 @@
           </div>
 
           <div class="flex flex-col sm:flex-row gap-2">
-            <input
-              v-model="searchTransactionId"
-              type="text"
-              placeholder="Transaction ID"
-              class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
-                     focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition"
-            />
-            <TertiaryB
-              @click="searchTransaction"
-              class="sm:w-44 bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white"
-            >
+            <input v-model="searchTransactionId" type="text" placeholder="Transaction ID" class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
+                     focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition" />
+            <TertiaryB @click="searchTransaction"
+              class="sm:w-44 bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white">
               Confirm
             </TertiaryB>
           </div>
@@ -54,19 +43,10 @@
           </div>
 
           <div class="flex flex-col sm:flex-row gap-2 mb-4">
-            <input
-              v-model="manageEmail"
-              type="email"
-              placeholder="User email"
-              class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
-                     focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition"
-            />
-            <TertiaryB
-              @click="fetchUser"
-              :disabled="loadingUser"
-              class="sm:w-44 bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
-                     disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <input v-model="manageEmail" type="email" placeholder="User email" class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
+                     focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition" />
+            <TertiaryB @click="fetchUser" :disabled="loadingUser" class="sm:w-44 bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
+                     disabled:opacity-50 disabled:cursor-not-allowed">
               {{ loadingUser ? 'Searching...' : 'Search' }}
             </TertiaryB>
           </div>
@@ -111,20 +91,10 @@
               <div>
                 <label class="block text-xs text-white/55 mb-2">New balance</label>
                 <div class="flex gap-2">
-                  <input
-                    v-model="newBalance"
-                    type="number"
-                    min="0"
-                    placeholder="New balance"
-                    class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
-                           focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition"
-                  />
-                  <TertiaryB
-                    @click="updateBalance"
-                    :disabled="loadingAction"
-                    class="w-32 bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                  <input v-model="newBalance" type="number" min="0" placeholder="New balance" class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
+                           focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition" />
+                  <TertiaryB @click="updateBalance" :disabled="loadingAction" class="w-32 bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed">
                     Confirm
                   </TertiaryB>
                 </div>
@@ -134,20 +104,10 @@
               <div v-if="userData?.reseller">
                 <label class="block text-xs text-white/55 mb-2">Reseller Balance</label>
                 <div class="flex gap-2">
-                  <input
-                    v-model="newResellerBalance"
-                    type="number"
-                    min="0"
-                    placeholder="New reseller balance"
-                    class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
-                           focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition"
-                  />
-                  <TertiaryB
-                    @click="updateResellerBalance"
-                    :disabled="loadingAction"
-                    class="w-32 bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                  <input v-model="newResellerBalance" type="number" min="0" placeholder="New reseller balance" class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
+                           focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition" />
+                  <TertiaryB @click="updateResellerBalance" :disabled="loadingAction" class="w-32 bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed">
                     Confirm
                   </TertiaryB>
                 </div>
@@ -158,42 +118,33 @@
                 <label class="block text-xs text-white/55 mb-2">Permissions</label>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <TertiaryB
-                    v-if="!userData.admin"
-                    @click="addAdminToUser"
-                    :disabled="loadingAction"
-                    class="bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                  <TertiaryB v-if="!userData.admin" @click="addAdminToUser" :disabled="loadingAction" class="bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed">
                     Make Admin
                   </TertiaryB>
 
-                  <TertiaryB
-                    v-else
-                    @click="removeAdminFromUser"
-                    :disabled="loadingAction"
-                    class="bg-rose-500/15 border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/35 text-white
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                  <TertiaryB v-else @click="removeAdminFromUser" :disabled="loadingAction" class="bg-rose-500/15 border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/35 text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed">
                     Remove Admin
                   </TertiaryB>
 
-                  <TertiaryB
-                    @click="addResellerToUser"
-                    :disabled="loadingAction"
-                    class="bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                  <TertiaryB @click="addResellerToUser" :disabled="loadingAction" class="bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed">
                     Make Reseller
                   </TertiaryB>
 
-                  <TertiaryB
-                    @click="addPremiumToUser"
-                    :disabled="loadingAction"
-                    class="bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                  <TertiaryB @click="addPremiumToUser" :disabled="loadingAction" class="bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed">
                     Make Premium
+                  </TertiaryB>
+
+                  <TertiaryB v-if="!userData.vipAccess" @click="addVipToUser" :disabled="loadingAction" class="bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed">
+                    Make Vip
+                  </TertiaryB>
+                  <TertiaryB v-else @click="removeVipFromUser" :disabled="loadingAction" class="bg-rose-500/15 border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/35 text-white
+                           disabled:opacity-50 disabled:cursor-not-allowed">
+                    Remove Vip
                   </TertiaryB>
                 </div>
               </div>
@@ -201,12 +152,8 @@
               <!-- Password -->
               <div>
                 <label class="block text-xs text-white/55 mb-2">Password</label>
-                <TertiaryB
-                  @click="resetPassword"
-                  :disabled="loadingAction"
-                  class="w-full bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
-                         disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                <TertiaryB @click="resetPassword" :disabled="loadingAction" class="w-full bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/20 text-white
+                         disabled:opacity-50 disabled:cursor-not-allowed">
                   Send reset link
                 </TertiaryB>
               </div>
@@ -216,25 +163,16 @@
           <!-- Status message -->
           <transition name="fade-slide">
             <div v-if="userMessage" class="mt-4">
-              <div
-                class="flex justify-center items-center rounded-2xl px-4 py-3 border flex items-start gap-3"
-                :class="userSuccess
-                  ? 'bg-emerald-500/10 border-emerald-500/25'
-                  : 'bg-rose-500/10 border-rose-500/25'"
-              >
-                <Icon
-                  :name="userSuccess ? 'mdi:check-circle-outline' : 'mdi:alert-circle-outline'"
-                  size="22"
-                  :class="userSuccess ? 'text-emerald-300' : 'text-rose-300'"
-                />
+              <div class="flex justify-center items-center rounded-2xl px-4 py-3 border flex items-start gap-3" :class="userSuccess
+                ? 'bg-emerald-500/10 border-emerald-500/25'
+                : 'bg-rose-500/10 border-rose-500/25'">
+                <Icon :name="userSuccess ? 'mdi:check-circle-outline' : 'mdi:alert-circle-outline'" size="22"
+                  :class="userSuccess ? 'text-emerald-300' : 'text-rose-300'" />
                 <div class="text-sm text-white/85 break-words flex-1">
                   {{ userMessage }}
                 </div>
-                <button
-                  class="w-9 h-9 rounded-full hover:bg-white/10 transition flex items-center justify-center"
-                  @click="userMessage = ''"
-                  title="Close"
-                >
+                <button class="w-9 h-9 rounded-full hover:bg-white/10 transition flex items-center justify-center"
+                  @click="userMessage = ''" title="Close">
                   <Icon name="mdi:close" size="18" class="text-white/70" />
                 </button>
               </div>
@@ -247,17 +185,14 @@
               <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
               <transition name="modal-zoom">
-                <div
-                  v-if="showBoughtModal"
-                  class="relative w-full max-w-md rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
-                         p-7 shadow-[0_24px_90px_rgba(0,0,0,0.70)] overflow-hidden"
-                >
-                  <div class="pointer-events-none absolute -inset-1 opacity-60 bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.22),transparent_55%)]"></div>
+                <div v-if="showBoughtModal" class="relative w-full max-w-md rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
+                         p-7 shadow-[0_24px_90px_rgba(0,0,0,0.70)] overflow-hidden">
+                  <div
+                    class="pointer-events-none absolute -inset-1 opacity-60 bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.22),transparent_55%)]">
+                  </div>
 
-                  <button
-                    @click="showBoughtModal = false"
-                    class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl transition"
-                  >
+                  <button @click="showBoughtModal = false"
+                    class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl transition">
                     <Icon name="mdi:close" />
                   </button>
 
@@ -297,14 +232,13 @@
 
                       <div>
                         <div class="text-white text-sm font-bold">Transaction ID</div>
-                        <div class="text-[#7aa7ff] font-mono text-xs break-all">{{ boughtModalData.transactionId }}</div>
+                        <div class="text-[#7aa7ff] font-mono text-xs break-all">{{ boughtModalData.transactionId }}
+                        </div>
                       </div>
                     </div>
 
-                    <TertiaryB
-                      @click="showBoughtModal = false"
-                      class="w-full bg-rose-500/15 border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/35 text-white"
-                    >
+                    <TertiaryB @click="showBoughtModal = false"
+                      class="w-full bg-rose-500/15 border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/35 text-white">
                       Close
                     </TertiaryB>
                   </div>
@@ -471,6 +405,24 @@ async function addAdminToUser() {
   loadingAction.value = false
 }
 
+async function removeVipFromUser() {
+  if (!userDocRef.value) return
+  loadingAction.value = true
+  userMessage.value = ''
+  userSuccess.value = false
+
+  try {
+    await updateDoc(userDocRef.value, { vipAccess: false })
+    userData.value.vipAccess = false
+    userMessage.value = 'User removed from VIP!'
+    userSuccess.value = true
+  } catch (e) {
+    userMessage.value = 'Error removing VIP.'
+    userSuccess.value = false
+  }
+  loadingAction.value = false
+}
+
 async function removeAdminFromUser() {
   if (!userDocRef.value) return
   loadingAction.value = true
@@ -530,6 +482,24 @@ async function addPremiumToUser() {
   loadingAction.value = false
 }
 
+async function addVipToUser() {
+  if (!userDocRef.value) return
+  loadingAction.value = true
+  userMessage.value = ''
+  userSuccess.value = false
+
+  try {
+    await updateDoc(userDocRef.value, { vipAccess: true })
+    userData.value.vipAccess = true
+    userMessage.value = 'User is now VIP!'
+    userSuccess.value = true
+  } catch (e) {
+    userMessage.value = 'Error making VIP.'
+    userSuccess.value = false
+  }
+  loadingAction.value = false
+}
+
 async function resetPassword() {
   if (!userData.value?.email) return
   loadingAction.value = true
@@ -567,11 +537,13 @@ onMounted(async () => {
 .fade-slide-leave-active {
   transition: all 0.25s cubic-bezier(.4, 0, .2, 1);
 }
+
 .fade-slide-enter-from,
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(14px);
 }
+
 .fade-slide-enter-to,
 .fade-slide-leave-from {
   opacity: 1;
@@ -583,14 +555,17 @@ onMounted(async () => {
 .modal-fade-leave-active {
   transition: opacity 0.22s ease;
 }
+
 .modal-fade-enter-from,
 .modal-fade-leave-to {
   opacity: 0;
 }
+
 .modal-zoom-enter-active,
 .modal-zoom-leave-active {
   transition: all 0.26s cubic-bezier(.4, 2, .6, 1);
 }
+
 .modal-zoom-enter-from,
 .modal-zoom-leave-to {
   opacity: 0;

