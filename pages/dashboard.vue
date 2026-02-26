@@ -104,7 +104,7 @@
                   <p class="text-[16px] font-bold">Checker</p>
                 </NuxtLink>
 
-                <NuxtLink v-if="isVip" to="/dashboard/admin"
+                <NuxtLink v-if="isVip" to="/dashboard/vip"
                   active-class="text-white bg-white/10 font-bold border border-white/10"
                   class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
                   @click="showMobileMenu = false">
