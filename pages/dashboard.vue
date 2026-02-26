@@ -104,6 +104,14 @@
                   <p class="text-[16px] font-bold">Checker</p>
                 </NuxtLink>
 
+                <NuxtLink v-if="isVip" to="/dashboard/admin"
+                  active-class="text-white bg-white/10 font-bold border border-white/10"
+                  class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
+                  @click="showMobileMenu = false">
+                  <Icon name="streamline-plump:diamond-1-solid" class="mr-2 text-white/80" size="22px" />
+                  <p class="text-[16px] font-bold">Vip</p>
+                </NuxtLink>
+
                 <NuxtLink v-if="user?.reseller" to="/dashboard/reseller"
                   exact-active-class="text-white font-bold bg-white/10 border border-white/10"
                   class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
@@ -260,8 +268,7 @@
               <p class="text-[16px] font-bold">Checker</p>
             </NuxtLink>
 
-            <NuxtLink to="/dashboard/vip"
-              v-if="isVip"
+            <NuxtLink to="/dashboard/vip" v-if="isVip"
               exact-active-class="text-white font-bold bg-white/10 border border-white/10"
               class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent">
               <Icon name="streamline-plump:diamond-1-solid" class="mr-2 text-white/80" size="22px" />
