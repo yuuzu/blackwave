@@ -578,9 +578,6 @@ async function startCheck() {
     async function processCard(card) {
         if (!loading.value) return
         try {
-            // incrementa contador global de cards testados
-            try { await updateDoc(statsRef, { cards: increment(1) }) } catch (e) { console.warn('stats.cards increment failed', e) }
-
             // incrementa contador do usuário para cartões testados
             try { await updateDoc(userRef, { cardsBought: increment(1) }) } catch (e) { console.warn('user.cardsBought increment failed', e) }
 
@@ -649,9 +646,6 @@ async function startCheck() {
                 checksMonth += 1
                 livesUsed += 1
                 avgSpentWeek = Math.max(0, avgSpentWeek + 0.10)
-
-                // incrementa global de lives
-                try { await updateDoc(statsRef, { lives: increment(1) }) } catch (e) { console.warn('stats.lives increment failed', e) }
 
                 // atualiza dados do usuário (inclui vida aprovada)
                 try {
