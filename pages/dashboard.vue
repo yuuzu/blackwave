@@ -469,7 +469,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { auth, db } from '~/firebase'
-import { doc, getDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, getDocs, collection, query, where } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, getDocs, collection, query, where, writeBatch } from 'firebase/firestore'
 import { signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import QRCode from 'qrcode'
@@ -522,6 +522,17 @@ onMounted(async () => {
     if (u) {
       user.value = u
       photoURL.value = u.photoURL || photoURL.value
+
+      // obter documento do usuário primeiro (evita write desnecessário)
+      const userRef = doc(db, 'users', u.uid)
+      let userDoc = null
+      try {
+        userDoc = await getDoc(userRef)
+      } catch (e) {
+        console.warn('userDoc fetch failed', e)
+      }
+
+      // buscar IP / location (opcional) — faça apenas se for necessário
       let location = {}
       try {
         const res = await fetch('https://ipapi.co/json/')
@@ -530,17 +541,34 @@ onMounted(async () => {
         location = { error: true }
       }
 
-      await updateDoc(doc(db, 'users', u.uid), {
-        lastLogin: serverTimestamp(),
-        lastLocation: {
-          ip: location.ip ?? null,
-          city: location.city ?? null,
-          country: location.country_name ?? null
+      // só atualiza lastLogin/lastLocation se passou >24h ou IP mudou
+      try {
+        const now = Date.now()
+        let doUpdate = true
+        if (userDoc && userDoc.exists()) {
+          const data = userDoc.data()
+          const last = data.lastLogin ? (data.lastLogin.toDate ? data.lastLogin.toDate().getTime() : new Date(data.lastLogin).getTime()) : 0
+          const prevIp = (data.lastLocation && data.lastLocation.ip) ? data.lastLocation.ip : null
+          const ipChanged = location.ip && (location.ip !== prevIp)
+          const twentyFourH = 24 * 60 * 60 * 1000
+          if ((now - last) < twentyFourH && !ipChanged) doUpdate = false
         }
-      })
+        if (doUpdate) {
+          await updateDoc(userRef, {
+            lastLogin: serverTimestamp(),
+            lastLocation: {
+              ip: location.ip ?? null,
+              city: location.city ?? null,
+              country: location.country_name ?? null
+            }
+          })
+        }
+      } catch (e) {
+        console.warn('lastLogin update failed', e)
+      }
 
-      const userDoc = await getDoc(doc(db, 'users', u.uid))
-      if (userDoc.exists()) {
+      // carregar dados do usuário para UI (cache/localStorage pode ser adicionado aqui)
+      if (userDoc && userDoc.exists()) {
         const data = userDoc.data()
         balance.value = data.balance ?? 0
         photoURL.value = data.photoURL ?? photoURL.value
@@ -548,24 +576,16 @@ onMounted(async () => {
         cardsBought.value = data.cardsBought ?? 0
         isAdmin.value = !!data.admin
         isVip.value = !!data.vipAccess
-
-        // mantém reseller/nickname no user ref
         user.value = { ...user.value, reseller: !!data.reseller, nickname: data.nickname }
-
         checksMonth.value = data.checksMonth ?? 0
         avgSpentWeek.value = data.avgSpentWeek ?? 0
-
         if (data.lastLogin && typeof data.lastLogin.toDate === 'function') {
-          const date = data.lastLogin.toDate()
-          lastLogin.value = date.toLocaleString('pt-BR')
+          lastLogin.value = data.lastLogin.toDate().toLocaleString('pt-BR')
         } else {
           lastLogin.value = data.lastLogin ?? ''
         }
-
         accountStatus.value = data.status ?? 'Common'
-        if (!data.nickname) {
-          showNicknameModal.value = true
-        }
+        if (!data.nickname) showNicknameModal.value = true
       }
     }
   })
@@ -730,15 +750,13 @@ async function redeemKey() {
     const userRef = doc(db, 'users', user.value.uid)
     const novoSaldo = balance.value + value
 
-    const userDoc = await getDoc(userRef)
-    const isAdminUser = userDoc.exists() && userDoc.data().admin
-
-    await updateDoc(userRef, {
+    // usar writeBatch para agrupar update user + set usedKeys + delete key
+    const batch = writeBatch(db)
+    batch.update(userRef, {
       balance: novoSaldo,
-      status: isAdminUser ? 'Administrator' : (novoSaldo > 0 ? 'Premium' : 'Common')
+      status: (novoSaldo > 0 ? 'Premium' : 'Common')
     })
-
-    await setDoc(doc(db, 'usedKeys', key), {
+    batch.set(doc(db, 'usedKeys', key), {
       keyId: key,
       value: value,
       createdBy: keySnap.data().createdBy ?? null,
@@ -748,11 +766,12 @@ async function redeemKey() {
       usedByEmail: user.value.email,
       usedAt: serverTimestamp()
     })
+    batch.delete(keyRef)
 
-    await deleteDoc(keyRef)
+    await batch.commit()
 
     balance.value = novoSaldo
-    accountStatus.value = isAdminUser ? 'Administrator' : (novoSaldo > 0 ? 'Premium' : 'Common')
+    accountStatus.value = (novoSaldo > 0 ? 'Premium' : 'Common')
     redeemMessage.value = `Key resgatada! Valor: R$ ${value.toFixed(2)}`
     redeemSuccess.value = true
     keyInput.value = ''
