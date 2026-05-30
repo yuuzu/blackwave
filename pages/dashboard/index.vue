@@ -1,726 +1,535 @@
 <template>
-  <div class="relative w-full bg-[#05060a] text-white">
-    <!-- Background layers -->
-    <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <!-- base radials -->
-      <div
-        class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(120,180,255,0.16),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(140,90,255,0.12),transparent_55%)]"
-      ></div>
+  <div class="relative min-h-screen w-full overflow-x-hidden bg-black text-white font-sans md:ml-[260px] pt-20 md:pt-4">
 
-      <!-- soft blobs -->
-      <div
-        class="absolute -top-48 left-1/2 h-[620px] w-[620px] -translate-x-1/2 rounded-full bg-[#5aa2ff]/18 blur-[110px]"
-      ></div>
-      <div
-        class="absolute top-52 -left-56 h-[560px] w-[560px] rounded-full bg-[#8b5dff]/14 blur-[130px]"
-      ></div>
-      <div
-        class="absolute -bottom-72 right-0 h-[720px] w-[720px] rounded-full bg-[#3dd6ff]/10 blur-[140px]"
-      ></div>
-
-      <!-- subtle grid -->
-      <div
-        class="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(to_right,rgba(255,255,255,0.16)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.16)_1px,transparent_1px)] [background-size:84px_84px]"
-      ></div>
-
-      <!-- vignette -->
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_35%,rgba(0,0,0,0.82)_85%)]"></div>
+    <!-- ═══ BACKGROUND ════════════════════════════════════════ -->
+    <div class="pointer-events-none fixed inset-0 z-0">
+      <div class="absolute inset-0"
+        style="background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 90% 80% at 50% 20%,black 40%,transparent 100%)"/>
+      <div class="absolute inset-0 opacity-50"
+        style="background-image:repeating-linear-gradient(-45deg,transparent,transparent 40px,rgba(255,255,255,0.01) 40px,rgba(255,255,255,0.01) 41px)"/>
+      <div class="absolute rounded-full" style="width:800px;height:800px;top:-300px;left:10%;filter:blur(180px);background:radial-gradient(circle,rgba(59,130,246,0.065) 0%,transparent 70%)"/>
+      <div class="absolute rounded-full" style="width:600px;height:600px;bottom:-100px;right:-80px;filter:blur(180px);background:radial-gradient(circle,rgba(139,92,246,0.05) 0%,transparent 70%)"/>
+      <div class="absolute rounded-full" style="width:400px;height:400px;top:35%;left:-80px;filter:blur(140px);background:radial-gradient(circle,rgba(255,255,255,0.02) 0%,transparent 70%)"/>
     </div>
 
-    <!-- Page container -->
-    <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10 pt-4 pb-16">
-      <!-- Header / Title -->
-      <div class="flex flex-col gap-2 mb-8">
-        <div class="inline-flex items-center gap-2 w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70 backdrop-blur-xl">
-          <span class="h-1.5 w-1.5 rounded-full bg-[#7aa7ff] shadow-[0_0_18px_rgba(122,167,255,0.9)]"></span>
-          Dashboard • Account overview
+    <div class="mx-auto w-full max-w-6xl px-5 sm:px-7 lg:px-10 pt-4 pb-20 relative z-10">
+
+      <!-- ═══ PAGE HEADER ═══════════════════════════════════════ -->
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="section-label">Overview</span>
+        </div>
+        <div class="flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <h1 class="font-display text-[2rem] sm:text-[2.5rem] font-extrabold tracking-[-0.04em] leading-tight text-white">
+              Welcome back<span class="text-blue-400">,</span>
+            </h1>
+            <p class="text-[13px] text-white/30 mt-1">Here's what's happening with your account today.</p>
+          </div>
+          <!-- Live badge -->
+          <div class="flex items-center gap-2 px-4 py-2 rounded-full border text-[11px] font-bold uppercase tracking-widest self-start mt-1"
+            style="background:rgba(34,197,94,0.07);border-color:rgba(34,197,94,0.18);color:#4ade80">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"/>
+            Account active
+          </div>
         </div>
       </div>
 
-      <!-- Top stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-        <!-- Balance -->
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition"
-        >
-          <div class="flex items-center gap-2 mb-2">
-            <Icon name="mdi:wallet" class="text-white/80" size="26" />
-            <span class="font-semibold text-lg text-white">Balance</span>
-          </div>
+      <!-- ═══ STAT CARDS ROW ════════════════════════════════════ -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden mb-6"
+        style="background:rgba(255,255,255,0.07)">
 
-          <div class="text-3xl font-bold text-white">
-            R$ {{ balance?.toFixed(2) ?? '0.00' }}
+        <!-- Balance -->
+        <div class="stat-card group">
+          <div class="stat-card-icon" style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.2)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
           </div>
-          <div class="text-sm text-white/55 mt-2">Your current balance</div>
+          <div class="font-display text-[1.9rem] font-extrabold tracking-[-0.04em] leading-none text-white mt-3 mb-1">
+            R$<span class="text-blue-400 truncate">{{ balance?.toFixed(2) ?? '0.00' }}</span>
+          </div>
+          <div class="text-[10px] font-semibold uppercase tracking-widest text-white/25">Current Balance</div>
+          <!-- bottom glow line -->
+          <div class="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            style="background:linear-gradient(to right,transparent,rgba(59,130,246,0.5),transparent)"/>
         </div>
 
         <!-- Lives taken -->
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition"
-        >
-          <div class="flex items-center gap-2 mb-2">
-            <Icon name="mdi:heart-pulse" class="text-white/80" size="26" />
-            <span class="font-semibold text-lg text-white">Lives taken</span>
+        <div class="stat-card group">
+          <div class="stat-card-icon" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+            </svg>
           </div>
-
-          <div class="text-3xl font-bold text-white">{{ livesUsed }}</div>
-          <div class="text-sm text-white/55 mt-2">Total lives taken</div>
+          <div class="font-display text-[1.9rem] font-extrabold tracking-[-0.04em] leading-none text-white mt-3 mb-1 truncate">
+            {{ livesUsed }}<span class="text-red-400 text-[1rem] ml-0.5">lives</span>
+          </div>
+          <div class="text-[10px] font-semibold uppercase tracking-widest text-white/25">Total Lives Taken</div>
+          <div class="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            style="background:linear-gradient(to right,transparent,rgba(239,68,68,0.4),transparent)"/>
         </div>
 
         <!-- Role -->
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition"
-        >
-          <div class="flex items-center gap-2 mb-2">
-            <Icon name="fluent:person-star-20-filled" class="text-white/80" size="26" />
-            <span class="font-semibold text-lg text-white">Role</span>
+        <div class="stat-card group">
+          <div class="stat-card-icon"
+            :style="roleIconStyle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" :stroke="roleIconColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
           </div>
-
-          <div class="text-3xl font-bold text-white">{{ accountStatus }}</div>
-          <div class="text-sm text-white/55 mt-2">Your user role</div>
+          <div class="font-display text-[1.9rem] font-extrabold tracking-[-0.04em] leading-none mt-3 mb-1 truncate"
+            :style="{ color: roleColor }">
+            {{ accountStatus }}
+          </div>
+          <div class="text-[10px] font-semibold uppercase tracking-widest text-white/25">Account Role</div>
+          <div class="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            :style="`background:linear-gradient(to right,transparent,${roleColor}66,transparent)`"/>
         </div>
 
-        <!-- Email -->
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition"
-        >
-          <div class="flex items-center gap-2 mb-2">
-            <Icon name="mdi:email" class="text-white/80" size="26" />
-            <span class="font-semibold text-lg text-white">Email</span>
+        <!-- Total expenses -->
+        <div class="stat-card group">
+          <div class="stat-card-icon" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+          </div>
+          <div class="font-display text-[1.9rem] font-extrabold tracking-[-0.04em] leading-none text-white mt-3 mb-1">
+            R$<span class="text-amber-400">{{ avgSpentWeek?.toFixed(2) ?? '0.00' }}</span>
+          </div>
+          <div class="text-[10px] font-semibold uppercase tracking-widest text-white/25">Total Expenses</div>
+          <div class="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate"
+            style="background:linear-gradient(to right,transparent,rgba(251,191,36,0.4),transparent)"/>
+        </div>
+      </div>
+
+      <!-- ═══ MIDDLE ROW ════════════════════════════════════════ -->
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
+
+        <!-- Account Status — wide card -->
+        <div class="lg:col-span-3 rounded-2xl border overflow-hidden relative group"
+          style="background:#030305;border-color:rgba(255,255,255,0.07)">
+          <!-- corner brackets -->
+          <span class="absolute top-3 left-3 w-3 h-3 border-l border-t opacity-30 transition-opacity group-hover:opacity-70" :style="`border-color:${roleColor}`"/>
+          <span class="absolute top-3 right-3 w-3 h-3 border-r border-t opacity-30 transition-opacity group-hover:opacity-70" :style="`border-color:${roleColor}`"/>
+          <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b opacity-30 transition-opacity group-hover:opacity-70" :style="`border-color:${roleColor}`"/>
+          <span class="absolute bottom-3 right-3 w-3 h-3 border-r border-b opacity-30 transition-opacity group-hover:opacity-70" :style="`border-color:${roleColor}`"/>
+
+          <!-- glow -->
+          <div class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            :style="`background:radial-gradient(ellipse at 50% 0%,${roleColor}0d 0%,transparent 60%)`"/>
+
+          <!-- header -->
+          <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color:rgba(255,255,255,0.06)">
+            <div class="flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-white/30">Account Status</span>
+            </div>
+            <span class="text-[10px] font-semibold text-white/20">{{ lastLogin || '—' }}</span>
           </div>
 
+          <!-- body -->
+          <div class="px-6 py-6 flex flex-col gap-6">
+            <!-- profile row -->
+            <div class="flex items-center gap-5">
+              <div class="relative shrink-0">
+                <div class="w-16 h-16 rounded-2xl overflow-hidden border-2"
+                  :style="`border-color:${roleColor}55`">
+                  <img :src="photoURL" class="w-full h-full object-cover" alt="Avatar"/>
+                </div>
+                <!-- online dot -->
+                <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-black bg-emerald-500"/>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-display text-[1.3rem] font-extrabold tracking-tight text-white leading-tight truncate">
+                  {{ nickname || user?.email?.split('@')[0] || 'User' }}
+                </div>
+                <div class="flex items-center gap-2 mt-1.5">
+                  <button @click="copyEmail"
+                    class="flex items-center gap-1.5 text-[11px] text-white/30 hover:text-white/60 transition group/email">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+                    <span class="font-mono text-[11px] truncate max-w-[200px]">{{ user?.email || '...' }}</span>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-0 group-hover/email:opacity-100 transition"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  </button>
+                  <transition name="fade-pop">
+                    <span v-if="copied" class="text-[10px] text-emerald-400 font-bold">Copied!</span>
+                  </transition>
+                </div>
+              </div>
+            </div>
+
+            <!-- status pill + perks -->
+            <div class="flex flex-wrap gap-3 items-center">
+              <!-- big role badge -->
+              <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border"
+                :style="`background:${roleColor}12;border-color:${roleColor}35`">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" :stroke="roleColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span class="font-display font-extrabold text-[14px] tracking-tight" :style="`color:${roleColor}`">
+                  {{ accountStatus }}
+                </span>
+              </div>
+
+              <!-- perks chips -->
+              <template v-for="perk in rolePerksList" :key="perk">
+                <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold"
+                  style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:rgba(255,255,255,0.45)">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  {{ perk }}
+                </span>
+              </template>
+            </div>
+
+            <!-- progress bar (balance usage) -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] uppercase tracking-widest font-bold text-white/25">Balance usage</span>
+                <span class="text-[11px] font-mono font-bold text-white/40">{{ balanceUsagePercent }}%</span>
+              </div>
+              <div class="h-1.5 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.06)">
+                <div class="h-full rounded-full transition-all duration-700"
+                  :style="`width:${balanceUsagePercent}%;background:linear-gradient(to right,${roleColor}88,${roleColor})`"/>
+              </div>
+              <div class="flex items-center justify-between mt-1.5">
+                <span class="text-[10px] text-white/20 font-mono">R$ {{ avgSpentWeek?.toFixed(2) }} spent</span>
+                <span class="text-[10px] text-white/20 font-mono">R$ {{ balance?.toFixed(2) }} left</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick stats sidebar -->
+        <div class="lg:col-span-2 flex flex-col gap-4">
+
+          <!-- Last login -->
+          <div class="flex-1 rounded-2xl border px-5 py-5 flex flex-col justify-between"
+            style="background:#030305;border-color:rgba(255,255,255,0.07)">
+            <div class="flex items-center gap-2 mb-3">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-white/25">Last Login</span>
+            </div>
+            <div class="font-mono text-[13px] text-white/60 leading-relaxed">{{ lastLogin || 'First session' }}</div>
+            <div class="mt-3 flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"/>
+              <span class="text-[10px] text-emerald-400/70 font-semibold">Active session</span>
+            </div>
+          </div>
+
+          <!-- Checker stats -->
+          <div class="flex-1 rounded-2xl border px-5 py-5"
+            style="background:#030305;border-color:rgba(255,255,255,0.07)">
+            <div class="flex items-center gap-2 mb-4">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+              </svg>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-white/25">Checker</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
+                <div class="font-display text-[1.4rem] font-extrabold tracking-tight leading-none" style="color:#4ade80">{{ livesUsed }}</div>
+                <div class="text-[9px] uppercase tracking-widest font-bold text-white/20 mt-1">Lives taken</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ VERIFIED RESELLERS ════════════════════════════════ -->
+      <div class="rounded-2xl border overflow-hidden" style="background:#030305;border-color:rgba(255,255,255,0.07)">
+        <!-- header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color:rgba(255,255,255,0.06)">
           <div class="flex items-center gap-2">
-            <div class="text-base font-semibold text-white truncate">{{ user?.email || '...' }}</div>
-            <button
-              @click="copyEmail"
-              class="ml-1 inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs font-bold text-white/80
-                     hover:bg-white/10 hover:border-white/20 transition"
-              :title="'Copiar email'"
-            >
-              <Icon name="mdi:content-copy" size="15px" />
-            </button>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.63 19.79 19.79 0 01.04 4.18 2 2 0 012 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-white/30">Verified Resellers</span>
           </div>
-
-          <div class="text-sm text-white/55 mt-2">Your registered email</div>
-          <div v-if="copied" class="text-emerald-400 text-xs mt-1">Copied!</div>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
+            style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);color:#60a5fa">
+            {{ resellers.length }} verified
+          </span>
         </div>
-      </div>
 
-      <!-- Middle widgets -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-        <!-- Usage summary -->
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition"
-        >
-          <div class="font-semibold text-lg mb-4 flex items-center gap-2">
-            <Icon name="mdi:chart-bar" class="text-[#7aa7ff]" size="22" />
-            Usage summary
-            <Beta class="-mb-1"></Beta>
-          </div>
-
-          <div class="flex flex-wrap gap-10">
-            <div>
-              <div class="text-2xl font-bold text-white">R$ {{ avgSpentWeek?.toFixed(2) }}</div>
-              <div class="text-xs text-white/55">Total expenses</div>
+        <!-- reseller grid -->
+        <div class="p-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <a v-for="r in resellers" :key="r.name"
+            :href="r.url" target="_blank" rel="noopener"
+            class="reseller-card group">
+            <!-- avatar initials -->
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-display font-extrabold text-[15px] mb-3 transition-transform group-hover:scale-105"
+              :style="`background:${r.color}18;border:1px solid ${r.color}30;color:${r.color}`">
+              {{ r.name.charAt(0).toUpperCase() }}
             </div>
-            <div>
-              <div class="text-2xl font-bold text-white">{{ lastLogin || '---' }}</div>
-              <div class="text-xs text-white/55">Last login</div>
+            <div class="text-[13px] font-bold text-white leading-tight">{{ r.name }}</div>
+            <div class="flex items-center gap-1 mt-1.5">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span class="text-[10px] text-blue-400/70 font-semibold">Verified</span>
             </div>
-          </div>
+            <!-- telegram handle -->
+            <div class="flex items-center gap-1.5 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
+              </svg>
+              <span class="text-[10px] font-mono text-white/30">{{ r.handle }}</span>
+            </div>
+            <!-- hover glow -->
+            <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              :style="`box-shadow:inset 0 0 0 1px ${r.color}25`"/>
+          </a>
         </div>
 
-        <!-- News -->
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition"
-        >
-          <div class="font-semibold text-lg mb-4 flex items-center gap-2">
-            <Icon name="mdi:bullhorn" class="text-[#7aa7ff]" size="22" />
-            News & Announcements
-          </div>
-
-          <ul class="text-sm text-white/80 space-y-2">
-            <li v-for="(notice, i) in notices" :key="i" class="flex gap-2">
-              <span class="text-[#7aa7ff] font-bold">•</span>
-              <span>{{ notice }}</span>
-            </li>
-            <li v-if="notices.length === 0" class="text-white/45">No news at the moment.</li>
-          </ul>
+        <!-- footer note -->
+        <div class="px-6 py-3 border-t flex items-center gap-2" style="border-color:rgba(255,255,255,0.05)">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span class="text-[10px] text-white/20">Only purchase from verified resellers. Contact <span class="text-blue-400/60">@yuzuuk1</span> to become one.</span>
         </div>
       </div>
 
-      <!-- Account status + Verified Resellers -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-        <!-- Account status -->
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition"
-        >
-          <div class="font-semibold text-lg mb-4 flex items-center gap-2">
-            <Icon name="mdi:account-check" class="text-[#7aa7ff]" size="22" />
-            Account status
-            <Beta class="-mb-1"></Beta>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <span
-              class="flex items-center gap-2 px-3 py-2 rounded-full font-bold border transition-all duration-200"
-              :class="{
-                'bg-gradient-to-r from-[#a78bfa]/80 to-[#7c3aed]/80 text-white border-[#a78bfa]/60 shadow-lg shadow-[#a78bfa]/15':
-                  accountStatus === 'Administrator',
-                'bg-gradient-to-r from-[#ffb347]/80 to-[#ff7746]/80 text-white border-[#ff7746]/60 shadow-lg shadow-[#ff7746]/15':
-                  accountStatus === 'Reseller',
-                'bg-gradient-to-r from-[#1e3a8a]/75 to-[#38bdf8]/75 text-white border-[#38bdf8]/60 shadow-lg shadow-[#38bdf8]/15':
-                  accountStatus === 'Premium',
-                'bg-gradient-to-r from-[#222]/80 to-[#2d2d2d]/80 text-white border-white/10':
-                  accountStatus === 'Common',
-                'bg-gradient-to-r from-[#7f1d1d]/75 to-[#ef4444]/75 text-white border-[#ef4444]/60 shadow-lg shadow-[#ef4444]/15':
-                  accountStatus === 'Blocked'
-              }"
-            >
-              <Icon
-                :name="{
-                  Administrator: 'fluent:person-shield-24-filled',
-                  Reseller: 'fluent:person-note-24-filled',
-                  Premium: 'fluent:person-star-24-filled',
-                  Common: 'fluent:person-20-filled',
-                  Blocked: 'fluent:person-cancel-24-filled'
-                }[accountStatus] || 'fluent:person-20-filled'"
-                size="18"
-                class="opacity-90"
-              />
-              {{ accountStatus }}
-
-              <!-- rank badge -->
-              <span
-                v-if="userRank && userRank <= 10"
-                class="ml-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold border"
-                :class="{
-                  'bg-gradient-to-r from-[#ffe066]/80 to-[#ffd700]/80 text-[#5a5200] border-[#ffd700]/70 shadow-[0_0_25px_rgba(255,215,0,0.15)]': userRank === 1,
-                  'bg-gradient-to-r from-[#e0e0e0]/80 to-[#b0b0b0]/80 text-[#444] border-[#b0b0b0]/70 shadow-[0_0_25px_rgba(200,200,200,0.10)]': userRank === 2,
-                  'bg-gradient-to-r from-[#ffb47e]/80 to-[#c97a3a]/80 text-[#5c2b00] border-[#c97a3a]/70 shadow-[0_0_25px_rgba(201,122,58,0.12)]': userRank === 3,
-                  'bg-gradient-to-r from-[#38bdf8]/35 to-[#1e3a8a]/35 text-white border-[#38bdf8]/35': userRank > 3 && userRank <= 10
-                }"
-              >
-                <span v-if="userRank === 1">🥇 Top 1</span>
-                <span v-else-if="userRank === 2">🥈 Top 2</span>
-                <span v-else-if="userRank === 3">🥉 Top 3</span>
-                <span v-else>Top {{ userRank }}</span>
-              </span>
-            </span>
-          </div>
-        </div>
-
-        <!-- Verified Resellers -->
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition"
-        >
-          <div class="font-semibold text-lg mb-4 flex items-center gap-2">
-            <Icon name="mdi:account-cash" class="text-[#7aa7ff]" size="22" />
-            Verified Resellers
-          </div>
-
-          <ul class="text-sm text-white/85 flex flex-wrap gap-3">
-            <li>
-              <a href="https://t.me/yuzuuk1" target="_blank" rel="noopener" class="group inline-flex">
-                <div
-                  class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2
-                         hover:bg-white/10 hover:border-white/20 transition"
-                >
-                  <Icon class="text-white/70" name="lucide:link" size="18px"></Icon>
-                  <p class="font-satoshi text-white font-semibold">Yuzuk</p>
-                  <Icon class="text-white/60 group-hover:text-white/80 transition" name="weui:arrow-outlined" size="18px"></Icon>
-                </div>
-              </a>
-            </li>
-
-            <li>
-              <a href="https://t.me/figthcobrita" target="_blank" rel="noopener" class="group inline-flex">
-                <div
-                  class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2
-                         hover:bg-white/10 hover:border-white/20 transition"
-                >
-                  <Icon class="text-white/70" name="lucide:link" size="18px"></Icon>
-                  <p class="font-satoshi text-white font-semibold">Zenitsu</p>
-                  <Icon class="text-white/60 group-hover:text-white/80 transition" name="weui:arrow-outlined" size="18px"></Icon>
-                </div>
-              </a>
-            </li>
-
-            <li>
-              <a href="https://t.me/chipeogod" target="_blank" rel="noopener" class="group inline-flex">
-                <div
-                  class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2
-                         hover:bg-white/10 hover:border-white/20 transition"
-                >
-                  <Icon class="text-white/70" name="lucide:link" size="18px"></Icon>
-                  <p class="font-satoshi text-white font-semibold">Chipero</p>
-                  <Icon class="text-white/60 group-hover:text-white/80 transition" name="weui:arrow-outlined" size="18px"></Icon>
-                </div>
-              </a>
-            </li>
-
-            <li>
-              <a href="https://t.me/Mbuu25" target="_blank" rel="noopener" class="group inline-flex">
-                <div
-                  class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2
-                         hover:bg-white/10 hover:border-white/20 transition"
-                >
-                  <Icon class="text-white/70" name="lucide:link" size="18px"></Icon>
-                  <p class="font-satoshi text-white font-semibold">Malibu</p>
-                  <Icon class="text-white/60 group-hover:text-white/80 transition" name="weui:arrow-outlined" size="18px"></Icon>
-                </div>
-              </a>
-            </li>
-
-            <li>
-              <a href="https://t.me/TioBolkano" target="_blank" rel="noopener" class="group inline-flex">
-                <div
-                  class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2
-                         hover:bg-white/10 hover:border-white/20 transition"
-                >
-                  <Icon class="text-white/70" name="lucide:link" size="18px"></Icon>
-                  <p class="font-satoshi text-white font-semibold">Bolka</p>
-                  <Icon class="text-white/60 group-hover:text-white/80 transition" name="weui:arrow-outlined" size="18px"></Icon>
-                </div>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Leaderboard -->
-      <div class="w-full">
-        <div
-          class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6
-                 shadow-[0_16px_60px_rgba(0,0,0,0.55)]
-                 hover:border-white/20 hover:bg-white/[0.07] transition
-                 max-h-36 overflow-y-auto"
-        >
-          <div class="font-semibold font-satoshi text-lg mb-4 flex items-center gap-2">
-            <Icon name="icon-park-solid:trophy" class="text-[#7aa7ff]" size="22" />
-            Leaderboard
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="min-w-full text-white text-sm">
-              <thead>
-                <tr class="text-white/55">
-                  <th class="text-left py-2 pr-4">#</th>
-                  <th class="text-left py-2 pr-4">Users</th>
-                  <th class="text-left py-2">Lives</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr
-                  v-for="(item, i) in leaderboard"
-                  :key="item.uid"
-                  class="border-t border-white/10"
-                  :class="{ 'bg-white/[0.04]': i < 3 }"
-                >
-                  <td class="py-2 pr-4 font-bold">
-                    <span class="pl-1" v-if="i === 0">🥇</span>
-                    <span class="pl-1" v-else-if="i === 1">🥈</span>
-                    <span class="pl-1" v-else-if="i === 2">🥉</span>
-                    <span class="pl-2 font-mono text-white/80" v-else>{{ i + 1 }}</span>
-                  </td>
-                  <td class="py-2 pr-4 text-white/90">{{ item.name }}</td>
-                  <td class="py-2 text-white/90">{{ item.livesUsed }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div v-if="userRank && userRank > 10" class="mt-3 text-xs text-white/55">
-            Your position: {{ userRank }}º
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Nickname Modal -->
+    <!-- ═══ NICKNAME MODAL ════════════════════════════════════ -->
     <transition name="modal-fade">
-      <div v-if="showNicknameModal" class="fixed inset-0 z-50 flex items-center justify-center font-satoshi px-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-
+      <div v-if="showNicknameModal" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"/>
         <transition name="modal-zoom">
-          <div
-            class="relative w-full max-w-sm rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
-                   p-7 shadow-[0_24px_90px_rgba(0,0,0,0.70)] overflow-hidden"
-          >
-            <!-- glow -->
-            <div class="pointer-events-none absolute -inset-1 opacity-60 bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.28),transparent_55%)]"></div>
+          <div class="relative w-full max-w-sm rounded-3xl border p-8 flex flex-col gap-5 overflow-hidden"
+            style="background:#020208;border-color:rgba(255,255,255,0.1);box-shadow:0 24px 80px rgba(0,0,0,0.7)">
+            <div class="pointer-events-none absolute inset-0"
+              style="background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,0.07) 0%,transparent 55%)"/>
+            <span class="absolute top-3 left-3 w-3 h-3 border-l border-t border-blue-500/40"/>
+            <span class="absolute top-3 right-3 w-3 h-3 border-r border-t border-blue-500/40"/>
+            <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b border-blue-500/40"/>
+            <span class="absolute bottom-3 right-3 w-3 h-3 border-r border-b border-blue-500/40"/>
 
-            <div class="relative flex flex-col gap-4">
-              <div class="flex flex-col items-center gap-2">
-                <Icon name="mdi:account-circle" size="52" class="text-[#7aa7ff]" />
-                <h2 class="text-xl font-black text-white text-center">Choose your nickname</h2>
-                <p class="text-white/60 text-sm text-center">
-                  You need to set a nickname to continue using the checker.
-                </p>
+            <div class="relative flex flex-col items-center gap-2 text-center">
+              <div class="w-12 h-12 flex items-center justify-center rounded-2xl border mb-1"
+                style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.25)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
               </div>
-
-              <div v-if="nicknameError" class="text-red-400 text-xs text-center">
-                {{ nicknameError }}
-              </div>
-
-              <input
-                v-model="nicknameInput"
-                type="text"
-                maxlength="20"
-                placeholder="Enter your nickname"
-                class="bg-black/30 rounded-2xl px-4 py-3 w-full text-white text-[15px] outline-none
-                       border border-white/10 focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/30 transition"
-              />
-
-              <button
-                @click="saveNickname"
-                class="rounded-2xl border border-white/10 bg-white/10 hover:bg-white/15 hover:border-white/20
-                       py-3 font-semibold text-white transition"
-              >
-                Save
-              </button>
+              <h2 class="font-display text-[1.3rem] font-extrabold tracking-tight text-white">Choose your nickname</h2>
+              <p class="text-[12px] text-white/35 leading-relaxed">Set a nickname to personalise your account. You can change it later.</p>
             </div>
+
+            <div v-if="nicknameError" class="text-[11px] text-red-400 text-center font-semibold">{{ nicknameError }}</div>
+
+            <input v-model="nicknameInput" type="text" maxlength="20" placeholder="e.g. darkwave99"
+              class="w-full px-4 py-3 rounded-xl border bg-transparent text-white text-[13px] outline-none transition placeholder:text-white/20 focus:border-blue-500/50"
+              style="border-color:rgba(255,255,255,0.08)"
+              @keyup.enter="saveNickname"/>
+
+            <button @click="saveNickname"
+              class="relative flex items-center justify-center gap-2 py-3 rounded-xl text-[13px] font-bold text-white transition-all hover:-translate-y-px"
+              style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Save nickname
+            </button>
           </div>
         </transition>
       </div>
     </transition>
+
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { auth, db } from '~/firebase'
 import {
-  doc,
-  getDoc,
-  getDocs,
-  collection,
-  updateDoc,
-  deleteDoc,
-  setDoc,
-  serverTimestamp,
-  query,
-  orderBy,
-  limit,
-  where
+  doc, getDoc, getDocs, collection,
+  updateDoc, serverTimestamp, query, where
 } from 'firebase/firestore'
 
-const accountOpen = ref(true)
-function toggleAccount() {
-  accountOpen.value = !accountOpen.value
-}
+/* ── user data ──────────────────────────────────────────── */
+const user          = ref(null)
+const balance       = ref(0)
+const livesUsed     = ref(0)
+const checksMonth   = ref(0)
+const avgSpentWeek  = ref(0)
+const lastLogin     = ref('')
+const accountStatus = ref('Common')
+const nickname      = ref('')
+const photoURL      = ref('https://i.imgur.com/qqG1ZOD.jpeg')
+const copied        = ref(false)
 
-// Dados do usuário
-const user = ref(null)
-const balance = ref(0)
-const livesUsed = ref(0)
-const cardsBought = ref(0)
-const photoURL = ref(
-  'https://media.discordapp.net/attachments/1309251468045320223/1379190818589376623/photo_4947363663258430903_c.jpg?ex=683f570b&is=683e058b&hm=e2fea9d2b064ad1a476fd85ca82ae498f9591f94c16081654ebefeb0803b7fb9&=&format=webp'
-) // Placeholder
-const isAdmin = ref(false)
-const copied = ref(false)
-const accountStatus = ref('Common') // Pode ser 'Premium', 'Common', 'Blocked'
-
-const checksMonth = ref(0)
-const avgSpentWeek = ref(0)
-const lastLogin = ref('')
-
-const notices = ref(['Detailed analysis in the menu'])
-
-const leaderboard = ref([])
-const userRank = ref(null)
-
-// Nickname
-const nickname = ref('')
+/* ── nickname modal ─────────────────────────────────────── */
 const showNicknameModal = ref(false)
-const nicknameInput = ref('')
-const nicknameError = ref('')
+const nicknameInput     = ref('')
+const nicknameError     = ref('')
 
-async function isNicknameTaken(nick) {
-  const nickLower = nick.trim().toLowerCase()
-  const q = query(collection(db, 'users'), where('nicknameLower', '==', nickLower))
-  const snap = await getDocs(q)
-  return snap.docs.some(docSnap => docSnap.id !== user.value?.uid)
+/* ── role theming ───────────────────────────────────────── */
+const roleMap = {
+  Administrator: { color: '#a78bfa', icon: 'shield',  },
+  Reseller:      { color: '#fb923c', icon: 'briefcase',  },
+  Premium:       { color: '#38bdf8', icon: 'star',  },
+  Common:        { color: '#94a3b8', icon: 'user',  },
+  Blocked:       { color: '#ef4444', icon: 'x-circle',  },
 }
 
-onMounted(async () => {
+const roleColor     = computed(() => roleMap[accountStatus.value]?.color ?? '#94a3b8')
+const rolePerksList = computed(() => roleMap[accountStatus.value]?.perks ?? [])
+const roleIconColor = computed(() => roleColor.value)
+const roleIconStyle = computed(() => `background:${roleColor.value}12;border-color:${roleColor.value}30;border-width:1px;border-style:solid`)
+
+/* ── balance usage (visual) ─────────────────────────────── */
+const balanceUsagePercent = computed(() => {
+  const spent = avgSpentWeek.value ?? 0
+  const left  = balance.value ?? 0
+  const total = spent + left
+  if (!total) return 0
+  return Math.min(100, Math.round((spent / total) * 100))
+})
+
+/* ── resellers ──────────────────────────────────────────── */
+const resellers = [
+  { name: 'Yuzuk',   handle: '@yuzuuk1',       url: 'https://t.me/yuzuuk1',       color: '#60a5fa' },
+  { name: 'Zenitsu', handle: '@figthcobrita',   url: 'https://t.me/figthcobrita',  color: '#4ade80' },
+  { name: 'Malibu',  handle: '@Mbuu25',         url: 'https://t.me/Mbuu25',        color: '#fb923c' },
+  { name: 'Bolka',   handle: '@TioBolkano',     url: 'https://t.me/TioBolkano',   color: '#a78bfa' },
+]
+
+/* ── firebase ───────────────────────────────────────────── */
+onMounted(() => {
   auth.onAuthStateChanged(async u => {
-    if (u) {
-      user.value = u
-      photoURL.value = u.photoURL || photoURL.value
+    if (!u) return
+    user.value     = u
+    photoURL.value = u.photoURL || photoURL.value
 
-      // Atualiza o lastLogin no Firestore ao logar
-      await updateDoc(doc(db, 'users', u.uid), {
-        lastLogin: serverTimestamp()
-      })
+    try {
+      await updateDoc(doc(db, 'users', u.uid), { lastLogin: serverTimestamp() })
+    } catch {}
 
-      // Busca saldo e dados do Firestore
-      const userDoc = await getDoc(doc(db, 'users', u.uid))
-      if (userDoc.exists()) {
-        const data = userDoc.data()
-        balance.value = data.balance ?? 0
-        livesUsed.value = data.livesUsed ?? 0
-        cardsBought.value = data.cardsBought ?? 0
-        isAdmin.value = !!data.admin
+    const snap = await getDoc(doc(db, 'users', u.uid))
+    if (snap.exists()) {
+      const d = snap.data()
+      balance.value      = d.balance       ?? 0
+      livesUsed.value    = d.livesUsed     ?? 0
+      checksMonth.value  = d.checksMonth   ?? 0
+      avgSpentWeek.value = d.avgSpentWeek  ?? 0
+      accountStatus.value = d.status       ?? 'Common'
+      nickname.value     = d.nickname      || ''
 
-        checksMonth.value = data.checksMonth ?? 0
-        avgSpentWeek.value = data.avgSpentWeek ?? 0
+      if (d.lastLogin?.toDate) lastLogin.value = d.lastLogin.toDate().toLocaleString('pt-BR')
+      else lastLogin.value = d.lastLogin ?? ''
 
-        if (data.lastLogin && typeof data.lastLogin.toDate === 'function') {
-          const date = data.lastLogin.toDate()
-          lastLogin.value = date.toLocaleString('pt-BR')
-        } else {
-          lastLogin.value = data.lastLogin ?? ''
-        }
-
-        accountStatus.value = data.status ?? 'Common'
-        nickname.value = data.nickname || ''
-        if (!nickname.value) {
-          showNicknameModal.value = true
-        }
-      }
-
-      // Leaderboard top 10
-      const qTop = query(collection(db, 'users'), orderBy('livesUsed', 'desc'), limit(10))
-      const querySnapshot = await getDocs(qTop)
-      leaderboard.value = []
-      let rank = 1
-
-      querySnapshot.forEach(docSnap => {
-        const d = docSnap.data()
-        leaderboard.value.push({
-          uid: docSnap.id,
-          name: d.nickname || '---',
-          livesUsed: d.livesUsed || 0
-        })
-        if (docSnap.id === u.uid) {
-          userRank.value = rank
-        }
-        rank++
-      })
-
-      // Se não está no top 10, buscar posição
-      if (!userRank.value) {
-        const allQ = query(collection(db, 'users'), orderBy('livesUsed', 'desc'))
-        const allSnap = await getDocs(allQ)
-        let r = 1
-        allSnap.forEach(docSnap => {
-          if (docSnap.id === u.uid) userRank.value = r
-          r++
-        })
-      }
+      if (!nickname.value) showNicknameModal.value = true
     }
   })
 })
 
-// Modal e lógica de resgate de key
-const showModal = ref(false)
-const keyInput = ref('')
-const loading = ref(false)
-const redeemMessage = ref('')
-const redeemSuccess = ref(false)
-
-// Modal de criar key
-const showCreateKeyModal = ref(false)
-const newKeyValue = ref('')
-const createKeyMessage = ref('')
-const createKeyLoading = ref(false)
-const createKeySuccess = ref(false)
-
-function generateKeyCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let code = ''
-  for (let i = 0; i < 12; i++) code += chars.charAt(Math.floor(Math.random() * chars.length))
-  return `LUNAR-${code}`
-}
-
-function openModal() {
-  showModal.value = true
-  keyInput.value = ''
-  redeemMessage.value = ''
-  redeemSuccess.value = false
-}
-function closeModal() {
-  showModal.value = false
-}
-function openCreateKeyModal() {
-  showCreateKeyModal.value = true
-  newKeyValue.value = ''
-  createKeyMessage.value = ''
-  createKeySuccess.value = false
-}
-function closeCreateKeyModal() {
-  showCreateKeyModal.value = false
-}
-
-async function redeemKey() {
-  redeemMessage.value = ''
-  redeemSuccess.value = false
-  loading.value = true
-
-  const key = keyInput.value.trim()
-  if (!key) {
-    redeemMessage.value = 'Enter a valid key.'
-    loading.value = false
-    return
-  }
-
-  try {
-    const keyRef = doc(db, 'keys', key)
-    const keySnap = await getDoc(keyRef)
-
-    if (!keySnap.exists()) {
-      redeemMessage.value = 'Key invalid or already used.'
-      loading.value = false
-      return
-    }
-
-    const value = keySnap.data().value ?? 0
-    const userRef = doc(db, 'users', user.value.uid)
-
-    await updateDoc(userRef, { balance: balance.value + value })
-    await deleteDoc(keyRef)
-
-    balance.value += value
-    redeemMessage.value = `Key redeemed! Value: R$ ${value.toFixed(2)}`
-    redeemSuccess.value = true
-    keyInput.value = ''
-  } catch (e) {
-    redeemMessage.value = 'Error redeeming key: ' + (e.message || e.code || e)
-  }
-
-  loading.value = false
-}
-
-async function createKey() {
-  createKeyMessage.value = ''
-  createKeySuccess.value = false
-  createKeyLoading.value = true
-
-  const value = Number(newKeyValue.value)
-  if (!value || value <= 0) {
-    createKeyMessage.value = 'Preencha um valor válido.'
-    createKeyLoading.value = false
-    return
-  }
-
-  try {
-    const keyId = generateKeyCode()
-    const keyRef = doc(db, 'keys', keyId)
-    await setDoc(keyRef, { value })
-
-    await navigator.clipboard.writeText(keyId)
-    createKeyMessage.value = `Key criada com sucesso: ${keyId}`
-    createKeySuccess.value = true
-    newKeyValue.value = ''
-  } catch (e) {
-    createKeyMessage.value = 'Erro ao criar key: ' + (e.message || e.code || e)
-  }
-
-  createKeyLoading.value = false
-}
-
+/* ── actions ────────────────────────────────────────────── */
 function copyEmail() {
   if (user.value?.email) {
     navigator.clipboard.writeText(user.value.email)
     copied.value = true
-    setTimeout(() => (copied.value = false), 1200)
+    setTimeout(() => (copied.value = false), 1400)
   }
 }
 
 async function saveNickname() {
   nicknameError.value = ''
   const nick = nicknameInput.value.trim()
+  if (!nick || nick.length < 3) { nicknameError.value = 'Minimum 3 characters.'; return }
 
-  if (!nick || nick.length < 3) {
-    nicknameError.value = 'Nickname must be at least 3 characters.'
-    return
-  }
-
-  if (nickname.value && nickname.value.toLowerCase() === nick.toLowerCase()) {
-    showNicknameModal.value = false
-    return
-  }
-
-  if (await isNicknameTaken(nick)) {
-    nicknameError.value = 'This nickname is already in use.'
-    return
-  }
+  const q    = query(collection(db, 'users'), where('nicknameLower', '==', nick.toLowerCase()))
+  const snap = await getDocs(q)
+  if (snap.docs.some(d => d.id !== user.value?.uid)) { nicknameError.value = 'Nickname already taken.'; return }
 
   try {
-    await updateDoc(doc(db, 'users', user.value.uid), {
-      nickname: nick,
-      nicknameLower: nick.toLowerCase()
-    })
+    await updateDoc(doc(db, 'users', user.value.uid), { nickname: nick, nicknameLower: nick.toLowerCase() })
     nickname.value = nick
     showNicknameModal.value = false
-  } catch (e) {
-    nicknameError.value = 'Error saving nickname.'
-  }
+  } catch { nicknameError.value = 'Error saving nickname.' }
 }
 </script>
 
 <style>
-/* (Opcional) Scrollbar combinando com o tema */
-::-webkit-scrollbar {
-  width: 8px;
-  background: #05060a;
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
+.font-display { font-family: 'Syne', sans-serif; }
+.font-sans    { font-family: 'DM Sans', sans-serif; }
+.font-mono    { font-family: 'JetBrains Mono','Fira Code','Courier New',monospace; }
+
+/* ── Section label ───────────────────────────────────────── */
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #3b82f6;
+}
+.section-label::before {
+  content: ''; display: block; width: 18px; height: 1px;
+  background: #3b82f6; opacity: 0.5;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 1000px;
+/* ── Stat cards ──────────────────────────────────────────── */
+.stat-card {
+  position: relative;
+  background: #030305;
+  padding: 24px 22px;
+  display: flex; flex-direction: column;
+  transition: background 0.2s;
+  overflow: hidden;
+}
+.stat-card:hover { background: #080810; }
+.stat-card-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; border-width: 1px; border-style: solid;
+  flex-shrink: 0;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(122, 167, 255, 0.45);
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.2rem, 2.6vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
-html,
-body {
-  overflow-x: hidden !important;
+/* ── Reseller cards ──────────────────────────────────────── */
+.reseller-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  overflow: hidden;
+}
+.reseller-card:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
 }
 
-body {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.14) #05060a;
-}
+/* ── Transitions ─────────────────────────────────────────── */
+.fade-pop-enter-active,.fade-pop-leave-active { transition: all 0.2s ease; }
+.fade-pop-enter-from,.fade-pop-leave-to { opacity: 0; transform: scale(0.85); }
 
-/* modal transitions */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.18s ease;
-}
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
+.modal-fade-enter-active,.modal-fade-leave-active { transition: opacity .2s ease; }
+.modal-fade-enter-from,.modal-fade-leave-to { opacity: 0; }
+.modal-zoom-enter-active,.modal-zoom-leave-active { transition: all .25s cubic-bezier(.4,2,.6,1); }
+.modal-zoom-enter-from,.modal-zoom-leave-to { opacity: 0; transform: scale(0.94) translateY(6px); }
 
-.modal-zoom-enter-active,
-.modal-zoom-leave-active {
-  transition: transform 0.18s ease, opacity 0.18s ease;
-}
-.modal-zoom-enter-from,
-.modal-zoom-leave-to {
-  opacity: 0;
-  transform: scale(0.98);
-}
+/* ── Scrollbar ───────────────────────────────────────────── */
+html { scrollbar-width: thin; scrollbar-color: #1a1a1a #000; }
+::-webkit-scrollbar { width: 4px; background: #000; }
+::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(122,167,255,0.35); }
+html, body { overflow-x: hidden !important; }
 </style>

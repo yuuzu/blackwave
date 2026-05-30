@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto pt-20 md:pt-8 px-4 sm:px-6 lg:px-10">
+  <div class="relative z-10 min-h-screen w-full md:ml-[260px] pt-20 md:pt-8 px-4 sm:px-6 lg:px-10">
     <!-- Header -->
       <div class="flex flex-col gap-2 mb-8">
         <div class="inline-flex items-center gap-2 w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70 backdrop-blur-xl">

@@ -1,905 +1,533 @@
 <template>
-  <div class="relative min-h-screen w-full overflow-x-hidden bg-[#05060a] text-white font-satoshi">
-    <!-- Background layers (igual vibe da landpage) -->
-    <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <!-- base radials -->
-      <div
-        class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(120,180,255,0.16),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(140,90,255,0.12),transparent_55%)]">
-      </div>
+  <div class="relative min-h-screen w-full overflow-x-hidden bg-black text-white font-sans">
 
-      <!-- soft blobs -->
-      <div
-        class="absolute -top-48 left-1/2 h-[620px] w-[620px] -translate-x-1/2 rounded-full bg-[#5aa2ff]/18 blur-[110px]">
-      </div>
-      <div class="absolute top-56 -left-56 h-[560px] w-[560px] rounded-full bg-[#8b5dff]/14 blur-[130px]"></div>
-      <div class="absolute -bottom-72 right-0 h-[720px] w-[720px] rounded-full bg-[#3dd6ff]/10 blur-[140px]"></div>
-
-      <!-- subtle grid -->
-      <div
-        class="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(to_right,rgba(255,255,255,0.16)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.16)_1px,transparent_1px)] [background-size:84px_84px]">
-      </div>
-
-      <!-- vignette -->
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_35%,rgba(0,0,0,0.82)_85%)]"></div>
+    <!-- ═══ BACKGROUND LAYERS ════════════════════════════════ -->
+    <div class="pointer-events-none fixed inset-0 z-0">
+      <!-- Grid texture -->
+      <div class="absolute inset-0"
+        style="background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 72px 72px; mask-image: radial-gradient(ellipse 90% 80% at 50% 20%, black 40%, transparent 100%);" />
+      <!-- Diagonal lines -->
+      <div class="absolute inset-0 opacity-60"
+        style="background-image: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px);" />
+      <!-- Glow orbs -->
+      <div class="absolute rounded-full"
+        style="width:700px;height:700px;top:-220px;left:20%;filter:blur(160px);background:radial-gradient(circle, rgba(59,130,246,0.07) 0%, transparent 70%);" />
+      <div class="absolute rounded-full"
+        style="width:500px;height:500px;bottom:0;right:-100px;filter:blur(160px);background:radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%);" />
+      <div class="absolute rounded-full"
+        style="width:300px;height:300px;top:40%;left:-50px;filter:blur(120px);background:radial-gradient(circle, rgba(255,255,255,0.025) 0%, transparent 70%);" />
     </div>
 
-    <div class="min-h-screen flex flex-col md:flex-row">
-      <!-- Mobile Header -->
-      <header class="md:hidden flex items-center rounded-3xl justify-between mx-2 my-2 px-4 py-3
-               bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.55)]
-               z-20 fixed top-0 left-0 right-0">
-        <div class="flex items-center gap-2">
-          <a href="/" class="flex items-center gap-2">
-            <NuxtImg src="/icon.png" class="w-6" />
-            <span class="font-bold text-2xl tracking-tight">lunarcntr.xyz</span>
+    <div class="relative z-10 flex min-h-screen">
+
+      <!-- ═══ DESKTOP SIDEBAR ══════════════════════════════════ -->
+      <aside class="hidden md:flex w-[260px] min-h-screen flex-col fixed left-0 top-0 bottom-0"
+        style="background:rgba(0,0,0,0.7);border-right:1px solid rgba(255,255,255,0.07);backdrop-filter:blur(24px);">
+
+        <!-- Logo -->
+        <div class="px-6 py-6 border-b" style="border-color:rgba(255,255,255,0.07)">
+          <a href="/" class="flex items-center gap-2.5">
+            <Icon name="lucide-lab:wave-circle" class="text-[#3b82f6]" size="24px"></Icon>
+            <span class="font-display text-[16px] font-extrabold tracking-tight">
+              Black<span class="text-blue-500">Wave</span>
+            </span>
           </a>
         </div>
-        <button @click="showMobileMenu = !showMobileMenu" class="focus:outline-none">
-          <Icon :name="showMobileMenu ? 'mdi:close' : 'mdi:menu'" size="32px" class="text-white/90" />
-        </button>
-      </header>
 
-      <!-- Mobile Menu Drawer -->
-      <transition name="fade">
-        <aside v-if="showMobileMenu" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex md:hidden">
-          <transition name="slide">
-            <div class="w-72 max-w-[85vw] bg-white/5 backdrop-blur-xl border-r border-white/10 h-full p-5 flex flex-col gap-4
-                     shadow-[20px_0_80px_rgba(0,0,0,0.6)]">
-              <!-- Logo -->
-              <div class="flex items-center gap-2 mb-6 px-2">
-                <NuxtImg src="/icon.png" class="w-6" />
-                <span class="font-bold text-2xl tracking-tight">lunarcntr.xyz</span>
+        <!-- Nav -->
+        <nav class="flex-1 px-3 py-5 flex flex-col gap-0.5">
+
+          <!-- Account group -->
+          <div class="mb-1">
+            <button @click="accountOpen = !accountOpen"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-[13px] font-semibold"
+              :class="accountOpen ? 'bg-white/5 text-white' : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03]'">
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+              Account
+              <svg class="w-3 h-3 ml-auto transition-transform" :class="accountOpen ? 'rotate-180' : ''" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M2 4l4 4 4-4"/>
+              </svg>
+            </button>
+            <transition name="faq">
+              <div v-if="accountOpen" class="ml-7 mt-1 flex flex-col gap-0.5">
+                <a href="/dashboard" class="sidebar-sub-link">Overview</a>
+                <a href="/dashboard/results" class="sidebar-sub-link">Historical</a>
+                <a href="/dashboard/settings" class="sidebar-sub-link">Settings</a>
               </div>
-
-              <!-- Menu -->
-              <nav class="flex flex-col gap-2">
-                <button @click="toggleAccount"
-                  class="flex items-center w-full px-3 py-2 rounded-2xl transition font-semibold"
-                  :class="accountOpen ? 'bg-white/10 border border-white/10' : 'hover:bg-white/5 border border-transparent'">
-                  <Icon name="mdi:account-circle" class="mr-2 text-white/80" size="24" />
-                  <p class="text-[16px]">Account</p>
-                  <Icon :name="accountOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" class="ml-auto text-white/70" />
-                </button>
-
-                <transition name="fade">
-                  <div v-if="accountOpen" class="ml-8 flex flex-col gap-1 mt-1">
-                    <NuxtLink to="/dashboard" exact-active-class="text-white font-semibold"
-                      class="text-[14px] text-white/60 hover:text-white/85 transition" @click="showMobileMenu = false">
-                      Overview
-                    </NuxtLink>
-
-                    <NuxtLink to="/dashboard/results" active-class="text-white font-semibold"
-                      class="text-[14px] text-white/60 hover:text-white/85 transition" @click="showMobileMenu = false">
-                      Historical
-                    </NuxtLink>
-
-                    <NuxtLink to="/dashboard/settings" active-class="text-white font-semibold"
-                      class="text-[14px] text-white/60 hover:text-white/85 transition" @click="showMobileMenu = false">
-                      Settings
-                    </NuxtLink>
-                  </div>
-                </transition>
-
-                <NuxtLink v-if="canCustomize" to="/dashboard/customize"
-                  exact-active-class="text-white font-bold bg-white/10 border border-white/10"
-                  class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
-                  @click="showMobileMenu = false">
-                  <Icon name="dashicons:admin-customizer" class="mr-2 text-white/80" size="22px" />
-                  <p class="text-[16px] font-bold">Customize</p>
-                </NuxtLink>
-
-                <NuxtLink to="/dashboard/store"
-                  exact-active-class="text-white font-bold bg-white/10 border border-white/10"
-                  class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
-                  @click="showMobileMenu = false">
-                  <Icon name="mdi:cart" class="mr-2 text-white/80" size="22px" />
-                  <p class="text-[16px] font-bold">Store</p>
-                </NuxtLink>
-
-                <NuxtLink to="/dashboard/checker"
-                  exact-active-class="text-white font-bold bg-white/10 border border-white/10"
-                  class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
-                  @click="showMobileMenu = false">
-                  <Icon name="mdi:credit-card" class="mr-2 text-white/80" size="22px" />
-                  <p class="text-[16px] font-bold">Checker</p>
-                </NuxtLink>
-
-                <NuxtLink v-if="isVip" to="/dashboard/vip"
-                  active-class="text-white bg-white/10 font-bold border border-white/10"
-                  class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
-                  @click="showMobileMenu = false">
-                  <Icon name="streamline-plump:diamond-1-solid" class="mr-2 text-white/80" size="22px" />
-                  <p class="text-[16px] font-bold">Vip</p>
-                </NuxtLink>
-
-                <NuxtLink v-if="user?.reseller" to="/dashboard/reseller"
-                  exact-active-class="text-white font-bold bg-white/10 border border-white/10"
-                  class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
-                  @click="showMobileMenu = false">
-                  <Icon name="mdi:account-cash" class="mr-2 text-white/80" size="22px" />
-                  <p class="text-[16px] font-bold">Reseller</p>
-                </NuxtLink>
-
-                <NuxtLink v-if="isAdmin" to="/dashboard/admin"
-                  active-class="text-white bg-white/10 font-bold border border-white/10"
-                  class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent"
-                  @click="showMobileMenu = false">
-                  <Icon name="material-symbols:admin-panel-settings-rounded" class="mr-2 text-white/80" size="22px" />
-                  <p class="text-[16px] font-bold">Admin</p>
-                </NuxtLink>
-              </nav>
-
-              <!-- Help -->
-              <div class="mt-6 flex flex-col gap-2 px-2">
-                <a href="https://t.me/lunaroficial" target="_blank" class="rounded-2xl py-2 px-3 flex items-center gap-2 font-semibold justify-center
-                         bg-white/10 border border-white/10 hover:bg-white/15 hover:border-white/20 transition">
-                  <Icon name="mdi:help-circle-outline" /> Help Center
-                </a>
-              </div>
-
-              <!-- Actions + Profile -->
-              <div class="flex flex-col gap-2 px-2 mt-auto">
-                <button v-if="isAdmin" class="rounded-2xl py-2 px-3 flex items-center gap-2 font-semibold justify-center
-                         bg-white/10 border border-white/10 hover:bg-white/15 hover:border-white/20 transition"
-                  @click="openCreateKeyModal">
-                  <Icon name="mdi:key-plus" /> Create Key
-                </button>
-
-                <button class="rounded-2xl py-2 px-3 flex items-center gap-2 font-semibold justify-center
-                         bg-white/10 border border-white/10 hover:bg-white/15 hover:border-white/20 transition"
-                  @click="openModal">
-                  <Icon name="mingcute:gift-fill" /> Redeem Key
-                </button>
-
-                <div class="flex items-center gap-3 px-3 py-3 rounded-2xl bg-white/5 border border-white/10 relative cursor-pointer
-                         hover:bg-white/10 hover:border-white/20 transition" @click="goToProfile">
-                  <img :src="user?.photoURL || photoURL" class="rounded-full w-10 h-10 object-cover bg-black/30"
-                    alt="Profile" />
-                  <div class="flex flex-col min-w-0">
-                    <span class="font-bold text-[15px] leading-tight truncate max-w-[140px]">
-                      {{ user?.nickname || 'User' }}
-                    </span>
-                    <span class="text-xs text-white/55 font-medium">
-                      Balance: <span class="font-semibold text-white">R$ {{ balance.toFixed(2) }}</span>
-                    </span>
-                  </div>
-
-                  <button @click.stop="showProfileMenu = !showProfileMenu"
-                    class="ml-auto flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/10 transition">
-                    <Icon name="mdi:dots-horizontal" size="22" class="text-white/70" />
-                  </button>
-
-                  <div v-if="showProfileMenu" class="absolute bottom-14 left-4 right-4 z-50 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl
-                           shadow-[0_18px_60px_rgba(0,0,0,0.55)] p-4 flex flex-col gap-2"
-                    @click.away="showProfileMenu = false">
-                    <div class="font-bold text-white text-[18px] mb-1">Other Links</div>
-                    <div class="text-[13px] text-white/55 mb-2">Navigate quickly through our system</div>
-
-                    <NuxtLink to="/"
-                      class="w-full py-2 rounded-xl bg-white/10 border border-white/10 text-center font-semibold hover:bg-white/15 hover:border-white/20 transition">
-                      Home
-                    </NuxtLink>
-
-                    <a href="https://t.me/lunaroficial" target="_blank"
-                      class="w-full py-2 rounded-xl bg-[#3390ec]/20 border border-[#3390ec]/40 text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
-                      <Icon name="mdi:telegram" /> Telegram Group
-                    </a>
-
-                    <NuxtLink to="/dashboard/settings"
-                      class="w-full py-2 rounded-xl bg-[#7aa7ff]/15 border border-[#7aa7ff]/35 text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
-                      <Icon name="mdi:cog" /> Account Settings
-                    </NuxtLink>
-
-                    <button @click="logout"
-                      class="w-full py-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-white text-center font-semibold flex items-center justify-center gap-2 hover:bg-rose-500/20 hover:border-rose-500/40 transition">
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </transition>
-
-          <div class="flex-1" @click="showMobileMenu = false"></div>
-        </aside>
-      </transition>
-
-      <!-- Desktop Sidebar -->
-      <aside class="hidden md:flex w-72 min-h-screen flex-col justify-between py-6 px-4
-               bg-white/5 backdrop-blur-xl rounded-r-3xl border-r border-white/10
-               shadow-[0_0_80px_rgba(0,0,0,0.45)]">
-        <div>
-          <!-- Logo -->
-          <div class="flex items-center gap-2 mb-8 px-2">
-            <a href="/" class="flex items-center gap-2">
-              <NuxtImg src="/icon.png" class="w-8" />
-              <span class="font-bold text-2xl tracking-tight">lunarcntr.xyz</span>
-            </a>
+            </transition>
           </div>
 
-          <!-- Menu -->
-          <nav class="flex flex-col gap-2">
-            <!-- Account Dropdown -->
-            <div>
-              <button @click="toggleAccount"
-                class="flex items-center w-full px-3 py-2 rounded-2xl transition font-semibold"
-                :class="accountOpen ? 'bg-white/10 border border-white/10' : 'hover:bg-white/5 border border-transparent'">
-                <Icon name="mdi:account-circle" class="mr-2 text-white/80" size="24" />
-                <p class="text-[16px]">Account</p>
-                <Icon :name="accountOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" class="ml-auto text-white/70" />
-              </button>
+          <a v-if="canCustomize" href="/dashboard/customize" class="sidebar-link">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
+            </svg>
+            Customize
+          </a>
 
-              <transition name="fade">
-                <div v-if="accountOpen" class="ml-12 flex flex-col gap-1 mt-1">
-                  <NuxtLink to="/dashboard" exact-active-class="text-white font-semibold"
-                    class="text-[14px] text-white/60 hover:text-white/85 transition">
-                    Overview
-                  </NuxtLink>
-                  <NuxtLink to="/dashboard/results" active-class="text-white font-semibold"
-                    class="text-[14px] text-white/60 hover:text-white/85 transition">
-                    Historical
-                  </NuxtLink>
-                  <NuxtLink to="/dashboard/settings" active-class="text-white font-semibold"
-                    class="text-[14px] text-white/60 hover:text-white/85 transition">
-                    Settings
-                  </NuxtLink>
-                </div>
-              </transition>
-            </div>
+          <a href="/dashboard/store" class="sidebar-link">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+            </svg>
+            Store
+          </a>
 
-            <!-- Customize (corrigido) -->
-            <NuxtLink v-if="canCustomize" to="/dashboard/customize"
-              exact-active-class="text-white font-bold bg-white/10 border border-white/10"
-              class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent">
-              <Icon name="dashicons:admin-customizer" class="mr-2 text-white/80" size="22px" />
-              <p class="text-[16px] font-bold">Customize</p>
-            </NuxtLink>
+          <a href="/dashboard/checker" class="sidebar-link sidebar-link">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+            Checker
+          </a>
 
-            <NuxtLink to="/dashboard/store" exact-active-class="text-white font-bold bg-white/10 border border-white/10"
-              class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent">
-              <Icon name="mdi:cart" class="mr-2 text-white/80" size="22px" />
-              <p class="text-[16px] font-bold">Store</p>
-            </NuxtLink>
+          <a v-if="isVip" href="/dashboard/vip" class="sidebar-link">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            VIP
+          </a>
 
-            <NuxtLink to="/dashboard/checker"
-              exact-active-class="text-white font-bold bg-white/10 border border-white/10"
-              class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent">
-              <Icon name="mdi:credit-card" class="mr-2 text-white/80" size="22px" />
-              <p class="text-[16px] font-bold">Checker</p>
-            </NuxtLink>
+          <a v-if="isReseller" href="/dashboard/reseller" class="sidebar-link">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+            Reseller
+          </a>
 
-            <NuxtLink to="/dashboard/vip" v-if="isVip"
-              exact-active-class="text-white font-bold bg-white/10 border border-white/10"
-              class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent">
-              <Icon name="streamline-plump:diamond-1-solid" class="mr-2 text-white/80" size="22px" />
-              <p class="text-[16px] font-bold">Vip</p>
-            </NuxtLink>
+          <a v-if="isAdmin" href="/dashboard/admin" class="sidebar-link">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Admin
+          </a>
 
-            <NuxtLink to="/dashboard/reseller"
-              exact-active-class="text-white font-bold bg-white/10 border border-white/10" v-if="user?.reseller"
-              class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent">
-              <Icon name="mdi:account-cash" class="mr-2 text-white/80" size="22px" />
-              <p class="text-[16px] font-bold">Reseller</p>
-            </NuxtLink>
+          <a v-if="isAdmin" href="/dashboard/keys" class="sidebar-link">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+            </svg>
+            Keys
+          </a>
 
-            <NuxtLink v-if="isAdmin" to="/dashboard/admin"
-              active-class="text-white bg-white/10 font-bold border border-white/10"
-              class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent">
-              <Icon name="material-symbols:admin-panel-settings-rounded" class="mr-2 text-white/80" size="22px" />
-              <p class="text-[16px] font-bold">Admin</p>
-            </NuxtLink>
+          <!-- Divider -->
+          <div class="my-3 h-px" style="background:rgba(255,255,255,0.06)" />
 
-            <NuxtLink v-if="isAdmin" to="/dashboard/keys"
-              active-class="text-white bg-white/10 font-bold border border-white/10"
-              class="flex items-center px-3 py-2 rounded-2xl hover:bg-white/5 transition border border-transparent">
-              <Icon name="ic:baseline-vpn-key" class="mr-2 text-white/80" size="22px" />
-              <p class="text-[16px] font-bold">Keys</p>
-            </NuxtLink>
-          </nav>
+          <a href="https://t.me/lunaroficial" target="_blank" class="sidebar-link" style="color:rgba(96,165,250,0.7)">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Help Center
+          </a>
+        </nav>
 
-          <!-- Help -->
-          <div class="mt-8 flex flex-col gap-2 px-2">
-            <a href="https://t.me/lunaroficial" target="_blank"
-              class="rounded-2xl py-2 px-3 flex items-center gap-2 font-semibold justify-center
-                     bg-[#7aa7ff]/15 border border-[#7aa7ff]/30 hover:bg-[#7aa7ff]/20 hover:border-[#7aa7ff]/40 transition">
-              <Icon name="mdi:help-circle-outline" /> Help Center
-            </a>
-          </div>
-        </div>
+        <!-- Bottom actions + profile -->
+        <div class="px-3 py-4 border-t flex flex-col gap-2" style="border-color:rgba(255,255,255,0.07)">
 
-        <!-- Actions + Profile -->
-        <div class="flex flex-col gap-2 px-2">
-          <button v-if="isAdmin" class="rounded-2xl py-2 px-3 flex items-center gap-2 font-semibold justify-center
-                   bg-white/10 border border-white/10 hover:bg-white/15 hover:border-white/20 transition"
-            @click="openCreateKeyModal">
-            <Icon name="mdi:key-plus" /> Create Key
-          </button>
-          <button class="rounded-2xl py-2 px-3 flex items-center gap-2 font-semibold justify-center
-                   bg-white/10 border border-white/10 hover:bg-white/15 hover:border-white/20 transition"
-            @click="openModal">
-            <Icon name="mingcute:gift-fill" /> Redeem Key
+          <button v-if="isAdmin" @click="openCreateKeyModal"
+            class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-[12px] font-semibold text-white/50 border transition hover:text-white hover:bg-white/5 hover:border-white/10"
+            style="border-color:rgba(255,255,255,0.07)">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+            </svg>
+            Create Key
           </button>
 
-          <div class="flex items-center gap-3 px-2 py-3 rounded-2xl bg-white/5 border border-white/10 relative cursor-pointer
-                   hover:bg-white/10 hover:border-white/20 transition" @click="goToProfile">
-            <img :src="user?.photoURL || photoURL" class="rounded-full w-10 h-10 object-cover bg-black/30"
-              alt="Profile" />
-            <div class="flex flex-col min-w-0">
-              <span class="font-bold text-[15px] leading-tight truncate max-w-[140px]">
-                {{ user?.nickname || 'User' }}
-              </span>
-              <span class="text-xs text-white/55 font-medium">
-                Balance: <span class="font-semibold text-white">R$ {{ balance.toFixed(2) }}</span>
-              </span>
-            </div>
+          <button @click="openModal"
+            class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[12px] font-semibold text-white/50 border transition hover:text-white hover:bg-white/5 hover:border-white/10"
+            style="border-color:rgba(255,255,255,0.07)">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
+            </svg>
+            Redeem Key
+          </button>
 
-            <button @click.stop="showProfileMenu = !showProfileMenu"
-              class="ml-auto flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/10 transition">
-              <Icon name="mdi:dots-horizontal" size="22" class="text-white/70" />
+          <!-- Profile card -->
+          <div class="relative">
+            <button @click="showProfileMenu = !showProfileMenu"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition hover:bg-white/[0.03] hover:border-white/10 group"
+              style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.07)">
+              <img :src="photoURL" class="w-8 h-8 rounded-full object-cover bg-black/30 shrink-0" alt="Profile" />
+              <div class="flex flex-col items-start min-w-0 flex-1">
+                <span class="text-[13px] font-bold text-white leading-tight truncate w-full text-left">{{ nickname }}</span>
+                <span class="text-[10px] text-white/30 font-medium">R$ {{ balance.toFixed(2) }}</span>
+              </div>
+              <svg class="w-3.5 h-3.5 text-white/20 group-hover:text-white/40 transition shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+              </svg>
             </button>
 
-            <div v-if="showProfileMenu" class="absolute bottom-14 left-4 right-4 z-50 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl
-                     shadow-[0_18px_60px_rgba(0,0,0,0.55)] p-4 flex flex-col gap-2"
-              @click.away="showProfileMenu = false">
-              <div class="font-bold text-white text-[18px] mb-1">Other Links</div>
-              <div class="text-[13px] text-white/55 mb-2">Navigate quickly through our system</div>
-
-              <NuxtLink to="/"
-                class="w-full py-2 rounded-xl bg-white/10 border border-white/10 text-center font-semibold hover:bg-white/15 hover:border-white/20 transition">
-                Home
-              </NuxtLink>
-
-              <a href="https://t.me/lunaroficial" target="_blank"
-                class="w-full py-2 rounded-xl bg-[#3390ec]/20 border border-[#3390ec]/40 text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
-                <Icon name="mdi:telegram" /> Telegram Group
-              </a>
-
-              <NuxtLink to="/dashboard/settings"
-                class="w-full py-2 rounded-xl bg-[#7aa7ff]/15 border border-[#7aa7ff]/35 text-white text-center font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
-                <Icon name="mdi:cog" /> Account Settings
-              </NuxtLink>
-
-              <button @click="logout"
-                class="w-full py-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-white text-center font-semibold flex items-center justify-center gap-2 hover:bg-rose-500/20 hover:border-rose-500/40 transition">
-                Logout
-              </button>
-            </div>
+            <!-- Profile dropdown -->
+            <transition name="faq">
+              <div v-if="showProfileMenu"
+                class="absolute bottom-full left-0 right-0 mb-2 rounded-2xl border p-3 flex flex-col gap-1.5 z-50"
+                style="background:rgba(5,5,10,0.95);border-color:rgba(255,255,255,0.1);backdrop-filter:blur(24px);box-shadow:0 -12px 40px rgba(0,0,0,0.6)">
+                <div class="px-2 pb-2 border-b mb-1" style="border-color:rgba(255,255,255,0.06)">
+                  <p class="text-[12px] font-bold text-white">Other Links</p>
+                  <p class="text-[10px] text-white/30">Navigate quickly</p>
+                </div>
+                <a href="/" class="profile-menu-item">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  Home
+                </a>
+                <a href="https://t.me/lunaroficial" target="_blank" class="profile-menu-item" style="color:rgba(96,165,250,0.8)">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+                  Telegram Group
+                </a>
+                <a href="/dashboard/settings" class="profile-menu-item">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+                  Account Settings
+                </a>
+                <button @click="logout" class="profile-menu-item profile-menu-item--danger w-full text-left">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  Logout
+                </button>
+              </div>
+            </transition>
           </div>
         </div>
       </aside>
 
-      <!-- Main Content -->
-      <main class="flex-1 min-h-screen font-satoshi pt-16 md:pt-0">
-        <!-- Mantém o fundo “do layout” (não pinta sólido aqui) -->
-        <div class="px-4 sm:px-6 lg:px-10 py-6">
-          <NuxtPage />
+      <!-- ═══ MOBILE HEADER ════════════════════════════════════ -->
+      <header class="md:hidden fixed top-0 left-0 right-0 z-50 px-3 py-2.5">
+        <div class="flex items-center justify-between rounded-2xl px-4 py-2.5"
+          style="background:rgba(0,0,0,0.85);border:1px solid rgba(255,255,255,0.07);backdrop-filter:blur(20px)">
+          <a href="/" class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center shrink-0">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+            </div>
+            <span class="font-display text-[15px] font-extrabold tracking-tight">
+              Black<span class="text-blue-500">Wave</span>
+            </span>
+          </a>
+          <button @click="showMobileMenu = !showMobileMenu"
+            class="w-8 h-8 flex items-center justify-center rounded-lg border text-white/40 hover:text-white transition"
+            style="border-color:rgba(255,255,255,0.1)">
+            <svg v-if="!showMobileMenu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
-      </main>
+      </header>
 
-      <!-- Modal de Resgatar Key -->
-      <transition name="modal-fade">
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center font-satoshi px-4">
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+      <!-- ═══ MOBILE MENU ════════════════════════════════════ -->
+      <transition name="curtain">
+        <div v-if="showMobileMenu" class="fixed inset-0 z-[100] flex md:hidden">
+          <!-- backdrop -->
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showMobileMenu = false" />
+          <!-- drawer -->
+          <div class="relative w-72 max-w-[85vw] h-full flex flex-col"
+            style="background:rgba(2,2,8,0.97);border-right:1px solid rgba(255,255,255,0.07);backdrop-filter:blur(24px)">
 
-          <transition name="modal-zoom">
-            <div class="relative w-full max-w-md rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
-                     p-8 shadow-[0_24px_90px_rgba(0,0,0,0.70)] overflow-hidden">
-              <div
-                class="pointer-events-none absolute -inset-1 opacity-60 bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.25),transparent_55%)]">
-              </div>
+            <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:rgba(255,255,255,0.07)">
+              <span class="font-display text-[15px] font-extrabold tracking-tight">
+                Black<span class="text-blue-500">Wave</span>
+              </span>
+              <button @click="showMobileMenu = false"
+                class="text-[12px] text-white/30 border border-white/10 rounded-lg px-2.5 py-1.5 hover:text-white transition">✕</button>
+            </div>
 
-              <button @click="closeModal"
-                class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl transition">
-                <Icon name="mdi:close" />
+            <nav class="flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-0.5">
+              <button @click="accountOpen = !accountOpen"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-[13px] font-semibold text-white/40 hover:text-white hover:bg-white/[0.03]">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                Account
+                <svg class="w-3 h-3 ml-auto transition-transform" :class="accountOpen ? 'rotate-180' : ''" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
               </button>
-
-              <div class="relative flex flex-col gap-6">
-                <div class="flex flex-col items-center gap-2">
-                  <Icon name="mingcute:gift-fill" size="46" class="text-[#7aa7ff]" />
-                  <h2 class="text-2xl font-black text-white">Redeem Key</h2>
-                  <p class="text-white/60 text-sm text-center">Enter your key below to add funds to your account.</p>
+              <transition name="faq">
+                <div v-if="accountOpen" class="ml-7 flex flex-col gap-0.5">
+                  <a href="/dashboard" class="sidebar-sub-link" @click="showMobileMenu = false">Overview</a>
+                  <a href="/dashboard/results" class="sidebar-sub-link" @click="showMobileMenu = false">Historical</a>
+                  <a href="/dashboard/settings" class="sidebar-sub-link" @click="showMobileMenu = false">Settings</a>
                 </div>
+              </transition>
+              <a href="/dashboard/store" class="sidebar-link" @click="showMobileMenu = false">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+                Store
+              </a>
+              <a href="/dashboard/checker" class="sidebar-link sidebar-link--active" @click="showMobileMenu = false">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Checker
+              </a>
+            </nav>
 
-                <input v-model="keyInput" placeholder="Enter your key here" class="rounded-2xl px-4 py-3 bg-black/30 border border-white/10 text-white outline-none
-                         focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/30 transition" />
-
-                <PrimaryB @click="redeemKey" :disabled="loading" class="w-full flex items-center justify-center gap-2">
-                  <Icon name="mdi:check-bold" /> {{ loading ? 'Redeeming...' : 'Confirm' }}
-                </PrimaryB>
-
-                <div v-if="redeemMessage" class="text-center text-sm flex items-center justify-center gap-2"
-                  :class="redeemSuccess ? 'text-emerald-400' : 'text-rose-400'">
-                  <Icon :name="redeemSuccess ? 'mdi:check-circle' : 'mdi:alert-circle'" />
-                  {{ redeemMessage }}
+            <div class="px-3 py-4 border-t flex flex-col gap-2" style="border-color:rgba(255,255,255,0.07)">
+              <button @click="openModal; showMobileMenu = false"
+                class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[12px] font-semibold text-white/50 border transition hover:text-white hover:bg-white/5 hover:border-white/10"
+                style="border-color:rgba(255,255,255,0.07)">
+                Redeem Key
+              </button>
+              <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl border" style="background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.07)">
+                <img :src="photoURL" class="w-8 h-8 rounded-lg object-cover bg-black/30 shrink-0" alt="Profile" />
+                <div class="flex flex-col min-w-0">
+                  <span class="text-[13px] font-bold text-white leading-tight">{{ nickname }}</span>
+                  <span class="text-[10px] text-white/30">R$ {{ balance.toFixed(2) }}</span>
                 </div>
               </div>
             </div>
-          </transition>
+          </div>
         </div>
       </transition>
 
-      <!-- Modal de Criar Key (admin) -->
-      <transition name="modal-fade">
-        <div v-if="showCreateKeyModal" class="fixed inset-0 z-50 flex items-center justify-center font-satoshi px-4">
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-
-          <transition name="modal-zoom">
-            <div class="relative w-full max-w-lg rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
-                     p-8 shadow-[0_24px_90px_rgba(0,0,0,0.70)] overflow-hidden">
-              <div
-                class="pointer-events-none absolute -inset-1 opacity-60 bg-[radial-gradient(circle_at_top,rgba(122,167,255,0.22),transparent_55%)]">
-              </div>
-
-              <button @click="closeCreateKeyModal"
-                class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl transition">
-                <Icon name="mdi:close" />
-              </button>
-
-              <div class="relative flex flex-col gap-6">
-                <div class="flex flex-col items-center gap-2">
-                  <Icon name="mdi:key-plus" size="46" class="text-[#7aa7ff]" />
-                  <h2 class="text-2xl font-black text-white">Create Key</h2>
-                  <p class="text-white/60 text-sm text-center">
-                    Set the value in BRL. The code will be generated automatically.
-                  </p>
-                </div>
-
-                <input v-model="newKeyValue" min="1" placeholder="Value (R$)" class="rounded-2xl px-4 py-3 bg-black/30 border border-white/10 text-white outline-none
-                         focus:border-white/20 focus:ring-2 focus:ring-[#7aa7ff]/30 transition" />
-
-                <PrimaryB @click="createKey" :disabled="createKeyLoading"
-                  class="w-full flex items-center justify-center gap-2">
-                  <Icon name="mdi:check-bold" /> {{ createKeyLoading ? 'Creating...' : 'Create Key' }}
-                </PrimaryB>
-
-                <div v-if="createKeyMessage" class="text-center text-sm flex items-center justify-center gap-2"
-                  :class="createKeySuccess ? 'text-emerald-400' : 'text-rose-400'">
-                  <Icon :name="createKeySuccess ? 'mdi:check-circle' : 'mdi:alert-circle'" />
-                  {{ createKeyMessage }}
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
-      </transition>
+      <!-- ═══ MAIN CONTENT ══════════════════════════════════════ -->
+       <NuxtPage />
     </div>
+
+    <!-- ═══ MODAL: REDEEM KEY ════════════════════════════════ -->
+    <transition name="modal-fade">
+      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="closeModal" />
+        <transition name="modal-zoom">
+          <div class="relative w-full max-w-md rounded-3xl border p-8 flex flex-col gap-6 overflow-hidden"
+            style="background:rgba(2,2,10,0.97);border-color:rgba(255,255,255,0.1);box-shadow:0 24px 80px rgba(0,0,0,0.7)">
+            <!-- glow -->
+            <div class="pointer-events-none absolute inset-0"
+              style="background:radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 60%)" />
+            <!-- corner brackets -->
+            <span class="absolute top-3 left-3 w-3 h-3 border-l border-t border-blue-500/40" />
+            <span class="absolute top-3 right-3 w-3 h-3 border-r border-t border-blue-500/40" />
+            <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b border-blue-500/40" />
+            <span class="absolute bottom-3 right-3 w-3 h-3 border-r border-b border-blue-500/40" />
+
+            <button @click="closeModal" class="absolute top-4 right-4 text-white/30 hover:text-white transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            <div class="relative flex flex-col items-center gap-2 text-center">
+              <div class="w-12 h-12 flex items-center justify-center rounded-2xl border mb-1"
+                style="background:#0a0a0a;border-color:rgba(59,130,246,0.2)">
+                <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
+                </svg>
+              </div>
+              <h2 class="font-display text-[1.4rem] font-extrabold tracking-tight text-white">Redeem Key</h2>
+              <p class="text-[13px] text-white/30">Enter your key below to add funds to your account.</p>
+            </div>
+
+            <input v-model="keyInput" placeholder="e.g. LUNAR-XXXXXXXXXXXX"
+              class="w-full px-4 py-3 rounded-xl border bg-transparent text-white text-[13px] outline-none transition placeholder:text-white/20 focus:border-blue-500/50"
+              style="border-color:rgba(255,255,255,0.08)" />
+
+            <button @click="redeemKey" :disabled="loading"
+              class="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-[13px] font-bold rounded-xl transition-all hover:-translate-y-px">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              {{ loading ? 'Redeeming...' : 'Confirm' }}
+            </button>
+
+            <div v-if="redeemMessage" class="text-center text-[12px] font-semibold"
+              :class="redeemSuccess ? 'text-emerald-400' : 'text-red-400'">
+              {{ redeemMessage }}
+            </div>
+          </div>
+        </transition>
+      </div>
+    </transition>
+
+    <!-- ═══ MODAL: CREATE KEY (admin) ════════════════════════ -->
+    <transition name="modal-fade">
+      <div v-if="showCreateKeyModal" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="closeCreateKeyModal" />
+        <transition name="modal-zoom">
+          <div class="relative w-full max-w-md rounded-3xl border p-8 flex flex-col gap-6 overflow-hidden"
+            style="background:rgba(2,2,10,0.97);border-color:rgba(255,255,255,0.1);box-shadow:0 24px 80px rgba(0,0,0,0.7)">
+            <div class="pointer-events-none absolute inset-0"
+              style="background:radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 60%)" />
+            <span class="absolute top-3 left-3 w-3 h-3 border-l border-t border-blue-500/40" />
+            <span class="absolute top-3 right-3 w-3 h-3 border-r border-t border-blue-500/40" />
+            <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b border-blue-500/40" />
+            <span class="absolute bottom-3 right-3 w-3 h-3 border-r border-b border-blue-500/40" />
+
+            <button @click="closeCreateKeyModal" class="absolute top-4 right-4 text-white/30 hover:text-white transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            <div class="relative flex flex-col items-center gap-2 text-center">
+              <div class="w-12 h-12 flex items-center justify-center rounded-2xl border mb-1"
+                style="background:#0a0a0a;border-color:rgba(59,130,246,0.2)">
+                <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                </svg>
+              </div>
+              <h2 class="font-display text-[1.4rem] font-extrabold tracking-tight text-white">Create Key</h2>
+              <p class="text-[13px] text-white/30">Set the value in BRL — code is generated automatically.</p>
+            </div>
+
+            <input v-model="newKeyValue" type="number" min="1" placeholder="Value (R$)"
+              class="w-full px-4 py-3 rounded-xl border bg-transparent text-white text-[13px] outline-none transition placeholder:text-white/20 focus:border-blue-500/50"
+              style="border-color:rgba(255,255,255,0.08)" />
+
+            <button @click="createKey" :disabled="createKeyLoading"
+              class="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-[13px] font-bold rounded-xl transition-all hover:-translate-y-px">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              {{ createKeyLoading ? 'Creating...' : 'Create Key' }}
+            </button>
+
+            <div v-if="createKeyMessage" class="text-center text-[12px] font-semibold"
+              :class="createKeySuccess ? 'text-emerald-400' : 'text-red-400'">
+              {{ createKeyMessage }}
+            </div>
+          </div>
+        </transition>
+      </div>
+    </transition>
+
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { auth, db } from '~/firebase'
-import { doc, getDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, getDocs, collection, query, where, writeBatch } from 'firebase/firestore'
-import { signOut } from 'firebase/auth'
-import { useRouter } from 'vue-router'
-import QRCode from 'qrcode'
+import { ref, computed } from 'vue'
 
-const showProfileMenu = ref(false)
-const router = useRouter()
-
-function logout() {
-  signOut(auth).then(() => {
-    router.push('/login')
-  })
-  showProfileMenu.value = false
-}
-
+// ── State ────────────────────────────────────────────────
 const showMobileMenu = ref(false)
-
+const showProfileMenu = ref(false)
 const accountOpen = ref(true)
-function toggleAccount() {
-  accountOpen.value = !accountOpen.value
-}
 
-// Dados do usuário
-const user = ref(null)
-const balance = ref(0)
-const livesUsed = ref(0)
-const cardsBought = ref(0)
-const photoURL = ref('https://i.imgur.com/qqG1ZOD.jpeg') // Placeholder
 const isAdmin = ref(false)
 const isVip = ref(false)
-const copied = ref(false)
-const accountStatus = ref('Common') // Premium/Common/Blocked
+const isReseller = ref(false)
+const canCustomize = computed(() => isAdmin.value || isReseller.value)
 
-// ✅ condição correta para Customize
-const canCustomize = computed(() => ['Premium', 'Administrator', 'Reseller'].includes(accountStatus.value))
+const nickname = ref('User')
+const balance = ref(0)
+const photoURL = ref('https://i.imgur.com/vJZfcZj.png')
 
-const checksMonth = ref(0)
-const avgSpentWeek = ref(0)
-const lastLogin = ref('')
-
-const notices = ref(['New profile system!'])
-
-function goToProfile() {
-  if (user.value?.nickname) {
-    router.push(`/profile/${user.value.nickname}`)
-  }
-}
-
-onMounted(async () => {
-  auth.onAuthStateChanged(async u => {
-    if (u) {
-      user.value = u
-      photoURL.value = u.photoURL || photoURL.value
-
-      // obter documento do usuário primeiro (evita write desnecessário)
-      const userRef = doc(db, 'users', u.uid)
-      let userDoc = null
-      try {
-        userDoc = await getDoc(userRef)
-      } catch (e) {
-        console.warn('userDoc fetch failed', e)
-      }
-
-      // buscar IP / location (opcional) — faça apenas se for necessário
-      let location = {}
-      try {
-        const res = await fetch('https://ipapi.co/json/')
-        location = await res.json()
-      } catch (e) {
-        location = { error: true }
-      }
-
-      // só atualiza lastLogin/lastLocation se passou >24h ou IP mudou
-      try {
-        const now = Date.now()
-        let doUpdate = true
-        if (userDoc && userDoc.exists()) {
-          const data = userDoc.data()
-          const last = data.lastLogin ? (data.lastLogin.toDate ? data.lastLogin.toDate().getTime() : new Date(data.lastLogin).getTime()) : 0
-          const prevIp = (data.lastLocation && data.lastLocation.ip) ? data.lastLocation.ip : null
-          const ipChanged = location.ip && (location.ip !== prevIp)
-          const twentyFourH = 24 * 60 * 60 * 1000
-          if ((now - last) < twentyFourH && !ipChanged) doUpdate = false
-        }
-        if (doUpdate) {
-          await updateDoc(userRef, {
-            lastLogin: serverTimestamp(),
-            lastLocation: {
-              ip: location.ip ?? null,
-              city: location.city ?? null,
-              country: location.country_name ?? null
-            }
-          })
-        }
-      } catch (e) {
-        console.warn('lastLogin update failed', e)
-      }
-
-      // carregar dados do usuário para UI (cache/localStorage pode ser adicionado aqui)
-      if (userDoc && userDoc.exists()) {
-        const data = userDoc.data()
-        balance.value = data.balance ?? 0
-        photoURL.value = data.photoURL ?? photoURL.value
-        livesUsed.value = data.livesUsed ?? 0
-        cardsBought.value = data.cardsBought ?? 0
-        isAdmin.value = !!data.admin
-        isVip.value = !!data.vipAccess
-        user.value = { ...user.value, reseller: !!data.reseller, nickname: data.nickname }
-        checksMonth.value = data.checksMonth ?? 0
-        avgSpentWeek.value = data.avgSpentWeek ?? 0
-        if (data.lastLogin && typeof data.lastLogin.toDate === 'function') {
-          lastLogin.value = data.lastLogin.toDate().toLocaleString('pt-BR')
-        } else {
-          lastLogin.value = data.lastLogin ?? ''
-        }
-        accountStatus.value = data.status ?? 'Common'
-        if (!data.nickname) showNicknameModal.value = true
-      }
-    }
-  })
-})
-
-// Modal e lógica de resgate de key
+// ── Modal state ──────────────────────────────────────────
 const showModal = ref(false)
 const keyInput = ref('')
 const loading = ref(false)
 const redeemMessage = ref('')
 const redeemSuccess = ref(false)
 
-// Modal Recharge
-const showRechargeModal = ref(false)
-const amounts = [5, 10, 15, 45]
-const creditsMap = { 5: 20, 10: 50, 15: 100, 45: 1200 }
-const selectedCurrency = ref('BTC')
-const selectedAmount = ref(5)
-const invoiceData = ref(null)
-const qrImage = ref('')
-const isCreatingInvoice = ref(false)
-let pollTimer = null
-
-// Modal de criar key
 const showCreateKeyModal = ref(false)
 const newKeyValue = ref('')
-const createKeyMessage = ref('')
 const createKeyLoading = ref(false)
+const createKeyMessage = ref('')
 const createKeySuccess = ref(false)
 
-// Modal de nickname
-const nicknameInput = ref('')
-const nicknameError = ref('')
-const showNicknameModal = ref(false)
+function openModal() { showModal.value = true; keyInput.value = ''; redeemMessage.value = '' }
+function closeModal() { showModal.value = false }
+function openCreateKeyModal() { showCreateKeyModal.value = true; newKeyValue.value = ''; createKeyMessage.value = '' }
+function closeCreateKeyModal() { showCreateKeyModal.value = false }
+function logout() { /* signOut */ }
+function redeemKey() {}
+function createKey() {}
 
-function generateKeyCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let code = ''
-  for (let i = 0; i < 16; i++) code += chars.charAt(Math.floor(Math.random() * chars.length))
-  return `LUNAR-${code}`
-}
+// ── Demo data ────────────────────────────────────────────
+const demoStats = [
+  { val: '0', suffix: '', label: 'Cards Loaded' },
+  { val: '0', suffix: '', label: 'Hits' },
+  { val: '0', suffix: '', label: 'Dies' },
+  { val: '0.0', suffix: '%', label: 'Approval Rate' },
+]
 
-function openModal() {
-  showModal.value = true
-  keyInput.value = ''
-  redeemMessage.value = ''
-  redeemSuccess.value = false
-}
-function closeModal() {
-  showModal.value = false
-}
-
-function openRechargeModal() {
-  showRechargeModal.value = true
-  selectedCurrency.value = 'BTC'
-  selectedAmount.value = 5
-  invoiceData.value = null
-  qrImage.value = ''
-  isCreatingInvoice.value = false
-}
-function closeRechargeModal() {
-  showRechargeModal.value = false
-  invoiceData.value = null
-  qrImage.value = ''
-  if (pollTimer) {
-    clearInterval(pollTimer)
-    pollTimer = null
-  }
-}
-
-async function createInvoice() {
-  if (!user.value) {
-    alert('Faça login primeiro.')
-    return
-  }
-  isCreatingInvoice.value = true
-  invoiceData.value = null
-  qrImage.value = ''
-
-  try {
-    const body = {
-      pay_currency: selectedCurrency.value,
-      amount_usd: selectedAmount.value,
-      uid: user.value.uid
-    }
-
-    const res = await fetch('/api/payments/create-invoice', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-
-    if (!res.ok) throw new Error('Failed to create invoice')
-
-    const data = await res.json()
-    invoiceData.value = data
-
-    const toEncode = data.pay_address || data.invoice_url || data.payment_url || ''
-    if (toEncode) qrImage.value = await QRCode.toDataURL(toEncode)
-
-    if (pollTimer) clearInterval(pollTimer)
-    pollTimer = setInterval(async () => {
-      try {
-        const st = await fetch('/api/payments/invoice-status', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ invoiceId: invoiceData.value.id })
-        })
-        if (!st.ok) throw new Error('status check failed')
-        const js = await st.json()
-        invoiceData.value = { ...invoiceData.value, ...js }
-
-        if (js.status && (js.status === 'finished' || js.status === 'confirmed' || js.status === 'paid')) {
-          clearInterval(pollTimer)
-          pollTimer = null
-          setTimeout(() => closeRechargeModal(), 1200)
-        }
-      } catch (e) {
-        console.error('poll error', e)
-      }
-    }, 8000)
-  } catch (e) {
-    console.error(e)
-    alert('Erro ao criar invoice: ' + (e.message || e))
-  }
-
-  isCreatingInvoice.value = false
-}
-
-function openCreateKeyModal() {
-  showCreateKeyModal.value = true
-  newKeyValue.value = ''
-  createKeyMessage.value = ''
-  createKeySuccess.value = false
-}
-function closeCreateKeyModal() {
-  showCreateKeyModal.value = false
-}
-
-async function redeemKey() {
-  redeemMessage.value = ''
-  redeemSuccess.value = false
-  loading.value = true
-
-  const key = keyInput.value.trim()
-  if (!key) {
-    redeemMessage.value = 'Digite uma key válida.'
-    loading.value = false
-    return
-  }
-
-  try {
-    const keyRef = doc(db, 'keys', key)
-    const keySnap = await getDoc(keyRef)
-    if (!keySnap.exists()) {
-      redeemMessage.value = 'Key inválida ou já utilizada.'
-      loading.value = false
-      return
-    }
-
-    const value = keySnap.data().value ?? 0
-    const userRef = doc(db, 'users', user.value.uid)
-    const novoSaldo = balance.value + value
-
-    // usar writeBatch para agrupar update user + set usedKeys + delete key
-    const batch = writeBatch(db)
-    batch.update(userRef, {
-      balance: novoSaldo,
-      status: (novoSaldo > 0 ? 'Premium' : 'Common')
-    })
-    batch.set(doc(db, 'usedKeys', key), {
-      keyId: key,
-      value: value,
-      createdBy: keySnap.data().createdBy ?? null,
-      createdByEmail: keySnap.data().createdByEmail ?? null,
-      createdAt: keySnap.data().createdAt ?? null,
-      usedBy: user.value.uid,
-      usedByEmail: user.value.email,
-      usedAt: serverTimestamp()
-    })
-    batch.delete(keyRef)
-
-    await batch.commit()
-
-    balance.value = novoSaldo
-    accountStatus.value = (novoSaldo > 0 ? 'Premium' : 'Common')
-    redeemMessage.value = `Key resgatada! Valor: R$ ${value.toFixed(2)}`
-    redeemSuccess.value = true
-    keyInput.value = ''
-  } catch (e) {
-    redeemMessage.value = 'Erro ao resgatar key: ' + (e.message || e.code || e)
-  }
-
-  loading.value = false
-}
-
-async function createKey() {
-  createKeyMessage.value = ''
-  createKeySuccess.value = false
-  createKeyLoading.value = true
-
-  const value = Number(newKeyValue.value)
-  if (!value || value <= 0) {
-    createKeyMessage.value = 'Preencha um valor válido.'
-    createKeyLoading.value = false
-    return
-  }
-
-  try {
-    const keyId = generateKeyCode()
-    await setDoc(doc(db, 'keys', keyId), {
-      value,
-      createdBy: user.value.uid,
-      createdByEmail: user.value.email,
-      createdAt: serverTimestamp(),
-      usedBy: null,
-      usedByEmail: null,
-      usedAt: null
-    })
-
-    await navigator.clipboard.writeText(keyId)
-    createKeyMessage.value = `Key criada com sucesso: ${keyId}`
-    createKeySuccess.value = true
-    newKeyValue.value = ''
-  } catch (e) {
-    createKeyMessage.value = 'Erro ao criar key: ' + (e.message || e.code || e)
-  }
-
-  createKeyLoading.value = false
-}
-
-async function saveNickname() {
-  nicknameError.value = ''
-  if (!nicknameInput.value || nicknameInput.value.length < 3) {
-    nicknameError.value = 'O nickname deve ter pelo menos 3 caracteres.'
-    return
-  }
-  try {
-    const q = query(collection(db, 'users'), where('nickname', '==', nicknameInput.value))
-    const snap = await getDocs(q)
-    let exists = false
-    snap.forEach(docSnap => {
-      if (docSnap.id !== user.value.uid) exists = true
-    })
-    if (exists) {
-      nicknameError.value = 'Este nickname já está em uso.'
-      return
-    }
-    await updateDoc(doc(db, 'users', user.value.uid), { nickname: nicknameInput.value })
-    showNicknameModal.value = false
-  } catch (e) {
-    nicknameError.value = 'Erro ao salvar nickname.'
-  }
-}
-
-function copyEmail() {
-  if (user.value?.email) {
-    navigator.clipboard.writeText(user.value.email)
-    copied.value = true
-    setTimeout(() => (copied.value = false), 1200)
-  }
-}
+const demoLogs = [
+  { id: 1, type: 'info', text: 'Waiting for input...' },
+  { id: 2, type: 'hit', text: '4111111111111111|12/28|123 → APPROVED' },
+  { id: 3, type: 'die', text: '5500005555555559|09/27|999 → DECLINED' },
+  { id: 4, type: 'hit', text: '378282246310005|01/26|1234 → APPROVED' },
+  { id: 5, type: 'die', text: '6011111111111117|11/26|123 → DECLINED' },
+]
 </script>
 
-<style scoped>
-/* drawer + dropdown fade */
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.2s ease;
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
+.font-display { font-family: 'Syne', sans-serif; }
+.font-sans    { font-family: 'DM Sans', sans-serif; }
+
+/* ── Section label ───────────────────────────────────────── */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #3b82f6;
+  margin-bottom: 8px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: #3b82f6;
+  opacity: 0.5;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  max-height: 0;
+/* ── Sidebar links ───────────────────────────────────────── */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  text-decoration: none;
 }
+.sidebar-link:hover {
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.03);
+}
+.sidebar-link--active {
+  color: white !important;
+  background: rgba(59,130,246,0.08) !important;
+  border-color: rgba(59,130,246,0.2) !important;
+}
+.sidebar-sub-link {
+  display: block;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: color 0.15s;
+}
+.sidebar-sub-link:hover { color: rgba(255,255,255,0.7); }
 
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-  max-height: 600px;
+/* ── Profile menu items ─────────────────────────────────── */
+.profile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  transition: all 0.15s;
+  cursor: pointer;
+  background: transparent;
+  border: none;
 }
+.profile-menu-item:hover { color: white; background: rgba(255,255,255,0.05); }
+.profile-menu-item--danger:hover { color: #f87171; background: rgba(239,68,68,0.08); }
 
-/* slide drawer */
-.slide-enter-active,
-.slide-leave-active {
-  transition: transform 0.22s ease, opacity 0.22s ease;
-}
+/* ── FAQ / accordion transition ─────────────────────────── */
+.faq-enter-active, .faq-leave-active { transition: all .25s cubic-bezier(0.4, 0, 0.2, 1); }
+.faq-enter-from, .faq-leave-to { opacity: 0; transform: translateY(-6px); }
 
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateX(-12px);
-  opacity: 0;
-}
+/* ── Curtain (mobile drawer) ────────────────────────────── */
+.curtain-enter-active, .curtain-leave-active { transition: opacity .2s, transform .2s; }
+.curtain-enter-from, .curtain-leave-to { opacity: 0; }
 
-/* modal transitions */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.22s ease;
-}
+/* ── Modal transitions ──────────────────────────────────── */
+.modal-fade-enter-active, .modal-fade-leave-active { transition: opacity .22s ease; }
+.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
+.modal-zoom-enter-active, .modal-zoom-leave-active { transition: all .26s cubic-bezier(.4, 2, .6, 1); }
+.modal-zoom-enter-from, .modal-zoom-leave-to { opacity: 0; transform: scale(0.93) translateY(8px); }
 
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-zoom-enter-active,
-.modal-zoom-leave-active {
-  transition: all 0.26s cubic-bezier(.4, 2, .6, 1);
-}
-
-.modal-zoom-enter-from,
-.modal-zoom-leave-to {
-  opacity: 0;
-  transform: scale(0.92);
-}
+/* ── Scrollbar ───────────────────────────────────────────── */
+html { scrollbar-width: thin; scrollbar-color: #1a1a1a #000; }
+::-webkit-scrollbar { width: 4px; background: #000; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 99px; }
 </style>
