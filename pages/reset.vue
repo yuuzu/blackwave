@@ -40,7 +40,7 @@
 
           <!-- Desktop Menu -->
           <div class="hidden sm:flex flex-row items-center gap-2 sm:gap-4">
-            <a href="https://t.me/lunaroficial" target="_blank" rel="noopener">
+            <a href="https://t.me/blackwaveofc" target="_blank" rel="noopener">
               <SecondaryB>Telegram</SecondaryB>
             </a>
             <a href="/dashboard" rel="noopener">
@@ -82,7 +82,7 @@
               <a href="/login" class="w-full sm:w-auto">
                 <span :class="[btnSecondary, 'w-full sm:w-auto']">Back to login</span>
               </a>
-              <a href="https://t.me/lunaroficial" target="_blank" rel="noopener" class="w-full sm:w-auto">
+              <a href="https://t.me/blackwaveofc" target="_blank" rel="noopener" class="w-full sm:w-auto">
                 <span :class="[btnSecondary, 'w-full sm:w-auto']">Need help? Telegram</span>
               </a>
             </div>

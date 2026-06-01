@@ -90,7 +90,7 @@
           <!-- Divider -->
           <div class="my-3 h-px" style="background:rgba(255,255,255,0.06)" />
 
-          <a href="https://t.me/lunaroficial" target="_blank" class="sidebar-link" style="color:rgba(96,165,250,0.7)">
+          <a href="https://t.me/blackwaveofc" target="_blank" class="sidebar-link" style="color:rgba(96,165,250,0.7)">
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
@@ -147,7 +147,7 @@
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                   Home
                 </a>
-                <a href="https://t.me/lunaroficial" target="_blank" class="profile-menu-item" style="color:rgba(96,165,250,0.8)">
+                <a href="https://t.me/blackwaveofc" target="_blank" class="profile-menu-item" style="color:rgba(96,165,250,0.8)">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
                   Telegram Group
                 </a>
@@ -286,7 +286,7 @@
               <p class="text-[13px] text-white/30">Enter your key below to add funds to your account.</p>
             </div>
 
-            <input v-model="keyInput" placeholder="e.g. LUNAR-XXXXXXXXXXXX"
+            <input v-model="keyInput" placeholder="e.g. WAVE-XXXXXXXXXXXX"
               class="w-full px-4 py-3 rounded-xl border bg-transparent text-white text-[13px] outline-none transition placeholder:text-white/20 focus:border-blue-500/50"
               style="border-color:rgba(255,255,255,0.08)" />
 
@@ -420,7 +420,7 @@ function generateKeyCode() {
     )
   }
 
-  return `LUNAR-${code}`
+  return `WAVE-${code}`
 }
 
 // ── Auth Load ────────────────────────────────────────────

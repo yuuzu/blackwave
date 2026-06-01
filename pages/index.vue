@@ -25,7 +25,7 @@
 
         <!-- Desktop nav -->
         <nav class="hidden sm:flex items-center gap-1">
-          <a href="https://t.me/lunaroficial" target="_blank" rel="noopener"
+          <a href="https://t.me/blackwaveofc" target="_blank" rel="noopener"
             class="px-4 py-2 text-[13px] text-white/40 rounded-xl transition hover:text-white hover:bg-white/5">
             Telegram
           </a>
@@ -68,7 +68,7 @@
             class="border border-white/10 rounded-lg px-3 py-2 text-[13px] text-white/40">✕</button>
         </div>
         <div class="flex flex-col gap-3 mt-6">
-          <a href="https://t.me/lunaroficial" target="_blank" rel="noopener" @click="mobileOpen = false"
+          <a href="https://t.me/blackwaveofc" target="_blank" rel="noopener" @click="mobileOpen = false"
             class="block px-5 py-4 border border-white/7 rounded-xl text-[15px] text-white/40"
             style="border-color:rgba(255,255,255,0.07)">Telegram</a>
           <a href="#pricing" @click="mobileOpen = false"
@@ -139,7 +139,7 @@
                 stroke-linejoin="round" />
             </svg>
           </button>
-          <a href="https://t.me/lunaroficial" target="_blank" rel="noopener"
+          <a href="https://t.me/blackwaveofc" target="_blank" rel="noopener"
             class="inline-flex items-center gap-2 px-7 py-3.5 border text-white/40 hover:text-white text-sm font-medium rounded-2xl transition-all"
             style="border-color:rgba(255,255,255,0.1)">
             Join Telegram
@@ -436,7 +436,7 @@
                 class="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-2xl transition-all hover:-translate-y-0.5">
                 Open dashboard →
               </button>
-              <a href="https://t.me/lunaroficial" target="_blank" rel="noopener"
+              <a href="https://t.me/blackwaveofc" target="_blank" rel="noopener"
                 class="inline-flex items-center px-7 py-3.5 border text-white/40 hover:text-white text-sm font-medium rounded-2xl transition-all"
                 style="border-color:rgba(255,255,255,0.1)">
                 Join community
@@ -470,7 +470,7 @@
             <div>
               <p class="text-[10px] font-semibold uppercase tracking-widest text-white/20 mb-3.5">Community</p>
               <ul class="flex flex-col gap-2.5">
-                <li><a href="https://t.me/lunaroficial"
+                <li><a href="https://t.me/blackwaveofc"
                     class="text-[12px] text-white/20 hover:text-white/60 transition-colors">Telegram Group</a></li>
                 <li><a href="https://t.me/yuzuuk1"
                     class="text-[12px] text-white/20 hover:text-white/60 transition-colors">Support</a></li>
@@ -654,7 +654,7 @@ const faqs = [
   },
   {
     q: 'Where can I get support?',
-    a: 'Join our Telegram group at @lunaroficial for community support, updates, and announcements. For direct premium support, message @yuzuuk1 on Telegram. We typically respond within a few hours.',
+    a: 'Join our Telegram group at @blackwaveofc for community support, updates, and announcements. For direct premium support, message @yuzuuk1 on Telegram. We typically respond within a few hours.',
   },
 ]
 

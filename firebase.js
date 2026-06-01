@@ -5,13 +5,13 @@ import { getStorage } from "firebase/storage";
 
 // Copie os dados do seu painel Firebase:
 const firebaseConfig = {
-  apiKey: "AIzaSyACkcJug2Sh-vfWSDwdXmE2pQFdjI_uJd0",
-  authDomain: "lunar-3e272.firebaseapp.com",
-  projectId: "lunar-3e272",
-  storageBucket: "lunar-3e272.firebasestorage.app",
-  messagingSenderId: "139886745568",
-  appId: "1:139886745568:web:501d1f0884a8430241bd85",
-  measurementId: "G-HYN204W0YH"
+  apiKey: "AIzaSyCFk0MCgCC8fWQXthJZGgzoy8aot1mEy20",
+  authDomain: "bloodmoon-167af.firebaseapp.com",
+  projectId: "bloodmoon-167af",
+  storageBucket: "bloodmoon-167af.firebasestorage.app",
+  messagingSenderId: "735941285232",
+  appId: "1:735941285232:web:27913773f42650bfa1ebb5",
+  measurementId: "G-9W97RGD838"
 };
 
 const app = initializeApp(firebaseConfig);

@@ -32,7 +32,7 @@
             <div>
               <div class="text-[10px] font-semibold uppercase tracking-widest text-white/30 leading-none mb-0.5">Balance</div>
               <div class="font-display text-[1.1rem] font-extrabold tracking-tight text-white leading-none">
-                R$ <span class="text-blue-400">{{ resellerBalance.toFixed(2) }}</span>
+                $ <span class="text-blue-400">{{ resellerBalance.toFixed(2) }}</span>
               </div>
             </div>
           </div>
@@ -74,7 +74,7 @@
               <div>
                 <div class="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1">Available</div>
                 <div class="font-display text-[1.5rem] font-extrabold tracking-tight text-white leading-none">
-                  R$ <span class="text-blue-400">{{ resellerBalance.toFixed(2) }}</span>
+                  $ <span class="text-blue-400">{{ resellerBalance.toFixed(2) }}</span>
                 </div>
               </div>
               <div class="w-10 h-10 flex items-center justify-center rounded-xl border"
@@ -87,7 +87,7 @@
 
             <!-- input -->
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-2">Key Value (R$)</label>
+              <label class="block text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-2">Key Value ($)</label>
               <input v-model.number="keyValue" type="number" min="1" placeholder="e.g. 5"
                 class="w-full px-4 py-3 rounded-xl border bg-transparent text-white text-[13px] font-mono outline-none transition placeholder:text-white/15 focus:border-blue-500/50"
                 style="background:rgba(255,255,255,0.025);border-color:rgba(255,255,255,0.08)"
@@ -98,14 +98,14 @@
             <div>
               <div class="text-[10px] font-semibold uppercase tracking-widest text-white/20 mb-2">Quick select</div>
               <div class="flex gap-2 flex-wrap">
-                <button v-for="amt in [5, 10, 15, 45]" :key="amt"
+                <button v-for="amt in [20, 100, 1200]" :key="amt"
                   @click="keyValue = amt"
                   class="px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all"
                   :class="keyValue === amt
                     ? 'bg-blue-600 text-white'
                     : 'text-white/35 border border-white/[0.07] hover:border-white/15 hover:text-white/60'"
                   :style="keyValue === amt ? '' : ''">
-                  R${{ amt }}
+                  ${{ amt }}
                 </button>
               </div>
             </div>
@@ -242,7 +242,7 @@ import {
 const createdKeys      = ref([])
 const loadingKeys      = ref(true)
 const resellerBalance  = ref(0)
-const keyValue         = ref(5)
+const keyValue         = ref(20)
 const loading          = ref(false)
 const message          = ref('')
 const success          = ref(false)
@@ -256,7 +256,7 @@ function toast(msg, ok = true) {
 async function copyKey(keyId) {
   try {
     await navigator.clipboard.writeText(
-      `🔑 You can redeem your key at:\nhttps://lunarcntr.vercel.app/redeem/${keyId}\n\nJust access the link, log in, and redeem your balance!`
+      `🔑 You can redeem your key at:\nhttps://blackwave-beta.vercel.app/redeem/${keyId}\n\nJust access the link, log in, and redeem your balance!`
     )
     toast('Key + link copied!', true)
   } catch {
@@ -285,7 +285,7 @@ function generateKeyCode() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   let code = ''
   for (let i = 0; i < 12; i++) code += chars.charAt(Math.floor(Math.random() * chars.length))
-  return `LUNAR-R-${code}`
+  return `WAVE-R-${code}`
 }
 
 onMounted(async () => {

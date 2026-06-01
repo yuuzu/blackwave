@@ -185,7 +185,7 @@
                                     :class="loading ? 'bg-emerald-500 animate-pulse' : 'bg-white/20'" />
                                 <span class="font-mono text-[10px]"
                                     :class="loading ? 'text-emerald-400' : 'text-white/20'">{{ loading ? 'RUNNING' :
-                                    'READY' }}</span>
+                                        'READY' }}</span>
                             </div>
                         </div>
                         <div ref="logContainer"
@@ -270,7 +270,7 @@
                         <span class="tab-badge"
                             :style="activeTab === tab.key ? tab.badgeFg : 'background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.2)'">
                             {{ tab.key === 'approved' ? approved.length : tab.key === 'rejected' ? refused.length :
-                            errors }}
+                                errors }}
                         </span>
                     </button>
                     <div class="ml-auto flex items-center gap-1">
@@ -439,7 +439,7 @@
                                             </div>
                                             <div class="text-[11px] text-white/30 mt-0.5">Gateway: {{ gw.gateway }} |
                                                 Charge: {{
-                                                gw.charge }}</div>
+                                                    gw.charge }}</div>
                                             <div class="flex flex-wrap gap-1.5 mt-2">
                                                 <span v-for="tag in gw.tags" :key="tag" class="gateway-tag">{{ tag
                                                     }}</span>
@@ -507,7 +507,7 @@
                                         </button>
                                         <span
                                             class="font-display text-[1.4rem] font-extrabold text-white w-8 text-center tabular-nums">{{
-                                            settings.threads }}</span>
+                                                settings.threads }}</span>
                                         <button @click="settings.threads = Math.min(4, settings.threads + 1)"
                                             class="w-7 h-7 flex items-center justify-center rounded-lg border text-white/40 hover:text-white hover:bg-white/5 transition"
                                             style="border-color:rgba(255,255,255,0.1)">
@@ -902,7 +902,11 @@ async function startCheck() {
 
             if (isApproved) {
                 const html = compact(json, text, card)
-                approved.value.push({ type: 'approved', card, html })
+                approved.value.push({
+                    type: 'approved',
+                    card: card,
+                    html: `${html} → @blackwaveofc`
+                })
                 addLog('APR', `${html} (${ms}ms)`)
 
                 // ✅ Sound respects user pref
@@ -916,7 +920,11 @@ async function startCheck() {
                 updateDoc(userRef, { lives: arrayUnion(card), checksMonth, livesUsed, lastCheck: serverTimestamp(), balance, avgSpentWeek }).catch(() => { })
             } else {
                 const html = compact(json, text, card)
-                refused.value.push({ type: 'refused', card, html })
+                refused.value.push({
+                    type: 'refused',
+                    card: card,
+                    html: `${html} → @blackwaveofc`
+                })
                 addLog('REJ', `${html} (${ms}ms)`)
             }
         } catch {
