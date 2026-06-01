@@ -109,11 +109,6 @@
         <!-- Account Status — wide card -->
         <div class="lg:col-span-3 rounded-2xl border overflow-hidden relative group"
           style="background:#030305;border-color:rgba(255,255,255,0.07)">
-          <!-- corner brackets -->
-          <span class="absolute top-3 left-3 w-3 h-3 border-l border-t opacity-30 transition-opacity group-hover:opacity-70" :style="`border-color:${roleColor}`"/>
-          <span class="absolute top-3 right-3 w-3 h-3 border-r border-t opacity-30 transition-opacity group-hover:opacity-70" :style="`border-color:${roleColor}`"/>
-          <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b opacity-30 transition-opacity group-hover:opacity-70" :style="`border-color:${roleColor}`"/>
-          <span class="absolute bottom-3 right-3 w-3 h-3 border-r border-b opacity-30 transition-opacity group-hover:opacity-70" :style="`border-color:${roleColor}`"/>
 
           <!-- glow -->
           <div class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"

