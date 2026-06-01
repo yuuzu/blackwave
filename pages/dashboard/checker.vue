@@ -410,10 +410,6 @@
                         style="background:#020208;border-color:rgba(255,255,255,0.1);box-shadow:0 24px 80px rgba(0,0,0,0.7)">
                         <div class="pointer-events-none absolute inset-0"
                             style="background:radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 55%)" />
-                        <span class="absolute top-3 left-3 w-3 h-3 border-l border-t border-blue-500/40" />
-                        <span class="absolute top-3 right-3 w-3 h-3 border-r border-t border-blue-500/40" />
-                        <span class="absolute bottom-3 left-3 w-3 h-3 border-l border-b border-blue-500/40" />
-                        <span class="absolute bottom-3 right-3 w-3 h-3 border-r border-b border-blue-500/40" />
 
                         <!-- Header -->
                         <div class="relative flex items-center justify-between px-7 py-5 border-b"

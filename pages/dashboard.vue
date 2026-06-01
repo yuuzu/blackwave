@@ -53,38 +53,17 @@
             <transition name="faq">
               <div v-if="accountOpen" class="ml-7 mt-1 flex flex-col gap-0.5">
                 <a href="/dashboard" class="sidebar-sub-link">Overview</a>
-                <a href="/dashboard/results" class="sidebar-sub-link">Historical</a>
+                <a href="/dashboard/historical" class="sidebar-sub-link">Historical</a>
                 <a href="/dashboard/settings" class="sidebar-sub-link">Settings</a>
               </div>
             </transition>
           </div>
-
-          <a v-if="canCustomize" href="/dashboard/customize" class="sidebar-link">
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
-            </svg>
-            Customize
-          </a>
-
-          <a href="/dashboard/store" class="sidebar-link">
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
-            </svg>
-            Store
-          </a>
 
           <a href="/dashboard/checker" class="sidebar-link sidebar-link">
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
             </svg>
             Checker
-          </a>
-
-          <a v-if="isVip" href="/dashboard/vip" class="sidebar-link">
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-            VIP
           </a>
 
           <a v-if="isReseller" href="/dashboard/reseller" class="sidebar-link">
@@ -378,49 +357,263 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { auth, db } from '~/firebase'
+import { signOut } from 'firebase/auth'
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  setDoc,
+  deleteDoc,
+  serverTimestamp,
+  writeBatch
+} from 'firebase/firestore'
 
-// ── State ────────────────────────────────────────────────
-const showMobileMenu = ref(false)
-const showProfileMenu = ref(false)
-const accountOpen = ref(true)
+// ── Router ───────────────────────────────────────────────
+const router = useRouter()
 
-const isAdmin = ref(false)
-const isVip = ref(false)
-const isReseller = ref(false)
-const canCustomize = computed(() => isAdmin.value || isReseller.value)
+// ── User ─────────────────────────────────────────────────
+const user = ref(null)
 
 const nickname = ref('User')
 const balance = ref(0)
 const photoURL = ref('https://i.imgur.com/vJZfcZj.png')
 
-// ── Modal state ──────────────────────────────────────────
+const isAdmin = ref(false)
+const isVip = ref(false)
+const isReseller = ref(false)
+
+const canCustomize = computed(
+  () => isAdmin.value || isReseller.value
+)
+
+// ── UI State ─────────────────────────────────────────────
+const showMobileMenu = ref(false)
+const showProfileMenu = ref(false)
+const accountOpen = ref(true)
+
+// ── Redeem Key Modal ─────────────────────────────────────
 const showModal = ref(false)
 const keyInput = ref('')
 const loading = ref(false)
 const redeemMessage = ref('')
 const redeemSuccess = ref(false)
 
+// ── Create Key Modal ─────────────────────────────────────
 const showCreateKeyModal = ref(false)
 const newKeyValue = ref('')
 const createKeyLoading = ref(false)
 const createKeyMessage = ref('')
 const createKeySuccess = ref(false)
 
-function openModal() { showModal.value = true; keyInput.value = ''; redeemMessage.value = '' }
-function closeModal() { showModal.value = false }
-function openCreateKeyModal() { showCreateKeyModal.value = true; newKeyValue.value = ''; createKeyMessage.value = '' }
-function closeCreateKeyModal() { showCreateKeyModal.value = false }
-function logout() { /* signOut */ }
-function redeemKey() {}
-function createKey() {}
+// ── Helpers ──────────────────────────────────────────────
+function generateKeyCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
-// ── Demo data ────────────────────────────────────────────
+  let code = ''
+
+  for (let i = 0; i < 16; i++) {
+    code += chars.charAt(
+      Math.floor(Math.random() * chars.length)
+    )
+  }
+
+  return `LUNAR-${code}`
+}
+
+// ── Auth Load ────────────────────────────────────────────
+onMounted(() => {
+  auth.onAuthStateChanged(async (u) => {
+    if (!u) {
+      router.push('/login')
+      return
+    }
+
+    user.value = u
+
+    if (u.photoURL) {
+      photoURL.value = u.photoURL
+    }
+
+    try {
+      const userRef = doc(db, 'users', u.uid)
+      const snap = await getDoc(userRef)
+
+      if (!snap.exists()) return
+
+      const data = snap.data()
+
+      nickname.value = data.nickname || 'User'
+      balance.value = data.balance || 0
+
+      if (data.photoURL) {
+        photoURL.value = data.photoURL
+      }
+
+      isAdmin.value = !!data.admin
+      isVip.value = !!data.vipAccess
+      isReseller.value = !!data.reseller
+
+      await updateDoc(userRef, {
+        lastLogin: serverTimestamp()
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  })
+})
+
+// ── Modal Actions ────────────────────────────────────────
+function openModal() {
+  showModal.value = true
+  keyInput.value = ''
+  redeemMessage.value = ''
+  redeemSuccess.value = false
+}
+
+function closeModal() {
+  showModal.value = false
+}
+
+function openCreateKeyModal() {
+  showCreateKeyModal.value = true
+  newKeyValue.value = ''
+  createKeyMessage.value = ''
+  createKeySuccess.value = false
+}
+
+function closeCreateKeyModal() {
+  showCreateKeyModal.value = false
+}
+
+// ── Logout ───────────────────────────────────────────────
+async function logout() {
+  try {
+    await signOut(auth)
+    router.push('/login')
+  } catch (err) {
+    console.error(err)
+  }
+
+  showProfileMenu.value = false
+}
+
+// ── Redeem Key ───────────────────────────────────────────
+async function redeemKey() {
+  redeemMessage.value = ''
+  redeemSuccess.value = false
+  loading.value = true
+
+  try {
+    const key = keyInput.value.trim()
+
+    if (!key) {
+      redeemMessage.value = 'Digite uma key válida.'
+      loading.value = false
+      return
+    }
+
+    const keyRef = doc(db, 'keys', key)
+    const keySnap = await getDoc(keyRef)
+
+    if (!keySnap.exists()) {
+      redeemMessage.value = 'Key inválida ou já utilizada.'
+      loading.value = false
+      return
+    }
+
+    const keyData = keySnap.data()
+    const value = keyData.value || 0
+
+    const userRef = doc(db, 'users', user.value.uid)
+
+    const newBalance = balance.value + value
+
+    const batch = writeBatch(db)
+
+    batch.update(userRef, {
+      balance: newBalance
+    })
+
+    batch.set(doc(db, 'usedKeys', key), {
+      keyId: key,
+      value,
+      usedBy: user.value.uid,
+      usedByEmail: user.value.email,
+      usedAt: serverTimestamp()
+    })
+
+    batch.delete(keyRef)
+
+    await batch.commit()
+
+    balance.value = newBalance
+
+    redeemSuccess.value = true
+    redeemMessage.value =
+      `Key resgatada! Valor: R$ ${value.toFixed(2)}`
+
+    keyInput.value = ''
+  } catch (err) {
+    console.error(err)
+
+    redeemMessage.value =
+      'Erro ao resgatar key.'
+  }
+
+  loading.value = false
+}
+
+// ── Create Key ───────────────────────────────────────────
+async function createKey() {
+  createKeyMessage.value = ''
+  createKeySuccess.value = false
+  createKeyLoading.value = true
+
+  try {
+    const value = Number(newKeyValue.value)
+
+    if (!value || value <= 0) {
+      createKeyMessage.value =
+        'Informe um valor válido.'
+      createKeyLoading.value = false
+      return
+    }
+
+    const keyId = generateKeyCode()
+
+    await setDoc(doc(db, 'keys', keyId), {
+      value,
+      createdBy: user.value.uid,
+      createdByEmail: user.value.email,
+      createdAt: serverTimestamp()
+    })
+
+    await navigator.clipboard.writeText(keyId)
+
+    createKeySuccess.value = true
+    createKeyMessage.value =
+      `Key criada: ${keyId}`
+
+    newKeyValue.value = ''
+  } catch (err) {
+    console.error(err)
+
+    createKeyMessage.value =
+      'Erro ao criar key.'
+  }
+
+  createKeyLoading.value = false
+}
+
+// ── Demo Data ────────────────────────────────────────────
 const demoStats = [
   { val: '0', suffix: '', label: 'Cards Loaded' },
   { val: '0', suffix: '', label: 'Hits' },
   { val: '0', suffix: '', label: 'Dies' },
-  { val: '0.0', suffix: '%', label: 'Approval Rate' },
+  { val: '0.0', suffix: '%', label: 'Approval Rate' }
 ]
 
 const demoLogs = [
@@ -428,7 +621,7 @@ const demoLogs = [
   { id: 2, type: 'hit', text: '4111111111111111|12/28|123 → APPROVED' },
   { id: 3, type: 'die', text: '5500005555555559|09/27|999 → DECLINED' },
   { id: 4, type: 'hit', text: '378282246310005|01/26|1234 → APPROVED' },
-  { id: 5, type: 'die', text: '6011111111111117|11/26|123 → DECLINED' },
+  { id: 5, type: 'die', text: '6011111111111117|11/26|123 → DECLINED' }
 ]
 </script>
 

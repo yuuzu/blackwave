@@ -358,7 +358,7 @@ const avgSpentWeek  = ref(0)
 const lastLogin     = ref('')
 const accountStatus = ref('Common')
 const nickname      = ref('')
-const photoURL      = ref('https://i.imgur.com/qqG1ZOD.jpeg')
+const photoURL      = ref('https://i.imgur.com/vJZfcZj.png')
 const copied        = ref(false)
 
 /* ── nickname modal ─────────────────────────────────────── */
